@@ -3,6 +3,7 @@
 /build/classes/java/main/
 /.idea/
 .idea/
+.idea
 /cuda-src/.idea
 /cuda-src/cmake-build-debug
 .gradle
@@ -48,3 +49,4 @@ bin/
 ### Mac OS ###
 .DS_Store
 
+/.idea/
