@@ -1,4 +1,4 @@
-package org.polyscape.render;
+package org.polyscape.render.model;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
