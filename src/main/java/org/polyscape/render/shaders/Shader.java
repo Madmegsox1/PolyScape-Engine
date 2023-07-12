@@ -1,10 +1,14 @@
 package org.polyscape.render.shaders;
 
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.FloatBuffer;
 
 /**
  * @author Madmegsox1
@@ -61,6 +65,7 @@ public abstract class Shader {
         if(GL20.glGetProgrami(programId, GL20.GL_VALIDATE_STATUS) == GL20.GL_FALSE){
             System.err.println("Programme failed to validate - "+ GL20.glGetProgramInfoLog(programId));
         }
+        getAllUniforms();
     }
 
     public void bind(){
@@ -76,6 +81,33 @@ public abstract class Shader {
 
         GL20.glDeleteProgram(programId);
     }
+
+    protected abstract void getAllUniforms();
+
+    protected int getUniform(String name){
+        return GL20.glGetUniformLocation(programId, name);
+    }
+
+    protected void loadFloatUniform(int location, float value){
+        GL20.glUniform1f(location, value);
+    }
+
+    protected void loadIntUniform(int location, int value){
+        GL20.glUniform1i(location, value);
+    }
+
+    protected void loadVectorUniform(int location, Vector3f value){
+        GL20.glUniform3f(location, value.x, value.y, value.z);
+    }
+
+    protected void loadMatrixUniform(int location, Matrix4f value){
+        FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
+        value.get(buffer);
+        buffer.flip();
+        GL20.glUniformMatrix4fv(location,false, buffer);
+    }
+
+
 
     private String readFile(String fileLocation){
         BufferedReader bufferedReader = null;

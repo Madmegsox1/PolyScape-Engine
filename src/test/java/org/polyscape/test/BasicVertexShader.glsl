@@ -1,10 +1,13 @@
 #version 400 core
 
 in vec3 vertices;
+in vec2 textCoords;
 
-out vec4 color;
+out vec2 passTextCoords;
+
+uniform float scale;
 
 void main() {
-    gl_Position = vec4(vertices, 1.0);
-    color = vec4(vertices.x + 0.5, 0.0, vertices.y + 0.5, 1.0);
+    gl_Position = vec4(vertices * scale, 1.0);
+    passTextCoords = textCoords;
 }
