@@ -1,0 +1,116 @@
+package org.polyscape.rendering;
+
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWErrorCallback;
+import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
+import org.lwjgl.opengl.GL;
+import org.polyscape.rendering.events.KeyEvent;
+import org.polyscape.rendering.events.MouseClickEvent;
+
+import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.system.MemoryUtil.NULL;
+
+
+public final class Display {
+    private final String title;
+    private GLFWErrorCallback errorCallback;
+    private long window;
+
+    private double fpsCap = 1d/120;
+
+    public Display(final String title)
+    {
+        this.title = title;
+    }
+
+    public void init(boolean aa)
+    {
+        // Error callback.
+        glfwSetErrorCallback(this.errorCallback = GLFWErrorCallback.createPrint(System.err));
+
+        // GLFW initialize
+        if (!glfwInit())
+        {
+            throw new IllegalStateException("Unable to initialize GLFW");
+        }
+
+
+
+
+        // Window config
+        glfwDefaultWindowHints();
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+        //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+        //glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+        //
+
+        if(aa) {
+            glfwWindowHint(GLFW_SAMPLES, 4);
+        }
+
+        // Window creation
+        this.window = GLFW.glfwCreateWindow(Profile.Display.WIDTH, Profile.Display.HEIGHT, this.title, NULL, NULL);
+
+        // Make fullscreen
+        // this.window = glfwCreateWindow(Constants.Display.WIDTH,
+        // Constants.Display.HEIGHT, this.title, GLFW.glfwGetPrimaryMonitor(),
+        // NULL);
+        glfwMakeContextCurrent(this.window);
+        GL.createCapabilities();
+
+
+        if (this.window == NULL)
+        {
+            throw new RuntimeException("Failed to create the GLFW window");
+        }
+
+        glfwSetMouseButtonCallback(window, ((window1, button, action, mods) -> Engine.getEventBus().postEvent(new MouseClickEvent(button, action, window))));
+        glfwSetKeyCallback(window, ((window1, key, scancode, action, mods) -> Engine.getEventBus().postEvent(new KeyEvent(key, action, window))));
+
+        // final GLFWVidMode vidmode =
+        // glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+        glfwSetWindowAspectRatio(this.window, Profile.Display.ASPECT_RATIO_NUMERATOR, Profile.Display.ASPECT_RATIO_DENOMINATOR);
+
+        glfwSwapInterval(1);
+        glfwShowWindow(this.window);
+
+        org.lwjgl.glfw.GLFW.glfwSetFramebufferSizeCallback(this.window, resizeWindow);
+        // GLFW.glfwSetCursorPos(window, 1080, 1920);
+    }
+
+    private static GLFWFramebufferSizeCallback resizeWindow = new GLFWFramebufferSizeCallback()
+    {
+        @Override
+        public void invoke(final long window, final int width, final int height)
+        {
+            // Keep ratio when resizing window
+            //final int newHeight = (int) (width / 1.777777777777778D);
+
+            Profile.Display.HEIGHT = height;
+            Profile.Display.WIDTH = width;
+
+            Engine.getRenderer().init();
+        }
+    };
+
+    public GLFWErrorCallback getErrorCallback()
+    {
+        return this.errorCallback;
+    }
+
+    public long getWindow()
+    {
+        return this.window;
+    }
+
+    public void setTitle(final String title)
+    {
+        glfwSetWindowTitle(this.window, title);
+    }
+
+}
