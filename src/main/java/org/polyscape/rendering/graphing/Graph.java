@@ -4,7 +4,7 @@ package org.polyscape.rendering.graphing;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.polyscape.font.Font;
-import org.polyscape.rendering.Engine;
+import org.polyscape.Engine;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.elements.Vector2;

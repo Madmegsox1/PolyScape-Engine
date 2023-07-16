@@ -1,7 +1,7 @@
 package org.polyscape.rendering.elements;
 
 import org.lwjgl.opengl.GL11;
-import org.polyscape.rendering.TextureLoader;
+import org.polyscape.rendering.sprite.TextureLoader;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;

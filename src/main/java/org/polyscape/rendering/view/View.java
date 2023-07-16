@@ -2,7 +2,7 @@ package org.polyscape.rendering.view;
 
 
 import org.polyscape.font.Font;
-import org.polyscape.rendering.Engine;
+import org.polyscape.Engine;
 
 public abstract class View implements IView {
 

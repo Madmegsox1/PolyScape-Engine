@@ -1,6 +1,7 @@
 package org.polyscape.rendering;
 
 import org.lwjgl.glfw.GLFW;
+import org.polyscape.Engine;
 import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.elements.Texture;
 import org.polyscape.rendering.elements.Vector2;
@@ -15,18 +16,18 @@ public final class RenderEngine {
         int fpsOld = 0;
         fps = 0;
         while (!renderer.shouldClose()) {
-            renderer.prepare();
-            Engine.getEventBus().postEvent(new RenderEvent(renderer, this));
-            //Engine.getEventProcessor().postEvent(new RenderEvent(renderer, this));
-            renderer.render(display.getWindow());
-            fpsOld++;
-            if(GLFW.glfwGetTime() - time >= 1.0){
-                fps = fpsOld;
-                fpsOld = 0;
-                time = GLFW.glfwGetTime();
+            if(renderer.isUpdateReady()) {
+                renderer.prepare();
+                Engine.getEventBus().postEvent(new RenderEvent(renderer, this));
+                renderer.render(display.getWindow());
+                fpsOld++;
+                if (GLFW.glfwGetTime() - time >= 1.0) {
+                    fps = fpsOld;
+                    fpsOld = 0;
+                    time = GLFW.glfwGetTime();
+                }
             }
         }
-        //Core.running = false;
         System.exit(0);
     }
 

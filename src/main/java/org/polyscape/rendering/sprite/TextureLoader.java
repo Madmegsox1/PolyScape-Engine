@@ -1,9 +1,10 @@
-package org.polyscape.rendering;
+package org.polyscape.rendering.sprite;
 
 
 import de.matthiasmann.twl.utils.PNGDecoder;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
+import org.polyscape.Profile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

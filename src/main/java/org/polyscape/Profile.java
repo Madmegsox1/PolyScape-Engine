@@ -1,4 +1,4 @@
-package org.polyscape.rendering;
+package org.polyscape;
 
 import org.polyscape.rendering.elements.Color;
 
@@ -10,8 +10,6 @@ public final class Profile {
         public static int HEIGHT = 720;
         public static int ASPECT_RATIO_NUMERATOR = 16;
         public static int ASPECT_RATIO_DENOMINATOR = 9;
-
-        public static int FOV = 90;
 
         public static float Z_NEAR = 0.01f;
 
@@ -28,7 +26,7 @@ public final class Profile {
     public final static class Textures
     {
 
-        public static final String TEXTURE_LOCATION = "res/";
+        public static final String TEXTURE_LOCATION = "res/textures/";
         public static final String TEXTURE_FILEFORMAT = "png";
 
     }

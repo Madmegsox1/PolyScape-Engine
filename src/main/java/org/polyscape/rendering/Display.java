@@ -4,6 +4,8 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import org.lwjgl.opengl.GL;
+import org.polyscape.Engine;
+import org.polyscape.Profile;
 import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;
 
@@ -12,11 +14,9 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 
 public final class Display {
-    private final String title;
+    private String title;
     private GLFWErrorCallback errorCallback;
     private long window;
-
-    private double fpsCap = 1d/120;
 
     public Display(final String title)
     {
@@ -38,7 +38,7 @@ public final class Display {
 
 
         // Window config
-        glfwDefaultWindowHints();
+        //glfwDefaultWindowHints();
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
@@ -108,9 +108,13 @@ public final class Display {
         return this.window;
     }
 
+
     public void setTitle(final String title)
     {
+        this.title = title;
         glfwSetWindowTitle(this.window, title);
     }
+
+
 
 }

@@ -4,6 +4,7 @@ package org.polyscape.rendering;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+import org.polyscape.Profile;
 import org.polyscape.rendering.elements.Color;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -16,6 +17,12 @@ public final class Renderer {
 
     private int fbo;
     private int rbo;
+
+    private double fpsCap = 1d/120d;
+
+    private double time;
+
+    private double processedTime = 0;
 
     private Display display;
 
@@ -34,7 +41,13 @@ public final class Renderer {
 
         glEnable(GL11.GL_DEPTH_TEST);
 
-        GL11.glShadeModel(GL_FLAT);
+        glEnable(GL_LIGHTING);
+
+        glEnable(GL_LIGHT0);
+
+        glEnable(GL_LIGHT1);
+
+        GL11.glShadeModel(GL_SMOOTH);
 
         glDisable(GL_CULL_FACE);
 
@@ -45,10 +58,10 @@ public final class Renderer {
         glMatrixMode(GL11.GL_PROJECTION);
         glLoadIdentity();
 
-        GL11.glOrtho(0, Profile.Display.WIDTH, Profile.Display.HEIGHT, 0, -1, 1);
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glLoadIdentity();
-        GL11.glViewport(0, 0,Profile.Display.WIDTH, Profile.Display.HEIGHT);
+        glOrtho(0, Profile.Display.WIDTH, Profile.Display.HEIGHT, 0, -1, 1);
+        glMatrixMode(GL11.GL_MODELVIEW);
+        glLoadIdentity();
+        glViewport(0, 0,Profile.Display.WIDTH, Profile.Display.HEIGHT);
 
         glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
 
@@ -96,6 +109,32 @@ public final class Renderer {
         GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
         glfwSwapBuffers(window);
         glfwPollEvents();
+    }
+
+    public double getTime(){
+        return System.nanoTime() / 1000000000d;
+    }
+
+    public boolean isUpdateReady(){
+        double currentTime = getTime();
+        double timePassed = currentTime - time;
+        processedTime += timePassed;
+        time = currentTime;
+
+        while (processedTime > fpsCap){
+            processedTime -= fpsCap;
+            return true;
+        }
+
+        return false;
+    }
+
+    public double getFpsCap() {
+        return fpsCap;
+    }
+
+    public void setFpsCap(double fpsCap) {
+        this.fpsCap = 1d/fpsCap;
     }
 
     public void setBackgroundColor(Color color) {

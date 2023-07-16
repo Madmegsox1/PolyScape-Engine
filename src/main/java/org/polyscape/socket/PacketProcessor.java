@@ -96,11 +96,8 @@ public final class PacketProcessor extends Thread {
                         e.printStackTrace(System.out);
                     }
                 }
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+
+                Thread.onSpinWait();
 
             }
         }

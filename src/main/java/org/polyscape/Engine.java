@@ -1,8 +1,11 @@
-package org.polyscape.rendering;
+package org.polyscape;
 
 
 import org.polyscape.event.EventBus;
 import org.polyscape.font.FontRenderer;
+import org.polyscape.rendering.Display;
+import org.polyscape.rendering.RenderEngine;
+import org.polyscape.rendering.Renderer;
 
 public abstract class Engine extends Thread {
     protected static EventBus eventBus;
