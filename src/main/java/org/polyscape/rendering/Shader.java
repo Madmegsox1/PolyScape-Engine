@@ -1,6 +1,5 @@
 package org.polyscape.rendering;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL20;
 import org.polyscape.rendering.elements.Vector2;
 
@@ -16,11 +15,26 @@ import java.io.IOException;
 public abstract class Shader {
     private int vertexShaderId, fragmentShaderId, programId;
 
-    private final String vertexFile, fragmentFile;
+    private boolean useFrag, useVertex;
+
+    private String vertexFile, fragmentFile;
     public Shader(String vertexFile, String fragmentFile){
         this.vertexFile = vertexFile;
         this.fragmentFile = fragmentFile;
+        useFrag = true;
+        useVertex = true;
     }
+
+    public Shader(String file, boolean vertex){
+        if(vertex) {
+            this.vertexFile = file;
+            useVertex = true;
+        }else{
+            this.fragmentFile = file;
+            useFrag = true;
+        }
+    }
+
 
     public abstract void bindAllAttributes();
 
@@ -31,26 +45,36 @@ public abstract class Shader {
 
     public void create(){
         programId = GL20.glCreateProgram();
-        vertexShaderId = GL20.glCreateShader(GL20.GL_VERTEX_SHADER);
-        GL20.glShaderSource(vertexShaderId, readFile(vertexFile));
-        GL20.glCompileShader(vertexShaderId);
+        if(useVertex) {
+            vertexShaderId = GL20.glCreateShader(GL20.GL_VERTEX_SHADER);
+            GL20.glShaderSource(vertexShaderId, readFile(vertexFile));
+            GL20.glCompileShader(vertexShaderId);
 
 
-        if(GL20.glGetShaderi(vertexShaderId, GL20.GL_COMPILE_STATUS) == GL20.GL_FALSE){
-            System.err.println("Vertex Shader failed to compile - "+ GL20.glGetShaderInfoLog(vertexShaderId));
+            if (GL20.glGetShaderi(vertexShaderId, GL20.GL_COMPILE_STATUS) == GL20.GL_FALSE) {
+                System.err.println("Vertex Shader failed to compile - " + GL20.glGetShaderInfoLog(vertexShaderId));
+            }
         }
 
-        fragmentShaderId = GL20.glCreateShader(GL20.GL_FRAGMENT_SHADER);
-        GL20.glShaderSource(fragmentShaderId, readFile(fragmentFile));
-        GL20.glCompileShader(fragmentShaderId);
+        if(useFrag) {
+
+            fragmentShaderId = GL20.glCreateShader(GL20.GL_FRAGMENT_SHADER);
+            GL20.glShaderSource(fragmentShaderId, readFile(fragmentFile));
+            GL20.glCompileShader(fragmentShaderId);
 
 
-        if(GL20.glGetShaderi(fragmentShaderId, GL20.GL_COMPILE_STATUS) == GL20.GL_FALSE){
-            System.err.println("Frag Shader failed to compile - "+ GL20.glGetShaderInfoLog(fragmentShaderId));
+            if (GL20.glGetShaderi(fragmentShaderId, GL20.GL_COMPILE_STATUS) == GL20.GL_FALSE) {
+                System.err.println("Frag Shader failed to compile - " + GL20.glGetShaderInfoLog(fragmentShaderId));
+            }
         }
 
-        GL20.glAttachShader(programId, vertexShaderId);
-        GL20.glAttachShader(programId, fragmentShaderId);
+        if(useVertex) {
+            GL20.glAttachShader(programId, vertexShaderId);
+        }
+
+        if(useFrag) {
+            GL20.glAttachShader(programId, fragmentShaderId);
+        }
 
         GL20.glLinkProgram(programId); // Links Programme
 
@@ -71,11 +95,14 @@ public abstract class Shader {
     }
 
     public void remove(){
-        GL20.glDetachShader(programId, fragmentShaderId);
-        GL20.glDetachShader(programId, vertexShaderId);
-
-        GL20.glDeleteShader(fragmentShaderId);
-        GL20.glDeleteShader(vertexShaderId);
+        if(useFrag) {
+            GL20.glDetachShader(programId, fragmentShaderId);
+            GL20.glDeleteShader(fragmentShaderId);
+        }
+        if(useVertex) {
+            GL20.glDetachShader(programId, vertexShaderId);
+            GL20.glDeleteShader(vertexShaderId);
+        }
 
         GL20.glDeleteProgram(programId);
     }
