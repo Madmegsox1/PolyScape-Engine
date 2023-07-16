@@ -57,7 +57,7 @@ public class EngineTest extends Engine {
         float x = RenderEngine.normalize(vectorX.get(), Profile.Display.WIDTH, 0);
         float y = RenderEngine.normalize(vectorY.get(), Profile.Display.HEIGHT, 0);
         AtomicReference<FloatBuffer> position = new AtomicReference<>(BufferUtils.createFloatBuffer(4));
-        position.get().put(new float[] { x, y, 1f, 0f, });
+        position.get().put(new float[] { x, y, 0f, 0f, });
         position.get().flip();
 
 
@@ -74,6 +74,8 @@ public class EngineTest extends Engine {
 
             RenderEngine.drawQuadTexture(new Vector2(100, 100), 100, 100, texture1);
             RenderEngine.drawQuad(new Vector2(vectorX.get(), vectorY.get()), 10, 10, Color.WHITE);
+
+            RenderEngine.drawQuad(new Vector2(200, 200), 100, 100, Color.WHITE);
             glLightfv(GL_LIGHT0, GL_DIFFUSE, dif);
             glLightfv(GL_LIGHT1, GL_AMBIENT, ambient);
             glLightfv(GL_LIGHT0, GL_POSITION, position.get());
@@ -96,7 +98,7 @@ public class EngineTest extends Engine {
             float x1 = RenderEngine.normalize(vectorX.get(), Profile.Display.WIDTH, 0);
             float y2 = RenderEngine.normalize(vectorY.get(), Profile.Display.HEIGHT, 0);
             position.set(BufferUtils.createFloatBuffer(4));
-            position.get().put(new float[] { x1, y2, 1f, 0f, });
+            position.get().put(new float[] { x1, y2, 0f, 0f, });
             position.get().flip();
         };
 
