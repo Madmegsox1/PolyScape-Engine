@@ -31,6 +31,11 @@ public final class Profile {
 
     }
 
+    public final static class Shaders{
+        public static final String SHADER_LOCATION = "res/shaders/";
+        public static final String SHADER_FILEFORMAT = "glsl";
+    }
+
     public final static class Sound
     {
 

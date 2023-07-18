@@ -1,6 +1,8 @@
-package org.polyscape.rendering;
+package org.polyscape.rendering.shaders;
 
 import org.lwjgl.opengl.GL20;
+import org.polyscape.Profile;
+import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.elements.Vector2;
 
 import java.io.BufferedReader;
@@ -19,18 +21,18 @@ public abstract class Shader {
 
     private String vertexFile, fragmentFile;
     public Shader(String vertexFile, String fragmentFile){
-        this.vertexFile = vertexFile;
-        this.fragmentFile = fragmentFile;
+        this.vertexFile = Profile.Shaders.SHADER_LOCATION + vertexFile + "." + Profile.Shaders.SHADER_FILEFORMAT;
+        this.fragmentFile = Profile.Shaders.SHADER_LOCATION + fragmentFile + "." + Profile.Shaders.SHADER_FILEFORMAT;
         useFrag = true;
         useVertex = true;
     }
 
     public Shader(String file, boolean vertex){
         if(vertex) {
-            this.vertexFile = file;
+            this.vertexFile = Profile.Shaders.SHADER_LOCATION + file + "." + Profile.Shaders.SHADER_FILEFORMAT;
             useVertex = true;
         }else{
-            this.fragmentFile = file;
+            this.fragmentFile = Profile.Shaders.SHADER_LOCATION + file + "." + Profile.Shaders.SHADER_FILEFORMAT;
             useFrag = true;
         }
     }
@@ -94,6 +96,8 @@ public abstract class Shader {
         GL20.glUseProgram(programId);
     }
 
+    public void unbind(){GL20.glUseProgram(0);}
+
     public void remove(){
         if(useFrag) {
             GL20.glDetachShader(programId, fragmentShaderId);
@@ -123,6 +127,10 @@ public abstract class Shader {
 
     protected void loadVectorUniform(int location, Vector2 value){
         GL20.glUniform2f(location, value.x, value.y);
+    }
+
+    protected void loadColorUniform(int location, Color value){
+        GL20.glUniform3f(location, value.r, value.g, value.b);
     }
 
 
