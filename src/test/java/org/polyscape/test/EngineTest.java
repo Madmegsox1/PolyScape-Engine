@@ -47,10 +47,10 @@ public class EngineTest extends Engine {
 
         fontRenderer.addFont(new Font(jFont2, true));
 
-        Texture texture1 = new Texture("001");
+        Texture texture1 = new Texture("002");
 
         FloatBuffer ambient = BufferUtils.createFloatBuffer(4);
-        ambient.put(new float[] { 1f, 1f, 1f, 1f });
+        ambient.put(new float[] { 0.6f, 0.6f, 0.6f, 0.6f });
         ambient.flip();
 
         AtomicInteger vectorX = new AtomicInteger(10);
@@ -78,9 +78,11 @@ public class EngineTest extends Engine {
         IEvent<RenderEvent> renderEvent = e -> {
 
             //RenderEngine.drawQuad(new Vector2(vectorX.get(), vectorY.get()), 10, 10, Color.WHITE);
+
+
+
             RenderEngine.drawQuad(new Vector2(200, 200), 100, 100, Color.WHITE);
             RenderEngine.drawQuadTexture(new Vector2(100, 100), 100, 100, texture1);
-
             glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
             glStencilFunc(GL_EQUAL, 0, 1);
             glColorMask(true, true, true, true);
