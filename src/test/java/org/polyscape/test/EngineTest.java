@@ -8,6 +8,7 @@ import org.polyscape.event.EventBus;
 import org.polyscape.event.IEvent;
 import org.polyscape.font.Font;
 import org.polyscape.font.FontRenderer;
+import org.polyscape.object.BaseObject;
 import org.polyscape.rendering.Display;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.Renderer;

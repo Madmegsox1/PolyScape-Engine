@@ -4,7 +4,7 @@ package org.polyscape.rendering.elements;
 import org.polyscape.font.Font;
 import org.polyscape.Profile;
 
-public final class Vector2 implements  Comparable<Vector2> {
+public final class Vector2 implements Comparable<Vector2> {
     public float x, y;
 
     public Vector2(final int x, final int y){

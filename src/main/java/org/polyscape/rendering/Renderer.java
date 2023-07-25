@@ -18,7 +18,7 @@ public final class Renderer {
     private int fbo;
     private int rbo;
 
-    private double fpsCap = 1d/120d;
+    private double fpsCap = 1d / 120d;
 
     private double time;
 
@@ -39,7 +39,7 @@ public final class Renderer {
 
         glEnable(GL11.GL_TEXTURE_2D);
 
-       glEnable(GL_LIGHTING);
+        glEnable(GL_LIGHTING);
 
         glEnable(GL_LIGHT0);
 
@@ -52,7 +52,6 @@ public final class Renderer {
         glEnable(GL_MULTISAMPLE);
 
 
-
         glMatrixMode(GL11.GL_PROJECTION);
         glLoadIdentity();
 
@@ -60,7 +59,7 @@ public final class Renderer {
         glMatrixMode(GL11.GL_MODELVIEW);
         glLoadIdentity();
         glEnable(GL_STENCIL_TEST);
-        glViewport(0, 0,Profile.Display.WIDTH, Profile.Display.HEIGHT);
+        glViewport(0, 0, Profile.Display.WIDTH, Profile.Display.HEIGHT);
 
         glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
 
@@ -110,17 +109,17 @@ public final class Renderer {
         glfwPollEvents();
     }
 
-    public double getTime(){
+    public double getTime() {
         return System.nanoTime() / 1000000000d;
     }
 
-    public boolean isUpdateReady(){
+    public boolean isUpdateReady() {
         double currentTime = getTime();
         double timePassed = currentTime - time;
         processedTime += timePassed;
         time = currentTime;
 
-        while (processedTime > fpsCap){
+        while (processedTime > fpsCap) {
             processedTime -= fpsCap;
             return true;
         }
@@ -133,7 +132,7 @@ public final class Renderer {
     }
 
     public void setFpsCap(double fpsCap) {
-        this.fpsCap = 1d/fpsCap;
+        this.fpsCap = 1d / fpsCap;
     }
 
     public void setBackgroundColor(Color color) {
