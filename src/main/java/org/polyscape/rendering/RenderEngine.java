@@ -62,6 +62,7 @@ public final class RenderEngine {
     public static void drawQuadA(final Vector2 vector, final float width, final float height, final Color color){
 
         final float[] c = Color.convertColorToFloatAlpha(color);
+        glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
         glColor4f(c[0], c[1], c[2], c[3]);
         glBegin(GL_QUADS);
 

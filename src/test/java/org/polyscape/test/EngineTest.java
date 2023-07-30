@@ -50,9 +50,6 @@ public class EngineTest extends Engine {
 
         Texture texture1 = new Texture("002");
 
-        FloatBuffer ambient = BufferUtils.createFloatBuffer(4);
-        ambient.put(new float[] { 0.6f, 0.6f, 0.6f, 0.6f });
-        ambient.flip();
 
         AtomicInteger vectorX = new AtomicInteger(10);
         AtomicInteger vectorY = new AtomicInteger(10);
@@ -62,10 +59,6 @@ public class EngineTest extends Engine {
         position.get().put(new float[] { x, y, 1f, 0f, });
         position.get().flip();
 
-
-        FloatBuffer dif = BufferUtils.createFloatBuffer(4);
-        dif.put(new float[] { 0.5f, 0.5f, 0.5f, 0f, });
-        dif.flip();
 
         LightingShader s = new LightingShader();
         s.create();
@@ -77,13 +70,13 @@ public class EngineTest extends Engine {
         ob.setObjectId(1);
         ob.setWidth(100);
         ob.setHeight(100);
-        ob.setWireframe(true);
+        //ob.setWireframe(true);
         ob.setBaseColor(new Color(255, 0, 0, 255));
 
 
 
 
-        Color lightColor = new Color((float) Math.random() * 10, (float) Math.random() * 10, (float) Math.random() * 10);
+        Color lightColor = new Color(10, 10, 10);
 
         IEvent<RenderEvent> renderEvent = e -> {
 
