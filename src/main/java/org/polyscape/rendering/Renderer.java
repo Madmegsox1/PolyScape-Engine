@@ -39,11 +39,11 @@ public final class Renderer {
 
         glEnable(GL11.GL_TEXTURE_2D);
 
-        glEnable(GL_LIGHTING);
+        //glEnable(GL_LIGHTING);
 
-        glEnable(GL_LIGHT0);
+        //glEnable(GL_LIGHT0);
 
-        glEnable(GL_LIGHT1);
+        //glEnable(GL_LIGHT1);
 
         glShadeModel(GL_SMOOTH);
 

@@ -13,17 +13,61 @@ public abstract class RenderProperty {
 
     protected int width, height;
 
-    protected boolean isTextured;
+    protected boolean isTextured = false;
 
     protected Texture texture;
 
     protected Color baseColor;
 
-    protected boolean shadered;
+    protected boolean shadered = false;
 
     protected Shader shader;
 
+    protected boolean wireframe = false;
+
+    protected boolean wireframeTextured = false;
+
     public void loadShaderPropertys(){
 
+    }
+
+    public boolean isTextured() {
+        return isTextured;
+    }
+
+    public void setTextured(boolean textured) {
+        isTextured = textured;
+    }
+
+    public Texture getTexture() {
+        return texture;
+    }
+
+    public void setTexture(Texture texture) {
+        this.texture = texture;
+    }
+
+    public Color getBaseColor() {
+        return baseColor;
+    }
+
+    public void setBaseColor(Color baseColor) {
+        this.baseColor = baseColor;
+    }
+
+    public boolean isShadered() {
+        return shadered;
+    }
+
+    public void setShadered(boolean shadered) {
+        this.shadered = shadered;
+    }
+
+    public Shader getShader() {
+        return shader;
+    }
+
+    public void setShader(Shader shader) {
+        this.shader = shader;
     }
 }

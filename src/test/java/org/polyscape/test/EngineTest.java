@@ -71,6 +71,15 @@ public class EngineTest extends Engine {
         s.create();
 
 
+        BaseObject ob = new BaseObject();
+
+        ob.setPosition(new Vector2(300, 300));
+        ob.setObjectId(1);
+        ob.setWidth(100);
+        ob.setHeight(100);
+        ob.setWireframe(true);
+        ob.setBaseColor(new Color(255, 0, 0, 255));
+
 
 
 
@@ -82,8 +91,9 @@ public class EngineTest extends Engine {
 
 
 
-            RenderEngine.drawQuad(new Vector2(200, 200), 100, 100, Color.WHITE);
+            //RenderEngine.drawQuad(new Vector2(200, 200), 100, 100, Color.GREEN);
             RenderEngine.drawQuadTexture(new Vector2(100, 100), 100, 100, texture1);
+            ob.render();
             glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
             glStencilFunc(GL_EQUAL, 0, 1);
             glColorMask(true, true, true, true);
