@@ -17,7 +17,7 @@ public abstract class RenderProperty {
 
     protected Texture texture;
 
-    protected Color baseColor;
+    protected Color baseColor = Color.WHITE;
 
     protected boolean shadered = false;
 
@@ -27,7 +27,7 @@ public abstract class RenderProperty {
 
     protected boolean wireframeTextured = false;
 
-    public void loadShaderPropertys(){
+    public void loadShaderProperty(){
 
     }
 
@@ -45,6 +45,9 @@ public abstract class RenderProperty {
 
     public void setTexture(Texture texture) {
         this.texture = texture;
+        if(this.texture != null){
+            this.isTextured = true;
+        }
     }
 
     public Color getBaseColor() {
@@ -69,5 +72,13 @@ public abstract class RenderProperty {
 
     public void setShader(Shader shader) {
         this.shader = shader;
+    }
+
+    public boolean isWireframeTextured() {
+        return wireframeTextured;
+    }
+
+    public void setWireframeTextured(boolean wireframeTextured) {
+        this.wireframeTextured = wireframeTextured;
     }
 }

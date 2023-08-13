@@ -1,5 +1,6 @@
 package org.polyscape.object;
 
+import org.polyscape.Profile;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.elements.Vector2;
@@ -21,10 +22,11 @@ public class BaseObject extends RenderProperty {
      */
     private Vector2 velocity;
 
-    private long lastApplyVelocityInterval;
+    private float velocityDecay = Profile.ObjectSettings.BaseVelocityDecay;
+
 
     public BaseObject() {
-        lastApplyVelocityInterval = System.currentTimeMillis();
+
     }
 
     public int getObjectId() {
@@ -90,6 +92,21 @@ public class BaseObject extends RenderProperty {
         return this.wireframe;
     }
 
+    public float getVelocityDecay() {
+        return velocityDecay;
+    }
+    public void setVelocityDecay(float velocityDecay) {
+        this.velocityDecay = velocityDecay;
+    }
+
+    public void addVelocity(float x, float y){
+        this.velocity.addToVect(x, y);
+    }
+
+    public void subtractVelocity(float x, float y){
+        this.velocity.subToVect(x, y);
+    }
+
     public void renderObject() {
 
         if (this.isTextured) {
@@ -102,7 +119,6 @@ public class BaseObject extends RenderProperty {
 
     public void renderObjectWireframe() {
         if (this.isTextured && this.wireframeTextured) {
-            baseColor.a = 10f;
             RenderEngine.drawQuadTexture(position, width, height, texture, baseColor);
         }
         drawWireframe();
@@ -122,13 +138,14 @@ public class BaseObject extends RenderProperty {
         }else{
             renderObject();
         }
+        applyVelocity();
     }
 
     public void applyVelocity() {
-        if (System.currentTimeMillis() - lastApplyVelocityInterval >= 1000) {
-            lastApplyVelocityInterval = System.currentTimeMillis();
-            position.addToVect(velocity.x, velocity.y);
-        }
+
+        position.addToVect(velocity.x, velocity.y);
+
+        velocity.applyVelocity(velocityDecay, velocityDecay);
     }
 
 

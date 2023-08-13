@@ -32,6 +32,30 @@ public final class Vector2 implements Comparable<Vector2> {
         this.y -= y;
     }
 
+    public void applyVelocity(final float x, final float y){
+        if(this.x > 0){
+            this.x -= x;
+        }
+        if(this.y > 0){
+            this.y -= y;
+        }
+
+        if(this.y < 0){
+            this.y += y;
+        }
+        if(this.x < 0){
+            this.x += x;
+        }
+
+        if(this.x >= -0.01 && this.x <= 0.01){
+            this.x = 0;
+        }
+        if(this.y >= -0.01 && this.y <= 0.01){
+            this.y = 0;
+        }
+
+    }
+
     @Override
     public String toString(){
         return "[X: " + this.x + ", Y: " + this.y + "]";

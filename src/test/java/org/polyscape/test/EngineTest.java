@@ -68,10 +68,11 @@ public class EngineTest extends Engine {
 
         ob.setPosition(new Vector2(300, 300));
         ob.setObjectId(1);
+
         ob.setWidth(100);
         ob.setHeight(100);
-        //ob.setWireframe(true);
-        ob.setBaseColor(new Color(255, 0, 0, 255));
+        ob.setTexture(new Texture("001"));
+        ob.setVelocity(new Vector2(-1, -1));
 
 
 
@@ -121,9 +122,11 @@ public class EngineTest extends Engine {
         IEvent<KeyEvent> keyEvent = e -> {
             if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_W)){
                 vectorY.set(vectorY.get() - 10);
+                ob.addVelocity(0, -0.25f);
             }
             if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_S)){
                 vectorY.set(vectorY.get() + 10);
+                ob.addVelocity(0, 0.25f);
             }
             if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_A)){
                 vectorX.set(vectorX.get() - 10);

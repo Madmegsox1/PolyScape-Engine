@@ -23,6 +23,10 @@ public final class Profile {
 
     }
 
+    public final static class ObjectSettings{
+        public static final float BaseVelocityDecay = 0.04f;
+    }
+
     public final static class Textures
     {
 
