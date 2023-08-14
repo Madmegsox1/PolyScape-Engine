@@ -1,5 +1,6 @@
 package org.polyscape.object;
 
+import org.polyscape.Engine;
 import org.polyscape.Profile;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.elements.Color;
@@ -21,6 +22,8 @@ public class BaseObject extends RenderProperty {
      * TODO replace with conventional measuring system as pixels very from pc to pc
      */
     private Vector2 velocity;
+
+    private Vector2 velocityMax = new Vector2(10, 10);
 
     private float velocityDecay = Profile.ObjectSettings.BaseVelocityDecay;
 
@@ -84,6 +87,16 @@ public class BaseObject extends RenderProperty {
         return points;
     }
 
+    /*
+        Pixels Per Second
+     */
+    public Vector2 getSpeed(){
+        float speedX = (RenderEngine.fps * velocityDecay) * velocity.x;
+        float speedY = (RenderEngine.fps * velocityDecay) * velocity.y;
+
+        return new Vector2(Math.abs(speedX), Math.abs(speedY));
+    }
+
     public void setWireframe(boolean wireframe) {
         this.wireframe = wireframe;
     }
@@ -101,10 +114,22 @@ public class BaseObject extends RenderProperty {
 
     public void addVelocity(float x, float y){
         this.velocity.addToVect(x, y);
-    }
+        if(Math.abs(velocity.x) > velocityMax.x){
+            if(velocity.x < 0){
+                this.velocity.x = -velocityMax.x;
+            }else{
+                this.velocity.x = velocityMax.x;
+            }
 
-    public void subtractVelocity(float x, float y){
-        this.velocity.subToVect(x, y);
+        }
+
+        if(Math.abs(velocity.y) > velocityMax.y) {
+            if (velocity.y < 0) {
+                this.velocity.y = -velocityMax.y;
+            } else {
+                this.velocity.y = velocityMax.y;
+            }
+        }
     }
 
     public void renderObject() {
@@ -148,5 +173,11 @@ public class BaseObject extends RenderProperty {
         velocity.applyVelocity(velocityDecay, velocityDecay);
     }
 
+    public Vector2 getVelocityMax() {
+        return velocityMax;
+    }
 
+    public void setVelocityMax(Vector2 velocityMax) {
+        this.velocityMax = velocityMax;
+    }
 }

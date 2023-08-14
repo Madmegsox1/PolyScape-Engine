@@ -40,7 +40,7 @@ public class EngineTest extends Engine {
         renderer = new Renderer(display);
         renderer.init();
 
-        java.awt.Font jFont = new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 30);
+        java.awt.Font jFont = new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 20);
 
         fontRenderer = new FontRenderer(new Font(jFont, true));
 
@@ -71,8 +71,9 @@ public class EngineTest extends Engine {
 
         ob.setWidth(100);
         ob.setHeight(100);
+        ob.setVelocityMax(new Vector2(2, 2));
         ob.setTexture(new Texture("001"));
-        ob.setVelocity(new Vector2(-1, -1));
+        ob.setVelocity(new Vector2(-5, 0));
 
 
 
@@ -88,6 +89,8 @@ public class EngineTest extends Engine {
             //RenderEngine.drawQuad(new Vector2(200, 200), 100, 100, Color.GREEN);
             RenderEngine.drawQuadTexture(new Vector2(100, 100), 100, 100, texture1);
             ob.render();
+            fontRenderer.renderFont(ob.getSpeed().toString(), new Vector2(Profile.Display.WIDTH - 200, 10));
+            fontRenderer.renderFont(ob.getVelocity().toString(), new Vector2(Profile.Display.WIDTH - 200, 60));
             glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
             glStencilFunc(GL_EQUAL, 0, 1);
             glColorMask(true, true, true, true);
@@ -111,29 +114,25 @@ public class EngineTest extends Engine {
             glClear(GL_STENCIL_BUFFER_BIT);
 
 
-
-
-
-
-
-
         };
 
         IEvent<KeyEvent> keyEvent = e -> {
+            float yv = 0;
+            float xv = 0;
             if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_W)){
-                vectorY.set(vectorY.get() - 10);
-                ob.addVelocity(0, -0.25f);
+                yv += -0.3f;
             }
             if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_S)){
-                vectorY.set(vectorY.get() + 10);
-                ob.addVelocity(0, 0.25f);
+                yv += 0.3f;
             }
             if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_A)){
-                vectorX.set(vectorX.get() - 10);
+                xv += -0.3f;
             }
             if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_D)){
-                vectorX.set(vectorX.get() + 10);
+                xv += 0.3f;
+
             }
+            ob.addVelocity(xv, yv);
 
             float x1 = RenderEngine.normalize(vectorX.get(), Profile.Display.WIDTH, 0);
             float y2 = RenderEngine.normalize(vectorY.get(), Profile.Display.HEIGHT, 0);
