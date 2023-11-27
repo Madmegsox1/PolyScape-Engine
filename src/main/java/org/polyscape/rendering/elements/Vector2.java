@@ -47,10 +47,10 @@ public final class Vector2 implements Comparable<Vector2> {
             this.x += x;
         }
 
-        if(this.x >= -0.01 && this.x <= 0.01){
+        if(this.x >= -0.04 && this.x <= 0.04){
             this.x = 0;
         }
-        if(this.y >= -0.01 && this.y <= 0.01){
+        if(this.y >= -0.04 && this.y <= 0.04){
             this.y = 0;
         }
 

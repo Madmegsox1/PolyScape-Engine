@@ -10,21 +10,27 @@ import org.polyscape.rendering.events.RenderEvent;
 import static org.lwjgl.opengl.GL11.*;
 public final class RenderEngine {
     public static int fps = 0;
+    public static double deltaTime = 0;
 
     public void render(final Renderer renderer, final Display display) {
         double time = GLFW.glfwGetTime();
+        double fpsTime = time;
         int fpsOld = 0;
         fps = 0;
         while (!renderer.shouldClose()) {
+
             if(renderer.isUpdateReady()) {
+                final double currentTime = GLFW.glfwGetTime();
+                deltaTime = currentTime - time;
+                time = currentTime;
                 renderer.prepare();
                 Engine.getEventBus().postEvent(new RenderEvent(renderer, this));
                 renderer.render(display.getWindow());
                 fpsOld++;
-                if (GLFW.glfwGetTime() - time >= 1.0) {
+                if (GLFW.glfwGetTime() - fpsTime >= 1.0) {
                     fps = fpsOld;
                     fpsOld = 0;
-                    time = GLFW.glfwGetTime();
+                    fpsTime = GLFW.glfwGetTime();
                 }
             }
         }

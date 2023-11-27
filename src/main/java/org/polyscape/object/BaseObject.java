@@ -6,6 +6,9 @@ import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.elements.Vector2;
 
+import java.awt.*;
+import java.util.HashMap;
+
 /**
  * @author Madmegsox1
  * @since 25/07/2023
@@ -23,13 +26,24 @@ public class BaseObject extends RenderProperty {
      */
     private Vector2 velocity;
 
+    private final Vector2 acceleration;
+
+    private static final Vector2 GRAVITY = new Vector2(0, 9.8f); // Gravity force
+    private static final float AIR_RESISTANCE = 0.01f;
+    private float mass;
     private Vector2 velocityMax = new Vector2(10, 10);
+
+    private HashMap<BaseObject, Integer> collisionCountMap = new HashMap<>();
 
     private float velocityDecay = Profile.ObjectSettings.BaseVelocityDecay;
 
+    private boolean isColliding = false;
+
 
     public BaseObject() {
-
+        acceleration = new Vector2(0, 0);
+        velocity = new Vector2(0, 0);
+        this.mass = 5f;
     }
 
     public int getObjectId() {
@@ -87,6 +101,31 @@ public class BaseObject extends RenderProperty {
         return points;
     }
 
+    public Rectangle getBounds() {
+        return new Rectangle((int) position.x, (int) position.y, width, height);
+    }
+    public boolean collidesWith(BaseObject other) {
+        return getBounds().intersects(other.getBounds());
+    }
+
+    public void handleCollision(BaseObject other){
+        if(!collisionCountMap.containsKey(other)){
+            collisionCountMap.put(other, 0);
+        }else{
+            collisionCountMap.put(other, collisionCountMap.get(other) + 1);
+        }
+
+        //this.velocity.x = -this.velocity.x;
+
+        if(collisionCountMap.get(other) > 1){
+            this.velocity.y = 0;
+        }else{
+            this.velocity.y = -this.velocity.y;
+        }
+
+        isColliding = true;
+    }
+
     /*
         Pixels Per Second
      */
@@ -104,33 +143,42 @@ public class BaseObject extends RenderProperty {
     public boolean isWireframe() {
         return this.wireframe;
     }
-
     public float getVelocityDecay() {
         return velocityDecay;
     }
+
     public void setVelocityDecay(float velocityDecay) {
         this.velocityDecay = velocityDecay;
     }
 
-    public void addVelocity(float x, float y){
-        this.velocity.addToVect(x, y);
-        if(Math.abs(velocity.x) > velocityMax.x){
-            if(velocity.x < 0){
-                this.velocity.x = -velocityMax.x;
-            }else{
-                this.velocity.x = velocityMax.x;
-            }
-
-        }
-
-        if(Math.abs(velocity.y) > velocityMax.y) {
-            if (velocity.y < 0) {
-                this.velocity.y = -velocityMax.y;
-            } else {
-                this.velocity.y = velocityMax.y;
-            }
-        }
+    public void addForce(float x, float y){
+        this.acceleration.addToVect((x / mass) * RenderEngine.fps, (y / mass) * RenderEngine.fps);
     }
+
+    public void applyPhysics() {
+        float deltaTime = (float) RenderEngine.deltaTime;
+        // Add the acceleration to the velocity
+        this.velocity.addToVect(this.acceleration.x , this.acceleration.y );
+
+        // Apply the damping factor
+        this.velocity.x *= velocityDecay;
+        this.velocity.y *= velocityDecay;
+        if(!isColliding) {
+            this.velocity.y += deltaTime * ((GRAVITY.y * mass) * RenderEngine.fps);
+        }
+        isColliding = false;
+        this.velocity.x -= AIR_RESISTANCE * this.velocity.x * Math.abs(this.velocity.x) * deltaTime;
+        this.velocity.y -= AIR_RESISTANCE * this.velocity.y * Math.abs(this.velocity.y) * deltaTime;
+
+        // Add the velocity to the position
+        this.position.addToVect(deltaTime * this.velocity.x, deltaTime * this.velocity.y);
+
+
+        // Reset the acceleration for the next frame
+        this.acceleration.x = 0;
+        this.acceleration.y = 0;
+    }
+
 
     public void renderObject() {
 
@@ -163,15 +211,9 @@ public class BaseObject extends RenderProperty {
         }else{
             renderObject();
         }
-        applyVelocity();
+        applyPhysics();
     }
 
-    public void applyVelocity() {
-
-        position.addToVect(velocity.x, velocity.y);
-
-        velocity.applyVelocity(velocityDecay, velocityDecay);
-    }
 
     public Vector2 getVelocityMax() {
         return velocityMax;

@@ -9,6 +9,7 @@ import org.polyscape.event.IEvent;
 import org.polyscape.font.Font;
 import org.polyscape.font.FontRenderer;
 import org.polyscape.object.BaseObject;
+import org.polyscape.object.StaticObject;
 import org.polyscape.rendering.Display;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.Renderer;
@@ -21,6 +22,7 @@ import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.rendering.shaders.LightingShader;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -71,11 +73,24 @@ public class EngineTest extends Engine {
 
         ob.setWidth(100);
         ob.setHeight(100);
-        ob.setVelocityMax(new Vector2(2, 2));
+        //ob.setVelocityMax(new Vector2(3, 3));
         ob.setTexture(new Texture("001"));
-        ob.setVelocity(new Vector2(-5, 0));
+        //ob.setVelocityDecay(0.05f);
+        //ob.setVelocity(new Vector2(-5, 0));
+        ob.addForce(10f, 10f);
 
 
+        StaticObject ob2 = new StaticObject();
+        ob2.setPosition(new Vector2(0, 600));
+        ob2.setObjectId(2);
+        ob2.setWidth(Profile.Display.WIDTH);
+        ob2.setHeight(100);
+        ob2.setBaseColor(Color.GREEN);
+
+
+        ArrayList<BaseObject> objects = new ArrayList<>();
+        objects.add(ob);
+        objects.add(ob2);
 
 
         Color lightColor = new Color(10, 10, 10);
@@ -83,12 +98,22 @@ public class EngineTest extends Engine {
         IEvent<RenderEvent> renderEvent = e -> {
 
             //RenderEngine.drawQuad(new Vector2(vectorX.get(), vectorY.get()), 10, 10, Color.WHITE);
+            //ob.addForce(1f, 0);
 
-
+            for (BaseObject obj1 : objects) {
+                for (BaseObject obj2 : objects) {
+                    if (obj1 != obj2 && obj1.collidesWith(obj2)) {
+                        obj1.handleCollision(obj2);
+                    }
+                }
+            }
 
             //RenderEngine.drawQuad(new Vector2(200, 200), 100, 100, Color.GREEN);
             RenderEngine.drawQuadTexture(new Vector2(100, 100), 100, 100, texture1);
             ob.render();
+            ob2.render();
+            fontRenderer.renderFont("FPS: " + RenderEngine.fps, new Vector2(10, 10));
+            fontRenderer.renderFont("Delta: " + RenderEngine.deltaTime, new Vector2(10, 60));
             fontRenderer.renderFont(ob.getSpeed().toString(), new Vector2(Profile.Display.WIDTH - 200, 10));
             fontRenderer.renderFont(ob.getVelocity().toString(), new Vector2(Profile.Display.WIDTH - 200, 60));
             glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
@@ -119,20 +144,23 @@ public class EngineTest extends Engine {
         IEvent<KeyEvent> keyEvent = e -> {
             float yv = 0;
             float xv = 0;
+
             if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_W)){
-                yv += -0.3f;
+                yv += -20f;
             }
             if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_S)){
-                yv += 0.3f;
+                yv += 20f;
             }
             if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_A)){
-                xv += -0.3f;
+                xv += -20f;
             }
             if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_D)){
-                xv += 0.3f;
+                xv += 20f;
 
             }
-            ob.addVelocity(xv, yv);
+            //ob.addVelocity(xv, yv);
+            ob.addForce(xv, yv);
+
 
             float x1 = RenderEngine.normalize(vectorX.get(), Profile.Display.WIDTH, 0);
             float y2 = RenderEngine.normalize(vectorY.get(), Profile.Display.HEIGHT, 0);
