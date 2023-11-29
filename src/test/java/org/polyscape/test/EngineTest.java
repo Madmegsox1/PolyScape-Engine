@@ -114,6 +114,7 @@ public class EngineTest extends Engine {
             ob2.render();
             fontRenderer.renderFont("FPS: " + RenderEngine.fps, new Vector2(10, 10));
             fontRenderer.renderFont("Delta: " + RenderEngine.deltaTime, new Vector2(10, 60));
+            fontRenderer.renderFont("Pos: " + ob.getPosition().toString(), new Vector2(10, 110));
             fontRenderer.renderFont(ob.getSpeed().toString(), new Vector2(Profile.Display.WIDTH - 200, 10));
             fontRenderer.renderFont(ob.getVelocity().toString(), new Vector2(Profile.Display.WIDTH - 200, 60));
             glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);

@@ -5,10 +5,7 @@ import org.polyscape.socket.PacketProcessor;
 import org.polyscape.socket.Protocol;
 import org.polyscape.socket.SocketMode;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.List;
@@ -30,7 +27,7 @@ public final class TcpPacketProcessor {
 
         sendData(socket, packet.compilePacket());
 
-        String data = Objects.requireNonNull(receiveData(socket)).readLine();
+        String data = Objects.requireNonNull(receiveData(socket));
 
         processPacket(data);
 
@@ -57,13 +54,31 @@ public final class TcpPacketProcessor {
         return new Socket(mainProcessor.address, mainProcessor.port);
     }
 
-    private BufferedReader receiveData(final Socket socket) {
+    private String receiveData(final Socket socket) {
         try {
-            return new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            InputStream is = socket.getInputStream();
+            String s = readStreamBytes(is);
+
+            if (s.isEmpty() || s.isBlank()) {
+                return new BufferedReader(new InputStreamReader(socket.getInputStream())).readLine();
+            } else {
+                return s;
+            }
         } catch (final IOException e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    private String readStreamBytes(InputStream is) throws IOException {
+        byte[] lenBytes = new byte[4];
+        is.read(lenBytes, 0, 4);
+        int len = (((lenBytes[3] & 0xff) << 24) | ((lenBytes[2] & 0xff) << 16) |
+                ((lenBytes[1] & 0xff) << 8) | (lenBytes[0] & 0xff));
+        byte[] receivedBytes = new byte[len];
+        is.read(receivedBytes, 0, len);
+
+        return new String(receivedBytes, 0, len);
     }
 
     private void processPacket(String packetData){

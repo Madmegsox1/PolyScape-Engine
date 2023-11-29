@@ -1,6 +1,5 @@
 package org.polyscape.object;
 
-import org.polyscape.Engine;
 import org.polyscape.Profile;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.elements.Color;
@@ -37,12 +36,19 @@ public class BaseObject extends RenderProperty {
 
     private float velocityDecay = Profile.ObjectSettings.BaseVelocityDecay;
 
-    private boolean isColliding = false;
+    private boolean isCollidingX = false;
 
+    private boolean isCollidingY = false;
+
+    private float velocityThresholdX = 10f;
+    private float velocityThresholdY = 20f;
+
+    private Vector2 previousPosition;
 
     public BaseObject() {
         acceleration = new Vector2(0, 0);
         velocity = new Vector2(0, 0);
+        this.previousPosition = new Vector2(0, 0);
         this.mass = 5f;
     }
 
@@ -101,11 +107,28 @@ public class BaseObject extends RenderProperty {
         return points;
     }
 
+    public Vector2 getPreviousPosition() {
+        return previousPosition;
+    }
+
+    public void setPreviousPosition(Vector2 previousPosition) {
+        this.previousPosition = previousPosition;
+    }
+
+
     public Rectangle getBounds() {
         return new Rectangle((int) position.x, (int) position.y, width, height);
     }
+    public boolean collidesWithX(BaseObject other) {
+
+        return this.position.x + this.height >= other.position.x && this.position.x <= other.position.x + other.width;
+    }
+    public boolean collidesWithY(BaseObject other){
+        return this.position.y + this.height >= other.position.y && this.position.y <= other.position.y + other.height;
+    }
+
     public boolean collidesWith(BaseObject other) {
-        return getBounds().intersects(other.getBounds());
+        return collidesWithY(other) && collidesWithX(other);
     }
 
     public void handleCollision(BaseObject other){
@@ -115,15 +138,14 @@ public class BaseObject extends RenderProperty {
             collisionCountMap.put(other, collisionCountMap.get(other) + 1);
         }
 
-        //this.velocity.x = -this.velocity.x;
+        this.position = previousPosition;
 
-        if(collisionCountMap.get(other) > 1){
-            this.velocity.y = 0;
-        }else{
-            this.velocity.y = -this.velocity.y;
+        if(collidesWithX(other)) {
+            isCollidingX = true;
         }
-
-        isColliding = true;
+        if(collidesWithY(other)){
+            isCollidingY = true;
+        }
     }
 
     /*
@@ -152,31 +174,47 @@ public class BaseObject extends RenderProperty {
     }
 
     public void addForce(float x, float y){
+
         this.acceleration.addToVect((x / mass) * RenderEngine.fps, (y / mass) * RenderEngine.fps);
     }
 
     public void applyPhysics() {
         float deltaTime = (float) RenderEngine.deltaTime;
+        this.previousPosition = new Vector2(this.position.x, this.position.y);
         // Add the acceleration to the velocity
-        this.velocity.addToVect(this.acceleration.x , this.acceleration.y );
+        this.velocity.addToVect(this.acceleration.x , this.acceleration.y);
 
         // Apply the damping factor
         this.velocity.x *= velocityDecay;
         this.velocity.y *= velocityDecay;
-        if(!isColliding) {
-            this.velocity.y += deltaTime * ((GRAVITY.y * mass) * RenderEngine.fps);
+        if(!isCollidingY) {
+            //this.velocity.y += deltaTime * ((GRAVITY.y * mass) * RenderEngine.fps);
         }
-        isColliding = false;
+
         this.velocity.x -= AIR_RESISTANCE * this.velocity.x * Math.abs(this.velocity.x) * deltaTime;
         this.velocity.y -= AIR_RESISTANCE * this.velocity.y * Math.abs(this.velocity.y) * deltaTime;
 
         // Add the velocity to the position
+        if(Math.abs(velocity.x) <= velocityThresholdX){
+            velocity.x = 0;
+        }
+        if(Math.abs(velocity.y) <= velocityThresholdY){
+            velocity.y = 0;
+        }
+        if(isCollidingX){
+            velocity.x = 0;
+        }
+        if(isCollidingY){
+            velocity.y = 0;
+        }
         this.position.addToVect(deltaTime * this.velocity.x, deltaTime * this.velocity.y);
 
 
         // Reset the acceleration for the next frame
         this.acceleration.x = 0;
         this.acceleration.y = 0;
+        isCollidingY = false;
+        isCollidingX = false;
     }
 
 

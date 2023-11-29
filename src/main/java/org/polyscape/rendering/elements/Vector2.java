@@ -77,6 +77,22 @@ public final class Vector2 implements Comparable<Vector2> {
         return new Vector2(Profile.Display.WIDTH / 2f - length / 2f, y);
     }
 
+    public Boolean greaterThan(Vector2 v){
+        return this.x > v.x && this.y > v.y;
+    }
+
+    public Boolean greaterThanOrEqual(Vector2 v){
+        return this.x >= v.x && this.y >= v.y;
+    }
+
+    public Boolean lessThan(Vector2 v){
+        return this.x < v.x && this.y < v.y;
+    }
+
+    public Boolean lessThanOrEqual(Vector2 v){
+        return this.x <= v.x && this.y <= v.y;
+    }
+
 
     @Override
     public boolean equals(Object obj) {
