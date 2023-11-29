@@ -138,14 +138,25 @@ public class BaseObject extends RenderProperty {
             collisionCountMap.put(other, collisionCountMap.get(other) + 1);
         }
 
+
+
         this.position = previousPosition;
+
+
+        String collisionSideX = "";
+        String collisionSideY = "";
 
         if(collidesWithX(other)) {
             isCollidingX = true;
+            collisionSideX = this.position.x > other.position.x ? "Right" : "Left";
         }
         if(collidesWithY(other)){
             isCollidingY = true;
+            collisionSideY = this.position.y > other.position.y ? "Bottom" : "Top";
         }
+
+        System.out.println("Collision occurred on the " + collisionSideX + " " + collisionSideY + " side.");
+
     }
 
     /*
