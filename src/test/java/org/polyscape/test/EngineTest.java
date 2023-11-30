@@ -87,10 +87,18 @@ public class EngineTest extends Engine {
         ob2.setHeight(200);
         ob2.setBaseColor(Color.GREEN);
 
+        StaticObject ob3 = new StaticObject();
+        ob3.setPosition(new Vector2(400, 600));
+        ob3.setObjectId(3);
+        ob3.setWidth(200);
+        ob3.setHeight(400);
+        ob3.setBaseColor(Color.BLUE);
+
 
         ArrayList<BaseObject> objects = new ArrayList<>();
         objects.add(ob);
         objects.add(ob2);
+        objects.add(ob3);
 
 
         Color lightColor = new Color(10, 10, 10);
@@ -111,6 +119,7 @@ public class EngineTest extends Engine {
             //RenderEngine.drawQuad(new Vector2(200, 200), 100, 100, Color.GREEN);
             RenderEngine.drawQuadTexture(new Vector2(100, 100), 100, 100, texture1);
             ob.render();
+            ob3.render();
             ob2.render();
             fontRenderer.renderFont("FPS: " + RenderEngine.fps, new Vector2(10, 10));
             fontRenderer.renderFont("Delta: " + RenderEngine.deltaTime, new Vector2(10, 60));
