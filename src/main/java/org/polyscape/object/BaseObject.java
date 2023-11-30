@@ -36,9 +36,7 @@ public class BaseObject extends RenderProperty {
 
     private float velocityDecay = Profile.ObjectSettings.BaseVelocityDecay;
 
-    private boolean isCollidingX = false;
-
-    private boolean isCollidingY = false;
+    private CollisionType collisionType = CollisionType.NONE;
 
     private float velocityThresholdX = 10f;
     private float velocityThresholdY = 20f;
@@ -99,10 +97,13 @@ public class BaseObject extends RenderProperty {
     public Vector2[] getVectorPoints() {
         Vector2[] points = new Vector2[4];
 
-        points[0] = position;
-        points[1] = new Vector2(position.x, position.y + height);
-        points[2] = new Vector2(position.x + width, position.y + height);
-        points[3] = new Vector2(position.x + width, position.y);
+        points[0] = position; // Bottom left
+
+        points[1] = new Vector2(position.x, position.y + height); // Top left
+
+        points[2] = new Vector2(position.x + width, position.y + height); // Top right
+
+        points[3] = new Vector2(position.x + width, position.y); // Bottom right
 
         return points;
     }
@@ -138,25 +139,66 @@ public class BaseObject extends RenderProperty {
             collisionCountMap.put(other, collisionCountMap.get(other) + 1);
         }
 
-
-
         this.position = previousPosition;
 
+        collisionType = getCollisionData(getVectorPoints(), other.getVectorPoints());
 
-        String collisionSideX = "";
-        String collisionSideY = "";
+    }
 
-        if(collidesWithX(other)) {
-            isCollidingX = true;
-            collisionSideX = this.position.x > other.position.x ? "Right" : "Left";
+    private CollisionType getCollisionData(Vector2[] rect1, Vector2[] rect2){
+        Vector2 bottomLeft1 = rect1[1];
+        Vector2 bottomRight1 = rect1[2];
+        Vector2 topLeft1 = rect1[0];
+        Vector2 topRight1 = rect1[3];
+
+        Vector2 bottomLeft2 = rect2[1];
+        Vector2 bottomRight2 = rect2[2];
+        Vector2 topLeft2 = rect2[0];
+        Vector2 topRight2 = rect2[3];
+
+        if(
+                ((bottomLeft1.x >= topLeft2.x && bottomRight1.x <= topRight2.x) ||
+                        (bottomLeft1.x <= topLeft2.x && bottomRight1.x <= topRight2.x && bottomRight1.x >= topLeft2.x) ||
+                        (bottomLeft1.x >= topLeft2.x && bottomRight1.x >= topRight2.x && bottomLeft1.x <= topRight2.x) ||
+                        (bottomLeft1.x <= topLeft2.x && bottomRight1.x >= topRight2.x)
+                ) && (bottomLeft1.y <= topLeft2.y + 2 && bottomRight1.y <= topRight2.y + 2) && (topLeft1.y <= topLeft2.y && topRight1.y <= topRight2.y)
+
+        ){
+            return CollisionType.UP;
         }
-        if(collidesWithY(other)){
-            isCollidingY = true;
-            collisionSideY = this.position.y > other.position.y ? "Bottom" : "Top";
+
+        else if(
+                ((topLeft1.x >= bottomLeft2.x && topRight1.x <= bottomRight2.x) ||
+                        (topLeft1.x <= bottomLeft2.x && topRight1.x <= bottomRight2.x && topRight1.x >= bottomLeft2.x) ||
+                        (topLeft1.x >= bottomLeft2.x && topRight1.x >= bottomRight2.x && topLeft1.x <= bottomRight2.x) ||
+                        (topLeft1.x <= bottomLeft2.x && topRight1.x >= bottomRight2.x)
+                ) && (topLeft1.y >= bottomLeft2.y - 2 && topRight1.y >= bottomRight2.y - 2) && (bottomLeft1.y >= bottomLeft2.y && bottomRight1.y >= bottomRight2.y)
+
+        ){
+            return CollisionType.DOWN;
         }
 
-        System.out.println("Collision occurred on the " + collisionSideX + " " + collisionSideY + " side.");
+        else if(
+                ((bottomRight1.y <= bottomLeft2.y && topRight1.y >= topLeft2.y) ||
+                  (bottomRight1.y >= bottomLeft2.y && topRight1.y >= topLeft2.y && topRight1.y <= bottomLeft2.y) ||
+                  (bottomRight1.y <= bottomLeft2.y && topRight1.y <= topLeft2.y && bottomRight1.y >= topLeft2.y) ||
+                  (bottomRight1.y >= bottomLeft2.y && topRight1.y <= topLeft2.y)
+                ) && (bottomRight1.x >= bottomLeft2.x - 2 && topRight1.x >= topLeft2.x - 2) && (bottomLeft1.x <= bottomLeft2.x && bottomRight1.x <= bottomRight2.x)
+        ){
+            return CollisionType.LEFT;
+        }
 
+        else if(
+                ((bottomLeft1.y <= bottomRight2.y && topLeft1.y >= topRight2.y) ||
+                        (bottomLeft1.y >= bottomRight2.y && topLeft1.y >= topRight2.y && topLeft1.y <= bottomRight2.y) ||
+                        (bottomLeft1.y <= bottomRight2.y && topLeft1.y <= topRight2.y && bottomLeft1.y >= topRight2.y) ||
+                        (bottomLeft1.y >= bottomRight2.y && topLeft1.y <= topRight2.y)
+                ) && (bottomLeft1.x <= bottomRight2.x + 2 && topLeft1.x <= topRight2.x + 2) && (bottomLeft1.x >= bottomLeft2.x && topLeft1.x >= topLeft2.x)
+        ){
+            return CollisionType.RIGHT;
+        }
+
+        return CollisionType.NONE;
     }
 
     /*
@@ -198,9 +240,8 @@ public class BaseObject extends RenderProperty {
         // Apply the damping factor
         this.velocity.x *= velocityDecay;
         this.velocity.y *= velocityDecay;
-        if(!isCollidingY) {
-            //this.velocity.y += deltaTime * ((GRAVITY.y * mass) * RenderEngine.fps);
-        }
+
+        //this.velocity.y += deltaTime * ((GRAVITY.y * mass) * RenderEngine.fps);
 
         this.velocity.x -= AIR_RESISTANCE * this.velocity.x * Math.abs(this.velocity.x) * deltaTime;
         this.velocity.y -= AIR_RESISTANCE * this.velocity.y * Math.abs(this.velocity.y) * deltaTime;
@@ -212,20 +253,27 @@ public class BaseObject extends RenderProperty {
         if(Math.abs(velocity.y) <= velocityThresholdY){
             velocity.y = 0;
         }
-        if(isCollidingX){
-            velocity.x = 0;
-        }
-        if(isCollidingY){
+
+        if(collisionType == CollisionType.UP && velocity.y > 0){
             velocity.y = 0;
         }
+        if(collisionType == CollisionType.DOWN && velocity.y < 0){
+            velocity.y = 0;
+        }
+        if(collisionType == CollisionType.LEFT && velocity.x > 0){
+            velocity.x = 0;
+        }
+        if(collisionType == CollisionType.RIGHT && velocity.x < 0){
+            velocity.x = 0;
+        }
+
         this.position.addToVect(deltaTime * this.velocity.x, deltaTime * this.velocity.y);
 
 
         // Reset the acceleration for the next frame
         this.acceleration.x = 0;
         this.acceleration.y = 0;
-        isCollidingY = false;
-        isCollidingX = false;
+        collisionType = CollisionType.NONE;
     }
 
 

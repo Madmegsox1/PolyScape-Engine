@@ -53,8 +53,8 @@ public class EngineTest extends Engine {
         Texture texture1 = new Texture("002");
 
 
-        AtomicInteger vectorX = new AtomicInteger(10);
-        AtomicInteger vectorY = new AtomicInteger(10);
+        AtomicInteger vectorX = new AtomicInteger(40);
+        AtomicInteger vectorY = new AtomicInteger(40);
         float x = RenderEngine.normalize(vectorX.get(), Profile.Display.WIDTH, 0);
         float y = RenderEngine.normalize(vectorY.get(), Profile.Display.HEIGHT, 0);
         AtomicReference<FloatBuffer> position = new AtomicReference<>(BufferUtils.createFloatBuffer(4));
@@ -81,10 +81,10 @@ public class EngineTest extends Engine {
 
 
         StaticObject ob2 = new StaticObject();
-        ob2.setPosition(new Vector2(0, 600));
+        ob2.setPosition(new Vector2(200, 600));
         ob2.setObjectId(2);
-        ob2.setWidth(Profile.Display.WIDTH);
-        ob2.setHeight(100);
+        ob2.setWidth(400);
+        ob2.setHeight(200);
         ob2.setBaseColor(Color.GREEN);
 
 
@@ -147,13 +147,13 @@ public class EngineTest extends Engine {
             float xv = 0;
 
             if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_W)){
-                yv += -20f;
+                yv -= 20f;
             }
             if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_S)){
                 yv += 20f;
             }
             if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_A)){
-                xv += -20f;
+                xv -= 20f;
             }
             if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_D)){
                 xv += 20f;
