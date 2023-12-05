@@ -13,6 +13,7 @@ public class LightingShader extends Shader{
 
     private int lightLocationUniformId;
     private int lightColorUniformId;
+    private int lightBrightnessUniformId;
 
     public LightingShader() {
         super("LightingFrag", false);
@@ -26,7 +27,9 @@ public class LightingShader extends Shader{
     @Override
     protected void getAllUniforms() {
         lightLocationUniformId = getUniform("lightLocation");
+        lightBrightnessUniformId = getUniform("lightBrightness");
         lightColorUniformId = getUniform("lightColor");
+
     }
 
     public void loadLightColor(Color color){
@@ -36,4 +39,9 @@ public class LightingShader extends Shader{
     public void loadLightLocation(Vector2 vector2){
         super.loadVectorUniform(lightLocationUniformId, new Vector2(vector2.x, Profile.Display.HEIGHT - vector2.y));
     }
+
+    public void loadLightBrightness(float brightness){
+        super.loadFloatUniform(lightBrightnessUniformId, brightness);
+    }
+
 }

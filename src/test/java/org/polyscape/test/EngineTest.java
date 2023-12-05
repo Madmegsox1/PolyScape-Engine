@@ -53,8 +53,8 @@ public class EngineTest extends Engine {
         Texture texture1 = new Texture("002");
 
 
-        AtomicInteger vectorX = new AtomicInteger(40);
-        AtomicInteger vectorY = new AtomicInteger(40);
+        AtomicInteger vectorX = new AtomicInteger(400);
+        AtomicInteger vectorY = new AtomicInteger(400);
         float x = RenderEngine.normalize(vectorX.get(), Profile.Display.WIDTH, 0);
         float y = RenderEngine.normalize(vectorY.get(), Profile.Display.HEIGHT, 0);
         AtomicReference<FloatBuffer> position = new AtomicReference<>(BufferUtils.createFloatBuffer(4));
@@ -88,7 +88,7 @@ public class EngineTest extends Engine {
         ob2.setBaseColor(Color.GREEN);
 
         StaticObject ob3 = new StaticObject();
-        ob3.setPosition(new Vector2(400, 600));
+        ob3.setPosition(new Vector2(400, 400));
         ob3.setObjectId(3);
         ob3.setWidth(200);
         ob3.setHeight(400);
@@ -133,6 +133,7 @@ public class EngineTest extends Engine {
 
             s.bind();
             s.loadLightLocation(new Vector2(vectorX.get(), vectorY.get()));
+            s.loadLightBrightness(1f);
             s.loadLightColor(lightColor);
             glEnable(GL_BLEND);
             glBlendFunc(GL_ONE, GL_ONE);
@@ -168,7 +169,7 @@ public class EngineTest extends Engine {
                 xv += 20f;
 
             }
-            //ob.addVelocity(xv, yv);
+
             ob.addForce(xv, yv);
 
 
