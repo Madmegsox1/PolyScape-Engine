@@ -134,8 +134,8 @@ public class EngineTest extends Engine {
             s.bind();
             s.loadLightLocation(new Vector2(vectorX.get(), vectorY.get()));
             s.loadLightBrightness(1f);
-            s.loadLightWidth(100f);
-            s.loadLightHeight(100f);
+            s.loadLightWidth(50f);
+            s.loadLightHeight(50f);
             s.loadLightColor(lightColor);
             glEnable(GL_BLEND);
             glBlendFunc(GL_ONE, GL_ONE);

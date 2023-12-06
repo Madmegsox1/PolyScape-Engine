@@ -18,6 +18,7 @@ public class LightingShader extends Shader{
     private int lightWidthUniformId;
 
     private int lightHeightUniformId;
+
     public LightingShader() {
         super("LightingFrag", false);
     }
@@ -56,4 +57,5 @@ public class LightingShader extends Shader{
     public void loadLightHeight(float height){
         super.loadFloatUniform(lightHeightUniformId, height);
     }
+
 }
