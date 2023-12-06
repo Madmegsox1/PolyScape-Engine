@@ -1,5 +1,6 @@
 package org.polyscape.test;
 
+import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.polyscape.Engine;
@@ -33,7 +34,7 @@ public class EngineTest extends Engine {
 
     public static void main(String[] args){
 
-        Profile.Display.BACKGROUND_COLOR = new float[]{0f/255f, 0f/255f,0f/255f, 1.0f};
+        Profile.Display.BACKGROUND_COLOR = new float[]{50f/255f, 50f/255f,50f/255f, 1.0f};
         eventBus = new EventBus();
 
         display = new Display("TEST");
@@ -53,8 +54,8 @@ public class EngineTest extends Engine {
         Texture texture1 = new Texture("002");
 
 
-        AtomicInteger vectorX = new AtomicInteger(400);
-        AtomicInteger vectorY = new AtomicInteger(400);
+        AtomicInteger vectorX = new AtomicInteger(200);
+        AtomicInteger vectorY = new AtomicInteger(200);
         float x = RenderEngine.normalize(vectorX.get(), Profile.Display.WIDTH, 0);
         float y = RenderEngine.normalize(vectorY.get(), Profile.Display.HEIGHT, 0);
         AtomicReference<FloatBuffer> position = new AtomicReference<>(BufferUtils.createFloatBuffer(4));
@@ -77,7 +78,7 @@ public class EngineTest extends Engine {
         ob.setTexture(new Texture("001"));
         //ob.setVelocityDecay(0.05f);
         //ob.setVelocity(new Vector2(-5, 0));
-        ob.addForce(10f, 10f);
+        //ob.addForce(10f, 10f);
 
 
         StaticObject ob2 = new StaticObject();
@@ -101,14 +102,58 @@ public class EngineTest extends Engine {
         objects.add(ob3);
 
 
-        Color lightColor = new Color(10, 10, 10);
-
+        Color lightColor = new Color(1, 10, 10);
+        Vector2 light = new Vector2(vectorX.get(), vectorY.get());
         IEvent<RenderEvent> renderEvent = e -> {
 
             //RenderEngine.drawQuad(new Vector2(vectorX.get(), vectorY.get()), 10, 10, Color.WHITE);
             //ob.addForce(1f, 0);
 
+//            for (BaseObject obj1 : objects) {
+//                for (BaseObject obj2 : objects) {
+//                    if (obj1 != obj2 && obj1.collidesWith(obj2)) {
+//                        obj1.handleCollision(obj2);
+//                    }
+//                }
+//            }
+
+            //RenderEngine.drawQuad(new Vector2(200, 200), 100, 100, Color.GREEN);
+            RenderEngine.drawQuadTexture(new Vector2(100, 100), 100, 100, texture1);
+
+            fontRenderer.renderFont("FPS: " + RenderEngine.fps, new Vector2(10, 10));
+            fontRenderer.renderFont("Delta: " + RenderEngine.deltaTime, new Vector2(10, 60));
+            fontRenderer.renderFont("Pos: " + ob.getPosition().toString(), new Vector2(10, 110));
+            fontRenderer.renderFont(ob.getSpeed().toString(), new Vector2(Profile.Display.WIDTH - 200, 10));
+            fontRenderer.renderFont(ob.getVelocity().toString(), new Vector2(Profile.Display.WIDTH - 200, 60));
+
+            //glColorMask(false, false, false, false);
+            glStencilFunc(GL_ALWAYS, 1, 1);
+            glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+
+
             for (BaseObject obj1 : objects) {
+
+                Vector2[] vertices = obj1.getVectorPoints();
+
+                for (int i = 0; i < vertices.length; i++) {
+                    Vector2 currentVertex = vertices[i];
+                    Vector2 nextVertex = vertices[(i + 1) % vertices.length];
+                    Vector2 edge = Vector2.sub(nextVertex, currentVertex);
+                    Vector2 normal = new Vector2(edge.y, -edge.x);
+                    Vector2 lightToCurrent = Vector2.sub(currentVertex, light);
+                    if (Vector2.dot(normal, lightToCurrent) > 0) {
+                        Vector2 point1 = Vector2.add(currentVertex, Vector2.sub(currentVertex, light).scale(800));
+                        Vector2 point2 = Vector2.add(nextVertex, Vector2.sub(nextVertex, light).scale(800));
+                        glColor3f(0, 0, 0);
+                        glBegin(GL_QUADS); {
+                            glVertex2f(currentVertex.x, currentVertex.y);
+                            glVertex2f(point1.x, point1.y);
+                            glVertex2f(point2.x, point2.y);
+                            glVertex2f(nextVertex.x, nextVertex.y);
+                        } glEnd();
+                    }
+                }
+
                 for (BaseObject obj2 : objects) {
                     if (obj1 != obj2 && obj1.collidesWith(obj2)) {
                         obj1.handleCollision(obj2);
@@ -116,26 +161,20 @@ public class EngineTest extends Engine {
                 }
             }
 
-            //RenderEngine.drawQuad(new Vector2(200, 200), 100, 100, Color.GREEN);
-            RenderEngine.drawQuadTexture(new Vector2(100, 100), 100, 100, texture1);
-            ob.render();
-            ob3.render();
-            ob2.render();
-            fontRenderer.renderFont("FPS: " + RenderEngine.fps, new Vector2(10, 10));
-            fontRenderer.renderFont("Delta: " + RenderEngine.deltaTime, new Vector2(10, 60));
-            fontRenderer.renderFont("Pos: " + ob.getPosition().toString(), new Vector2(10, 110));
-            fontRenderer.renderFont(ob.getSpeed().toString(), new Vector2(Profile.Display.WIDTH - 200, 10));
-            fontRenderer.renderFont(ob.getVelocity().toString(), new Vector2(Profile.Display.WIDTH - 200, 60));
+
+
             glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
             glStencilFunc(GL_EQUAL, 0, 1);
             glColorMask(true, true, true, true);
-
+            ob.render();
+            ob3.render();
+            ob2.render();
 
             s.bind();
             s.loadLightLocation(new Vector2(vectorX.get(), vectorY.get()));
-            s.loadLightBrightness(1f);
-            s.loadLightWidth(50f);
-            s.loadLightHeight(50f);
+            s.loadLightBrightness(2f);
+            s.loadLightWidth(10f);
+            s.loadLightHeight(10f);
             s.loadLightColor(lightColor);
             glEnable(GL_BLEND);
             glBlendFunc(GL_ONE, GL_ONE);
@@ -150,6 +189,8 @@ public class EngineTest extends Engine {
             glDisable(GL_BLEND);
             s.unbind();
             glClear(GL_STENCIL_BUFFER_BIT);
+
+
 
 
         };

@@ -108,6 +108,7 @@ public class BaseObject extends RenderProperty {
         return points;
     }
 
+
     public Vector2 getPreviousPosition() {
         return previousPosition;
     }

@@ -39,14 +39,7 @@ public final class Renderer {
 
         glEnable(GL11.GL_TEXTURE_2D);
 
-        glEnable(GL_LIGHTING);
-
         glEnable(GL_COLOR_MATERIAL);
-
-        glEnable(GL_LIGHT0);
-
-
-        glEnable(GL_LIGHT1);
 
         glShadeModel(GL_SMOOTH);
 
@@ -61,9 +54,9 @@ public final class Renderer {
         glOrtho(0, Profile.Display.WIDTH, Profile.Display.HEIGHT, 0, -1, 1);
         glMatrixMode(GL11.GL_MODELVIEW);
         glLoadIdentity();
-        glEnable(GL_STENCIL_TEST);
-        glViewport(0, 0, Profile.Display.WIDTH, Profile.Display.HEIGHT);
 
+        glViewport(0, 0, Profile.Display.WIDTH, Profile.Display.HEIGHT);
+        glEnable(GL_STENCIL_TEST);
         glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
 
         this.fbo = GL30.glGenFramebuffers();

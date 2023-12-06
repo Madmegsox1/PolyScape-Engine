@@ -56,6 +56,14 @@ public final class Vector2 implements Comparable<Vector2> {
 
     }
 
+    public float dot(final Vector2 v){
+        return this.x * v.x + this.y * v.y;
+    }
+
+    public Vector2 scale(final float scale){
+        return new Vector2(this.x * scale, this.y * scale);
+    }
+
     @Override
     public String toString(){
         return "[X: " + this.x + ", Y: " + this.y + "]";
@@ -76,6 +84,19 @@ public final class Vector2 implements Comparable<Vector2> {
     public static Vector2 centerScreenX(float y, float length){
         return new Vector2(Profile.Display.WIDTH / 2f - length / 2f, y);
     }
+
+    public static Vector2 sub(final Vector2 v1, final Vector2 v2){
+        return new Vector2(v1.x - v2.x, v1.y - v2.y);
+    }
+
+    public static float dot(final Vector2 v1, final Vector2 v2){
+        return v1.x * v2.x + v1.y * v2.y;
+    }
+
+    public static Vector2 add(final Vector2 v1, final Vector2 v2){
+        return new Vector2(v1.x + v2.x, v1.y + v2.y);
+    }
+
 
     public Boolean greaterThan(Vector2 v){
         return this.x > v.x && this.y > v.y;
