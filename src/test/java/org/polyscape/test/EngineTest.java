@@ -10,6 +10,7 @@ import org.polyscape.event.IEvent;
 import org.polyscape.font.Font;
 import org.polyscape.font.FontRenderer;
 import org.polyscape.object.BaseObject;
+import org.polyscape.object.ObjectManager;
 import org.polyscape.object.StaticObject;
 import org.polyscape.rendering.Display;
 import org.polyscape.rendering.RenderEngine;
@@ -34,7 +35,7 @@ public class EngineTest extends Engine {
 
     public static void main(String[] args){
 
-        Profile.Display.BACKGROUND_COLOR = new float[]{50f/255f, 50f/255f,50f/255f, 1.0f};
+        Profile.Display.BACKGROUND_COLOR = new float[]{0f/255f, 0f/255f,0f/255f, 1.0f};
         eventBus = new EventBus();
 
         display = new Display("TEST");
@@ -66,58 +67,48 @@ public class EngineTest extends Engine {
         LightingShader s = new LightingShader();
         s.create();
 
+        LightingShader s2 = new LightingShader();
+        s2.create();
+
+        ObjectManager.clearObjects();
 
         BaseObject ob = new BaseObject();
 
         ob.setPosition(new Vector2(300, 300));
-        ob.setObjectId(1);
-
         ob.setWidth(100);
         ob.setHeight(100);
-        //ob.setVelocityMax(new Vector2(3, 3));
         ob.setTexture(new Texture("001"));
-        //ob.setVelocityDecay(0.05f);
-        //ob.setVelocity(new Vector2(-5, 0));
-        //ob.addForce(10f, 10f);
+
+        ObjectManager.addObject(ob);
 
 
         StaticObject ob2 = new StaticObject();
         ob2.setPosition(new Vector2(200, 600));
-        ob2.setObjectId(2);
         ob2.setWidth(400);
         ob2.setHeight(200);
         ob2.setBaseColor(Color.GREEN);
 
+        ObjectManager.addObject(ob2);
+
         StaticObject ob3 = new StaticObject();
         ob3.setPosition(new Vector2(400, 400));
-        ob3.setObjectId(3);
         ob3.setWidth(200);
         ob3.setHeight(400);
         ob3.setBaseColor(Color.BLUE);
 
-
-        ArrayList<BaseObject> objects = new ArrayList<>();
-        objects.add(ob);
-        objects.add(ob2);
-        objects.add(ob3);
+        ObjectManager.addObject(ob3);
 
 
         Color lightColor = new Color(1, 10, 10);
+
+
+
         Vector2 light = new Vector2(vectorX.get(), vectorY.get());
+
+
         IEvent<RenderEvent> renderEvent = e -> {
 
-            //RenderEngine.drawQuad(new Vector2(vectorX.get(), vectorY.get()), 10, 10, Color.WHITE);
-            //ob.addForce(1f, 0);
 
-//            for (BaseObject obj1 : objects) {
-//                for (BaseObject obj2 : objects) {
-//                    if (obj1 != obj2 && obj1.collidesWith(obj2)) {
-//                        obj1.handleCollision(obj2);
-//                    }
-//                }
-//            }
-
-            //RenderEngine.drawQuad(new Vector2(200, 200), 100, 100, Color.GREEN);
             RenderEngine.drawQuadTexture(new Vector2(100, 100), 100, 100, texture1);
 
             fontRenderer.renderFont("FPS: " + RenderEngine.fps, new Vector2(10, 10));
@@ -126,12 +117,12 @@ public class EngineTest extends Engine {
             fontRenderer.renderFont(ob.getSpeed().toString(), new Vector2(Profile.Display.WIDTH - 200, 10));
             fontRenderer.renderFont(ob.getVelocity().toString(), new Vector2(Profile.Display.WIDTH - 200, 60));
 
-            //glColorMask(false, false, false, false);
+            glColorMask(false, false, false, false);
             glStencilFunc(GL_ALWAYS, 1, 1);
             glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
 
-            for (BaseObject obj1 : objects) {
+            ObjectManager.iterateObjects(obj1 -> {
 
                 Vector2[] vertices = obj1.getVectorPoints();
 
@@ -144,7 +135,7 @@ public class EngineTest extends Engine {
                     if (Vector2.dot(normal, lightToCurrent) > 0) {
                         Vector2 point1 = Vector2.add(currentVertex, Vector2.sub(currentVertex, light).scale(800));
                         Vector2 point2 = Vector2.add(nextVertex, Vector2.sub(nextVertex, light).scale(800));
-                        glColor3f(0, 0, 0);
+                       //glColor3f(0, 0, 0);
                         glBegin(GL_QUADS); {
                             glVertex2f(currentVertex.x, currentVertex.y);
                             glVertex2f(point1.x, point1.y);
@@ -154,21 +145,17 @@ public class EngineTest extends Engine {
                     }
                 }
 
-                for (BaseObject obj2 : objects) {
-                    if (obj1 != obj2 && obj1.collidesWith(obj2)) {
-                        obj1.handleCollision(obj2);
-                    }
-                }
-            }
+            });
+
+            ObjectManager.collisionCheck();
 
 
 
             glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
             glStencilFunc(GL_EQUAL, 0, 1);
             glColorMask(true, true, true, true);
-            ob.render();
-            ob3.render();
-            ob2.render();
+
+
 
             s.bind();
             s.loadLightLocation(new Vector2(vectorX.get(), vectorY.get()));
@@ -176,6 +163,9 @@ public class EngineTest extends Engine {
             s.loadLightWidth(10f);
             s.loadLightHeight(10f);
             s.loadLightColor(lightColor);
+
+
+
             glEnable(GL_BLEND);
             glBlendFunc(GL_ONE, GL_ONE);
             glBegin(GL_QUADS); {
@@ -190,7 +180,33 @@ public class EngineTest extends Engine {
             s.unbind();
             glClear(GL_STENCIL_BUFFER_BIT);
 
+            glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+            glStencilFunc(GL_EQUAL, 0, 1);
+            glColorMask(true, true, true, true);
 
+            s2.bind();
+            s2.loadLightLocation(new Vector2(700, 400));
+            s2.loadLightBrightness(2f);
+            s2.loadLightWidth(10f);
+            s2.loadLightHeight(10f);
+            s2.loadLightColor(lightColor);
+
+
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_ONE, GL_ONE);
+            glBegin(GL_QUADS); {
+                glVertex2f(0, 0);
+                glVertex2f(0, Profile.Display.HEIGHT);
+                glVertex2f(Profile.Display.WIDTH, Profile.Display.HEIGHT);
+                glVertex2f(Profile.Display.WIDTH, 0);
+            } glEnd();
+
+
+            glDisable(GL_BLEND);
+            s2.unbind();
+            glClear(GL_STENCIL_BUFFER_BIT);
+            glColor3f(0, 0, 0);
+            ObjectManager.renderObjects();
 
 
         };

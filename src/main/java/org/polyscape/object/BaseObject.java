@@ -143,6 +143,10 @@ public class BaseObject extends RenderProperty {
         this.position = previousPosition;
 
         collisionType = getCollisionData(getVectorPoints(), other.getVectorPoints());
+        if(collisionType == CollisionType.UP) {
+            this.velocity.y = 0;
+            addForce(0, -200);
+        }
 
     }
 
@@ -242,7 +246,7 @@ public class BaseObject extends RenderProperty {
         this.velocity.x *= velocityDecay;
         this.velocity.y *= velocityDecay;
 
-        //this.velocity.y += deltaTime * ((GRAVITY.y * mass) * RenderEngine.fps);
+        this.velocity.y += deltaTime * ((GRAVITY.y * mass) * RenderEngine.fps);
 
         this.velocity.x -= AIR_RESISTANCE * this.velocity.x * Math.abs(this.velocity.x) * deltaTime;
         this.velocity.y -= AIR_RESISTANCE * this.velocity.y * Math.abs(this.velocity.y) * deltaTime;
