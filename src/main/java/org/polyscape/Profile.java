@@ -5,7 +5,6 @@ import org.polyscape.rendering.elements.Color;
 public final class Profile {
     public final static class Display
     {
-
         public static int WIDTH = 1280;
         public static int HEIGHT = 720;
         public static int ASPECT_RATIO_NUMERATOR = 16;

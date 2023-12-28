@@ -3,6 +3,7 @@ package org.polyscape.object;
 import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.elements.Texture;
 import org.polyscape.rendering.shaders.Shader;
+import org.polyscape.rendering.sprite.SpriteSheet;
 
 /**
  * @author Madmegsox1
@@ -16,6 +17,8 @@ public abstract class RenderProperty {
     protected boolean isTextured = false;
 
     protected Texture texture;
+
+    protected SpriteSheet spriteSheet;
 
     protected Color baseColor = Color.WHITE;
 
@@ -43,8 +46,18 @@ public abstract class RenderProperty {
         return texture;
     }
 
+    public void setSpriteSheet(SpriteSheet sheet){
+        this.spriteSheet = sheet;
+    }
     public void setTexture(Texture texture) {
         this.texture = texture;
+        if(this.texture != null){
+            this.isTextured = true;
+        }
+    }
+
+    public void setTexture(int index){
+        this.texture = spriteSheet.getTexture(index);
         if(this.texture != null){
             this.isTextured = true;
         }

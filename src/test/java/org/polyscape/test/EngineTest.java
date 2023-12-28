@@ -22,7 +22,9 @@ import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;
 import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.rendering.shaders.LightingShader;
+import org.polyscape.rendering.sprite.SpriteSheet;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -33,7 +35,7 @@ import static org.lwjgl.opengl.GL20.glUseProgram;
 
 public class EngineTest extends Engine {
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException {
 
         Profile.Display.BACKGROUND_COLOR = new float[]{0f/255f, 0f/255f,0f/255f, 1.0f};
         eventBus = new EventBus();
@@ -52,7 +54,7 @@ public class EngineTest extends Engine {
 
         fontRenderer.addFont(new Font(jFont2, true));
 
-        Texture texture1 = new Texture("002");
+        SpriteSheet spriteSheet = new SpriteSheet("003", 10, 10);
 
 
         AtomicInteger vectorX = new AtomicInteger(200);
@@ -77,7 +79,8 @@ public class EngineTest extends Engine {
         ob.setPosition(new Vector2(300, 300));
         ob.setWidth(100);
         ob.setHeight(100);
-        ob.setTexture(new Texture("001"));
+        ob.setSpriteSheet(spriteSheet);
+        ob.setTexture(3);
 
         ObjectManager.addObject(ob);
 
@@ -109,7 +112,7 @@ public class EngineTest extends Engine {
         IEvent<RenderEvent> renderEvent = e -> {
 
 
-            RenderEngine.drawQuadTexture(new Vector2(100, 100), 100, 100, texture1);
+            //RenderEngine.drawQuadTexture(new Vector2(100, 100), 100, 100, texture1);
 
             fontRenderer.renderFont("FPS: " + RenderEngine.fps, new Vector2(10, 10));
             fontRenderer.renderFont("Delta: " + RenderEngine.deltaTime, new Vector2(10, 60));
@@ -135,7 +138,7 @@ public class EngineTest extends Engine {
                     if (Vector2.dot(normal, lightToCurrent) > 0) {
                         Vector2 point1 = Vector2.add(currentVertex, Vector2.sub(currentVertex, light).scale(800));
                         Vector2 point2 = Vector2.add(nextVertex, Vector2.sub(nextVertex, light).scale(800));
-                       //glColor3f(0, 0, 0);
+                        glColor3f(0, 0, 0);
                         glBegin(GL_QUADS); {
                             glVertex2f(currentVertex.x, currentVertex.y);
                             glVertex2f(point1.x, point1.y);

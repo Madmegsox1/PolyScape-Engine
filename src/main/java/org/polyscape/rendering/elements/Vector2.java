@@ -32,29 +32,6 @@ public final class Vector2 implements Comparable<Vector2> {
         this.y -= y;
     }
 
-    public void applyVelocity(final float x, final float y){
-        if(this.x > 0){
-            this.x -= x;
-        }
-        if(this.y > 0){
-            this.y -= y;
-        }
-
-        if(this.y < 0){
-            this.y += y;
-        }
-        if(this.x < 0){
-            this.x += x;
-        }
-
-        if(this.x >= -0.04 && this.x <= 0.04){
-            this.x = 0;
-        }
-        if(this.y >= -0.04 && this.y <= 0.04){
-            this.y = 0;
-        }
-
-    }
 
     public float dot(final Vector2 v){
         return this.x * v.x + this.y * v.y;

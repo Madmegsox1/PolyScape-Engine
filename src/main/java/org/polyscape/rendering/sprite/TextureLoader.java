@@ -8,9 +8,7 @@ import org.polyscape.Profile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 public final class TextureLoader {
@@ -26,7 +24,6 @@ public final class TextureLoader {
             System.err.println("Init engine before loading textures!");
         }
         tmp.rewind();
-
 
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, tmp.get(0));
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
