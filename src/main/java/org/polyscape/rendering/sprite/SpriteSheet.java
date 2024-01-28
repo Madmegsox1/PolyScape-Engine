@@ -54,7 +54,7 @@ public class SpriteSheet {
         return textures.get(index);
     }
 
-    public void loadSprites() throws IOException {
+    public void loadSprites() {
         BufferedImage imgs[] = new BufferedImage[chunks];
         int count = 0;
 

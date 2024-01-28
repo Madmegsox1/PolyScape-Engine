@@ -4,6 +4,11 @@ import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.elements.Texture;
 import org.polyscape.rendering.shaders.Shader;
 import org.polyscape.rendering.sprite.SpriteSheet;
+import org.polyscape.rendering.sprite.action.ActionInvoker;
+import org.polyscape.rendering.sprite.action.IAction;
+
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Madmegsox1
@@ -30,8 +35,20 @@ public abstract class RenderProperty {
 
     protected boolean wireframeTextured = false;
 
+    protected ConcurrentHashMap<String, IAction> actionMap = new ConcurrentHashMap<>();
+
     public void loadShaderProperty(){
 
+    }
+
+    public void addAction(String actionName ,IAction action){
+        actionMap.put(actionName, action);
+    }
+
+    public void runAction(String actionName){
+        IAction action = actionMap.get(actionName);
+        ActionInvoker invoker = new ActionInvoker(action, this);
+        invoker.start();
     }
 
     public boolean isTextured() {

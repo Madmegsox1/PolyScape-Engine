@@ -80,8 +80,15 @@ public class EngineTest extends Engine {
         ob.setWidth(100);
         ob.setHeight(100);
         ob.setSpriteSheet(spriteSheet);
-        ob.setTexture(3);
-
+        ob.setTexture(2);
+        ob.addAction("Test", (object) -> {
+            object.setTexture(1);
+            sleep(1000);
+            object.setTexture(0);
+            sleep(1000);
+            object.setTexture(3);
+        });
+        ob.runAction("Test");
         ObjectManager.addObject(ob);
 
 
