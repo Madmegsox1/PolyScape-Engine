@@ -46,9 +46,12 @@ public abstract class RenderProperty {
     }
 
     public void runAction(String actionName){
-        IAction action = actionMap.get(actionName);
-        ActionInvoker invoker = new ActionInvoker(action, this);
-        invoker.start();
+        boolean running = ActionInvoker.runningActions.getOrDefault(actionName, false);
+        if(!running) {
+            IAction action = actionMap.get(actionName);
+            ActionInvoker invoker = new ActionInvoker(action, actionName, this);
+            invoker.start();
+        }
     }
 
     public boolean isTextured() {

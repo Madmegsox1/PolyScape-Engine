@@ -82,13 +82,16 @@ public class EngineTest extends Engine {
         ob.setSpriteSheet(spriteSheet);
         ob.setTexture(2);
         ob.addAction("Test", (object) -> {
-            object.setTexture(1);
-            sleep(1000);
             object.setTexture(0);
             sleep(1000);
+            object.setTexture(1);
+            sleep(1000);
+            object.setTexture(2);
+            sleep(1000);
             object.setTexture(3);
+            sleep(1000);
         });
-        ob.runAction("Test");
+
         ObjectManager.addObject(ob);
 
 
@@ -217,7 +220,7 @@ public class EngineTest extends Engine {
             glClear(GL_STENCIL_BUFFER_BIT);
             glColor3f(0, 0, 0);
             ObjectManager.renderObjects();
-
+            ob.runAction("Test");
 
         };
 

@@ -143,10 +143,6 @@ public class BaseObject extends RenderProperty {
         this.position = previousPosition;
 
         collisionType = getCollisionData(getVectorPoints(), other.getVectorPoints());
-        if(collisionType == CollisionType.UP) {
-            this.velocity.y = 0;
-            addForce(0, -200);
-        }
 
     }
 
