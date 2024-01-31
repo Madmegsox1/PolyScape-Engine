@@ -30,24 +30,26 @@ public class SpriteSheet {
     private ArrayList<Texture> textures;
 
 
-    public SpriteSheet(String fileName, int width, int height) throws IOException {
-        this.fileName = fileName;
-        this.chunkWidth = width;
-        this.chunkHeight = height;
+    public SpriteSheet(String fileName, int width, int height) {
+        try {
+            this.fileName = fileName;
+            this.chunkWidth = width;
+            this.chunkHeight = height;
 
-        final InputStream in = new FileInputStream(Profile.Textures.TEXTURE_LOCATION + fileName + "." + Profile.Textures.TEXTURE_FILEFORMAT);
-        this.imageBuffer = ImageIO.read(in);
+            final InputStream in = new FileInputStream(Profile.Textures.TEXTURE_LOCATION + fileName + "." + Profile.Textures.TEXTURE_FILEFORMAT);
+            this.imageBuffer = ImageIO.read(in);
 
-        this.width = imageBuffer.getWidth();
-        this.height = imageBuffer.getHeight();
+            this.width = imageBuffer.getWidth();
+            this.height = imageBuffer.getHeight();
 
-        this.rows = (this.width / this.chunkWidth);
-        this.cols = (this.height / this.chunkHeight);
+            this.rows = (this.width / this.chunkWidth);
+            this.cols = (this.height / this.chunkHeight);
 
-        this.chunks = rows * cols;
+            this.chunks = rows * cols;
 
-        textures = new ArrayList<>(chunks);
-        loadSprites();
+            textures = new ArrayList<>(chunks);
+            loadSprites();
+        }catch (Exception ignored){}
     }
 
     public Texture getTexture(int index){

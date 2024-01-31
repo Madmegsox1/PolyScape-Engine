@@ -58,4 +58,15 @@ public final class Profile {
         public static Color white = new Color(255, 255, 255);
         public static Color grey = new Color(100, 100, 100);
     }
+
+    public final static class UiThemes
+    {
+        public final static class Dark {
+            public static Color background = new Color(61, 61, 61);
+            public static Color foreground = Colors.white;
+
+            public static Color accent = new Color(175, 255, 178);
+
+        }
+    }
 }

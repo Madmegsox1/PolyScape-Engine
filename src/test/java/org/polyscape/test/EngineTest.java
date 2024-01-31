@@ -23,6 +23,8 @@ import org.polyscape.rendering.events.MouseClickEvent;
 import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.rendering.shaders.LightingShader;
 import org.polyscape.rendering.sprite.SpriteSheet;
+import org.polyscape.ui.HomeScreen;
+import org.polyscape.ui.ScreenManager;
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
@@ -65,6 +67,12 @@ public class EngineTest extends Engine {
         position.get().put(new float[] { x, y, 1f, 0f, });
         position.get().flip();
 
+
+        ScreenManager screenManager = new ScreenManager();
+
+        screenManager.addScreen("Home", new HomeScreen());
+
+        screenManager.setCurrentUi(1, "Home");
 
         LightingShader s = new LightingShader();
         s.create();
@@ -120,7 +128,6 @@ public class EngineTest extends Engine {
 
 
         IEvent<RenderEvent> renderEvent = e -> {
-
 
             //RenderEngine.drawQuadTexture(new Vector2(100, 100), 100, 100, texture1);
 
