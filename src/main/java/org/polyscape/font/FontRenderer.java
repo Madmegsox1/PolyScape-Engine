@@ -44,6 +44,16 @@ public class FontRenderer {
         fontHashMap.put(name, f);
     }
 
+    public void compileFontTextures(){
+        if(useMap){
+            fontHashMap.forEach((n, x) -> {
+                x.compileTexture();
+            });
+        }else{
+            fonts.forEach(Font::compileTexture);
+        }
+    }
+
 
 
     public void renderFont(String text, Vector2 vector, Color c){

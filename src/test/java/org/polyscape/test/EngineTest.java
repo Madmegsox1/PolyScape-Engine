@@ -38,10 +38,10 @@ import static org.lwjgl.opengl.GL20.glUseProgram;
 
 public class EngineTest extends Engine {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         Profile.Display.BACKGROUND_COLOR = new float[]{0f/255f, 0f/255f,0f/255f, 1.0f};
-        eventBus = new EventBus();
+
 
 
         java.awt.Font jFont = new java.awt.Font("Segoe UI", java.awt.Font.PLAIN, 20);
@@ -51,12 +51,15 @@ public class EngineTest extends Engine {
         java.awt.Font jFont2 = new java.awt.Font("Segoe UI", java.awt.Font.BOLD, 10);
 
         fontRenderer.addFont(new Font(jFont2, true));
+
+        eventBus = new EventBus();
         display = new Display("TEST");
         display.init(true);
 
         renderer = new Renderer(display);
         renderer.init();
 
+        fontRenderer.compileFontTextures();
         //SpriteSheet spriteSheet = new SpriteSheet("003", 10, 10);
 
 

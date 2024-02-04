@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,7 +21,9 @@ import static java.awt.Font.*;
 public final class Font {
     private final Map<Character, Glyph> glyphs;
 
-    private final Texture texture;
+    private Texture texture;
+
+    private BufferedImage texturesToCompile;
 
     private int fontHeight;
 
@@ -106,11 +109,40 @@ public final class Font {
      */
     public Font(java.awt.Font font, boolean antiAlias) {
         glyphs = new HashMap<>();
-        texture = createFontTexture(font, antiAlias);
+        texturesToCompile = createFontTexture(font, antiAlias);
+
+        texture = null;
+    }
+
+    public void compileTexture(){
+        int[] pixels = new int[tw * th];
+        texturesToCompile.getRGB(0, 0, tw, th, pixels, 0, tw);
+
+        /* Put pixel data into a ByteBuffer */
+        ByteBuffer buffer = MemoryUtil.memAlloc(tw * th * 4);
+        for (int i = 0; i < th; i++) {
+            for (int j = 0; j < tw; j++) {
+                /* Pixel as RGBA: 0xAARRGGBB */
+                int pixel = pixels[i * tw + j];
+                /* Red component 0xAARRGGBB >> 16 = 0x0000AARR */
+                buffer.put((byte) ((pixel >> 16) & 0xFF));
+                /* Green component 0xAARRGGBB >> 8 = 0x00AARRGG */
+                buffer.put((byte) ((pixel >> 8) & 0xFF));
+                /* Blue component 0xAARRGGBB >> 0 = 0xAARRGGBB */
+                buffer.put((byte) (pixel & 0xFF));
+                /* Alpha component 0xAARRGGBB >> 24 = 0x000000AA */
+                buffer.put((byte) ((pixel >> 24) & 0xFF));
+            }
+        }
+        /* Do not forget to flip the buffer! */
+        buffer.flip();
+
+        texture = new Texture(tw, th, buffer);
+        MemoryUtil.memFree(buffer);
     }
 
 
-    private Texture createFontTexture(java.awt.Font font, boolean antiAlias) {
+    private BufferedImage createFontTexture(java.awt.Font font, boolean antiAlias) {
         /* Loop through the characters to get charWidth and charHeight */
         int imageWidth = 0;
         int imageHeight = 0;
@@ -176,36 +208,14 @@ public final class Font {
         int height = image.getHeight();
 
         /* Get pixel data of image */
-        int[] pixels = new int[width * height];
-        image.getRGB(0, 0, width, height, pixels, 0, width);
 
-        /* Put pixel data into a ByteBuffer */
-        ByteBuffer buffer = MemoryUtil.memAlloc(width * height * 4);
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                /* Pixel as RGBA: 0xAARRGGBB */
-                int pixel = pixels[i * width + j];
-                /* Red component 0xAARRGGBB >> 16 = 0x0000AARR */
-                buffer.put((byte) ((pixel >> 16) & 0xFF));
-                /* Green component 0xAARRGGBB >> 8 = 0x00AARRGG */
-                buffer.put((byte) ((pixel >> 8) & 0xFF));
-                /* Blue component 0xAARRGGBB >> 0 = 0xAARRGGBB */
-                buffer.put((byte) (pixel & 0xFF));
-                /* Alpha component 0xAARRGGBB >> 24 = 0x000000AA */
-                buffer.put((byte) ((pixel >> 24) & 0xFF));
-            }
-        }
-        /* Do not forget to flip the buffer! */
-        buffer.flip();
 
         /* Create texture */
 
         th = height;
         tw = width;
-
-        Texture fontTexture = new Texture(width, height, buffer);
-        MemoryUtil.memFree(buffer);
-        return fontTexture;
+        g.dispose();
+        return image;
     }
 
     /**
@@ -318,6 +328,10 @@ public final class Font {
 
 
     public void drawText(CharSequence text, float x, float y, org.polyscape.rendering.elements.Color c) {
+        if(texture == null){
+            //throw new NullPointerException("Cannot draw text as texture is null, please compile texture before rendering the font");
+            return;
+        }
         int textHeight = getHeight(text);
 
         float drawX = x;
