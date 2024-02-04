@@ -13,6 +13,8 @@ import org.polyscape.rendering.Renderer;
 import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.elements.Vector2;
 import org.polyscape.rendering.events.RenderEvent;
+import org.polyscape.ui.HomeScreen;
+import org.polyscape.ui.ScreenManager;
 
 public class MacTest extends Engine {
     public static void main(String[] args){
@@ -33,12 +35,22 @@ public class MacTest extends Engine {
         object.setBaseColor(Color.BLUE);
         ObjectManager.addObject(object);
 
+
+
+
         IEvent<RenderEvent> renderEvent = e -> {
             ObjectManager.collisionCheck();
             ObjectManager.renderObjects();
         };
 
         RenderEvent.addEvent(renderEvent, RenderEvent.class);
+
+        ScreenManager screenManager = new ScreenManager();
+
+        screenManager.addScreen("Home", new HomeScreen());
+
+        screenManager.setCurrentUi(1, "Home");
+
         renderEngine.render(renderer, display);
     }
 

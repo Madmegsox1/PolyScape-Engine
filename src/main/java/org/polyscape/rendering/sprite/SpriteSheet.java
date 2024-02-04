@@ -1,5 +1,6 @@
 package org.polyscape.rendering.sprite;
 
+import de.matthiasmann.twl.utils.PNGDecoder;
 import org.lwjgl.system.MemoryUtil;
 import org.polyscape.Profile;
 import org.polyscape.rendering.elements.Texture;
@@ -9,6 +10,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -49,15 +51,17 @@ public class SpriteSheet {
 
             textures = new ArrayList<>(chunks);
             loadSprites();
-        }catch (Exception ignored){}
+        } catch (Exception ignored) {
+        }
     }
 
-    public Texture getTexture(int index){
+    public Texture getTexture(int index) {
         return textures.get(index);
     }
 
     public void loadSprites() {
-        BufferedImage imgs[] = new BufferedImage[chunks];
+
+        BufferedImage[] imgs = new BufferedImage[chunks];
         int count = 0;
 
         for (int y = 0; y < cols; y++) {
@@ -68,12 +72,21 @@ public class SpriteSheet {
                 }
 
                 imgs[count] = new BufferedImage(this.chunkWidth, this.chunkHeight, type);
-                Graphics2D gr = imgs[count].createGraphics();
+                int x0 = chunkWidth * x;
+                int y0 = chunkHeight * y;
+                int w = chunkWidth;
+                int h = chunkHeight;
 
+                // Ensure we don't exceed the image boundaries
+                w = Math.min(w, imageBuffer.getWidth() - x0);
+                h = Math.min(h, imageBuffer.getHeight() - y0);
 
-                gr.drawImage(this.imageBuffer, 0, 0, chunkWidth, chunkHeight, chunkWidth * x, chunkHeight * y,
-                        chunkWidth * x + chunkWidth, chunkHeight * y + chunkHeight, null);
-                gr.dispose();
+                // Get the pixel data from the original image
+                Raster raster = imageBuffer.getRaster().createChild(x0, y0, w, h, 0, 0, null);
+
+                // Set the pixel data to the new chunk image
+                imgs[count].setData(raster);
+
                 count++;
             }
         }
@@ -85,9 +98,7 @@ public class SpriteSheet {
 
     }
 
-    private static ByteBuffer toByteBuffer(BufferedImage image){
-
-
+    private static ByteBuffer toByteBuffer(BufferedImage image) {
         int width = image.getWidth();
         int height = image.getHeight();
 
@@ -115,7 +126,6 @@ public class SpriteSheet {
         buffer.flip();
         return buffer;
     }
-
 
 
 }

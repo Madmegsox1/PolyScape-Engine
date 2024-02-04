@@ -7,6 +7,7 @@ import org.polyscape.rendering.events.MouseClickEvent;
 import org.polyscape.rendering.events.RenderEvent;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -17,13 +18,13 @@ import java.util.stream.Collectors;
  */
 
 public class ScreenManager {
-    private final ConcurrentHashMap<String, IScreen> screenMap;
+    private final HashMap<String, IScreen> screenMap;
 
-    private ConcurrentHashMap<Integer, IScreen> currentViewMap; // <Z-Index, UI>
+    private HashMap<Integer, IScreen> currentViewMap; // <Z-Index, UI>
 
     public ScreenManager(){
-        this.screenMap = new ConcurrentHashMap<>();
-        this.currentViewMap = new ConcurrentHashMap<>();
+        this.screenMap = new HashMap<>();
+        this.currentViewMap = new HashMap<>();
         subscribeEvents();
     }
 
@@ -64,10 +65,10 @@ public class ScreenManager {
         currentViewMap = currentViewMap.entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByKey())
-                .collect(Collectors.toConcurrentMap(
+                .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         Map.Entry::getValue,
                         (oldValue, newValue) -> oldValue,
-                        ConcurrentHashMap::new));
+                        HashMap::new));
     }
 }

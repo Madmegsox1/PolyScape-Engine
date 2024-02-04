@@ -5,6 +5,7 @@ import org.polyscape.rendering.events.MouseClickEvent;
 import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.ui.component.Component;
 
+import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -14,10 +15,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class Screen implements IScreen {
 
-    protected CopyOnWriteArrayList<Component> components;
+    protected ArrayList<Component> components;
 
     public Screen(){
-        components = new CopyOnWriteArrayList<>();
+        components = new ArrayList<>();
         onLoad();
     }
 
