@@ -4,10 +4,13 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.system.MemoryStack;
 import org.polyscape.Engine;
 import org.polyscape.Profile;
 import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;
+
+import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.system.MemoryUtil.NULL;
@@ -65,8 +68,6 @@ public final class Display {
         glfwSetMouseButtonCallback(window, ((window1, button, action, mods) -> Engine.getEventBus().postEvent(new MouseClickEvent(button, action, window))));
         glfwSetKeyCallback(window, ((window1, key, scancode, action, mods) -> Engine.getEventBus().postEvent(new KeyEvent(key, action, window))));
 
-        // final GLFWVidMode vidmode =
-        // glfwGetVideoMode(glfwGetPrimaryMonitor());
 
         glfwSetWindowAspectRatio(this.window, Profile.Display.ASPECT_RATIO_NUMERATOR, Profile.Display.ASPECT_RATIO_DENOMINATOR);
 
@@ -74,7 +75,17 @@ public final class Display {
         glfwShowWindow(this.window);
 
         org.lwjgl.glfw.GLFW.glfwSetFramebufferSizeCallback(this.window, resizeWindow);
-        // GLFW.glfwSetCursorPos(window, 1080, 1920);
+
+
+        // This accounts fo HIGH DPI displays.
+        try(MemoryStack stack = MemoryStack.stackPush()){
+            IntBuffer width = stack.mallocInt(1);
+            IntBuffer height = stack.mallocInt(1);
+            org.lwjgl.glfw.GLFW.glfwGetFramebufferSize(window, width, height);
+
+            Profile.Display.HEIGHT = height.get();
+            Profile.Display.WIDTH = width.get();
+        }
     }
 
     private static GLFWFramebufferSizeCallback resizeWindow = new GLFWFramebufferSizeCallback()

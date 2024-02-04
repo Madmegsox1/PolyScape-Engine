@@ -1,11 +1,15 @@
 package org.polyscape.rendering;
 
 
+import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.system.MemoryStack;
 import org.polyscape.Profile;
 import org.polyscape.rendering.elements.Color;
+
+import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -102,7 +106,9 @@ public final class Renderer {
 
         GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
         glfwSwapBuffers(window);
+/*  TODO [Bugfix] Change rendering so it runs on the main thread. Poll events is holding which stops the rendering pipeline */
         glfwPollEvents();
+        System.out.println("Point reached");
     }
 
     public double getTime() {

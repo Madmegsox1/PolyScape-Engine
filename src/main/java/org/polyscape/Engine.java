@@ -7,7 +7,7 @@ import org.polyscape.rendering.Display;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.Renderer;
 
-public abstract class Engine extends Thread {
+public abstract class Engine {
     protected static EventBus eventBus;
     protected static Display display;
     protected static Renderer renderer;
