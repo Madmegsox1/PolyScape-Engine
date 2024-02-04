@@ -4,6 +4,10 @@ plugins {
 
 group = 'org.polyscape'
 version = '1.0.0-beta'
+def cpuType = "-" + ("uname -m").execute().text.trim()
+if (!cpuType.contains("arm")) {
+    cpuType = ""
+}
 
 repositories {
     mavenCentral()
@@ -13,14 +17,26 @@ repositories {
 project.ext.lwjglVersion = "3.2.3"
 project.ext.jomlVersion = "1.10.4"
 
-switch (org.gradle.internal.os.OperatingSystem.current()) {
-    case org.gradle.internal.os.OperatingSystem.LINUX:
+import org.gradle.internal.os.OperatingSystem
+
+project.ext.lwjglVersion = "3.3.3"
+
+switch (OperatingSystem.current()) {
+    case OperatingSystem.LINUX:
         project.ext.lwjglNatives = "natives-linux"
+        def osArch = System.getProperty("os.arch")
+        if (osArch.startsWith("arm") || osArch.startsWith("aarch64")) {
+            project.ext.lwjglNatives += osArch.contains("64") || osArch.startsWith("armv8") ? "-arm64" : "-arm32"
+        } else if (osArch.startsWith("ppc")) {
+            project.ext.lwjglNatives += "-ppc64le"
+        } else if (osArch.startsWith("riscv")) {
+            project.ext.lwjglNatives += "-riscv64"
+        }
         break
-    case org.gradle.internal.os.OperatingSystem.MAC_OS:
-        project.ext.lwjglNatives = "natives-macos"
+    case OperatingSystem.MAC_OS:
+        project.ext.lwjglNatives = "natives-macos$cpuType"
         break
-    case org.gradle.internal.os.OperatingSystem.WINDOWS:
+    case OperatingSystem.WINDOWS:
         project.ext.lwjglNatives = "natives-windows"
         break
 }
