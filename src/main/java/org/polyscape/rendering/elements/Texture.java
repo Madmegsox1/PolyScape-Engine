@@ -34,6 +34,10 @@ public final class Texture {
         loadTexture(w, h, buffer);
     }
 
+    public Texture(int textureId){
+        this.texture = textureId;
+    }
+
     private void loadTexture(final String textureName) {
         this.texture = TextureLoader.readTexture(textureName);
         loadedTextures.put(this.texture, textureName);

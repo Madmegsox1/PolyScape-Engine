@@ -106,9 +106,7 @@ public final class Renderer {
 
         GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
         glfwSwapBuffers(window);
-/*  TODO [Bugfix] Change rendering so it runs on the main thread. Poll events is holding which stops the rendering pipeline */
         glfwPollEvents();
-        System.out.println("Point reached");
     }
 
     public double getTime() {

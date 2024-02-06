@@ -32,23 +32,25 @@ public class MacTest extends Engine {
 
         FontMac test = new FontMac();
 
+
+
         renderEngine = new RenderEngine();
         eventBus = new EventBus();
 
-        Texture t = new Texture(512, 512, test.atlas);
+        //Texture t = new Texture(1024, 1024, test.atlas);
 
         ObjectManager.clearObjects();
         StaticObject object = new StaticObject();
         object.setPosition(new Vector2(100, 100));
-        object.setWidth(512);
-        object.setHeight(512);
+        object.setWidth(1024);
+        object.setHeight(1024);
         object.setTextured(true);
-        object.setTexture(t);
-        object.setBaseColor(Color.BLACK);
+        object.setTexture(test.texture);
+        //object.setBaseColor(Color.BLACK);
         //object.setWireframe(true);
         object.setWireframeTextured(true);
 
-        ObjectManager.addObject(object);
+        //ObjectManager.addObject(object);
 
 
 
@@ -56,6 +58,7 @@ public class MacTest extends Engine {
         IEvent<RenderEvent> renderEvent = e -> {
             ObjectManager.collisionCheck();
             ObjectManager.renderObjects();
+            test.generateGlyphs(100, 100);
         };
 
         RenderEvent.addEvent(renderEvent, RenderEvent.class);
