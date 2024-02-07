@@ -163,19 +163,19 @@ public final class RenderEngine {
         textureColorShader.bind();
         List<Vector2> v = new ArrayList<>();
         v.add(vector2);
-        v.add(new Vector2(vector2.x + width, vector2.y));
         v.add(new Vector2(vector2.x + width, vector2.y + height));
+        v.add(new Vector2(vector2.x + width, vector2.y));
         v.add(new Vector2(vector2.x, vector2.y + height));
         textureColorShader.loadVertexLocation(v,false);
         List<Vector2> v2 = new ArrayList<>();
         v2.add(new Vector2(tx, ty));
-        v2.add(new Vector2(tx + tw, ty));
         v2.add(new Vector2(tx + tw, ty + th));
+        v2.add(new Vector2(tx + tw, ty));
         v2.add(new Vector2(tx, ty + th));
 
         textureColorShader.loadVertexTexPos(v2);
         textureColorShader.loadTextureColor(color);
-        texture.bindwShader();
+        texture.bind();
         //final float[] c = Color.convertColorToFloatAlpha(color);
         //glColor4f(c[0], c[1], c[2], c[3]);
         glBegin(GL_QUADS);

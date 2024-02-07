@@ -71,9 +71,9 @@ public class FontMac {
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
             GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
-            //int[] swizzles = {GL_ONE, GL_ONE, GL_ONE, GL_RED};
-            //glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzles);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, bitmapWidth, bitmapHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, bitmap);
+            int[] swizzles = { GL_ONE, GL_ONE, GL_ONE, GL_RED };
+            glTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_SWIZZLE_RGBA, swizzles);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, bitmapWidth, bitmapHeight, 0, GL_RED, GL_UNSIGNED_BYTE, bitmap);
 
 
             this.texture = new Texture(id);
@@ -109,7 +109,7 @@ public class FontMac {
             float uvWidth = (info.x1() - info.x0()) / 512f;
             float uvHeight = (info.y1() - info.y0()) / 512f;
 
-            RenderEngine.drawQuadTexture(new Vector2(charX, charY), width, height, uvX, uvY, uvWidth, uvHeight, this.texture, Color.BLUE);
+            RenderEngine.drawQuadTexture(new Vector2(charX, charY), width, height, uvX, uvY, uvWidth, uvHeight, this.texture);
 
             x += info.xadvance();
         }
