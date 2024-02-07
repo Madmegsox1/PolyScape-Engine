@@ -4,10 +4,6 @@ plugins {
 
 group = 'org.polyscape'
 version = '1.0.0-beta'
-def cpuType = "-" + ("uname -m").execute().text.trim()
-if (!cpuType.contains("arm")) {
-    cpuType = ""
-}
 
 repositories {
     mavenCentral()
@@ -34,6 +30,11 @@ switch (OperatingSystem.current()) {
         }
         break
     case OperatingSystem.MAC_OS:
+        def cpuType = "-" + ("uname -m").execute().text.trim()
+        if (!cpuType.contains("arm")) {
+            cpuType = ""
+        }
+
         project.ext.lwjglNatives = "natives-macos$cpuType"
         break
     case OperatingSystem.WINDOWS:
