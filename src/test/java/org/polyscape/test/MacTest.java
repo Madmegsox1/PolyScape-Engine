@@ -58,7 +58,7 @@ public class MacTest extends Engine {
         IEvent<RenderEvent> renderEvent = e -> {
             ObjectManager.collisionCheck();
             ObjectManager.renderObjects();
-            test.generateGlyphs(100, 100);
+            test.generateGlyphs(10, 10);
         };
 
         RenderEvent.addEvent(renderEvent, RenderEvent.class);

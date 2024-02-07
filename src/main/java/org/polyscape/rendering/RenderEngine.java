@@ -9,6 +9,10 @@ import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.rendering.shaders.Shader;
 import org.polyscape.rendering.shaders.TextureColorShader;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
+
 import static org.lwjgl.opengl.GL11.*;
 public final class RenderEngine {
     public static int fps = 0;
@@ -156,12 +160,24 @@ public final class RenderEngine {
     }
 
     public static void drawQuadTexture(final Vector2 vector2, final float width, final float height, final float tx, final float ty, final float tw, final float th,final Texture texture, final Color color){
-        //textureColorShader.bind();
+        textureColorShader.bind();
+        List<Vector2> v = new ArrayList<>();
+        v.add(vector2);
+        v.add(new Vector2(vector2.x + width, vector2.y));
+        v.add(new Vector2(vector2.x + width, vector2.y + height));
+        v.add(new Vector2(vector2.x, vector2.y + height));
+        textureColorShader.loadVertexLocation(v,false);
+        List<Vector2> v2 = new ArrayList<>();
+        v2.add(new Vector2(tx, ty));
+        v2.add(new Vector2(tx + tw, ty));
+        v2.add(new Vector2(tx + tw, ty + th));
+        v2.add(new Vector2(tx, ty + th));
 
-        //textureColorShader.loadTextureColor(color);
-        texture.bind();
-        final float[] c = Color.convertColorToFloatAlpha(color);
-        glColor4f(c[0], c[1], c[2], c[3]);
+        textureColorShader.loadVertexTexPos(v2);
+        textureColorShader.loadTextureColor(color);
+        texture.bindwShader();
+        //final float[] c = Color.convertColorToFloatAlpha(color);
+        //glColor4f(c[0], c[1], c[2], c[3]);
         glBegin(GL_QUADS);
 
         glTexCoord2f(tx, ty);
@@ -178,7 +194,7 @@ public final class RenderEngine {
 
         glEnd();
         texture.disable();
-       // textureColorShader.unbind();
+        textureColorShader.unbind();
     }
 
     public static float normalize(float val, float max, float min){

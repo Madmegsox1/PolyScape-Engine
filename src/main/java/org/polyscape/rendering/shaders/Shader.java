@@ -1,5 +1,6 @@
 package org.polyscape.rendering.shaders;
 
+import org.joml.Vector2f;
 import org.lwjgl.opengl.GL20;
 import org.polyscape.Profile;
 import org.polyscape.rendering.elements.Color;
@@ -8,6 +9,7 @@ import org.polyscape.rendering.elements.Vector2;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author Madmegsox1
@@ -141,7 +143,42 @@ public abstract class Shader {
         GL20.glUniform4f(location, value.r, value.g, value.b, value.a);
     }
 
+    protected void loadColorAUniform(int location, float[] value){
+        GL20.glUniform4f(location, value[0], value[1], value[2], value[3]);
+    }
 
+
+
+    protected List<Vector2> convertPixelCoordsToNDC(List<Vector2> pixelCoords) {
+        float aspectRatio = (float) Profile.Display.WIDTH / (float) Profile.Display.HEIGHT;
+
+        for (Vector2 point : pixelCoords) {
+            // Convert from pixel coordinates to normalized [0, 1] range
+            point.x = point.x / Profile.Display.WIDTH;
+            point.y = point.y / Profile.Display.HEIGHT;
+
+            // Convert from [0, 1] range to [-1, 1] NDC range
+            point.x = point.x * 2 - 1;
+            point.y = 1 - point.y * 2; // Invert y coordinate
+
+            // Adjust x coordinate for aspect ratio
+            point.x = point.x * aspectRatio;
+        }
+
+        return pixelCoords;
+    }
+
+    protected float[] toFloatArray(List<Vector2> ndcVectors){
+        float[] floatArray = new float[(ndcVectors.size()) * 2];
+        int index = 0;
+        for (int i = 0; i < ndcVectors.size(); i ++) {
+            floatArray[index] = ndcVectors.get(i).x;
+            floatArray[index + 1] = ndcVectors.get(i).y;
+            index += 2;
+        }
+
+        return floatArray;
+    }
 
     private String readFile(String fileLocation){
         BufferedReader bufferedReader = null;
