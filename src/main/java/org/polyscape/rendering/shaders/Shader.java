@@ -15,7 +15,7 @@ import java.io.IOException;
  */
 
 public abstract class Shader {
-    private int vertexShaderId, fragmentShaderId, programId;
+    protected int vertexShaderId, fragmentShaderId, programId;
 
     private boolean useFrag, useVertex;
 
@@ -42,7 +42,6 @@ public abstract class Shader {
 
     public void bindAttribute(int index, String location){
         GL20.glBindAttribLocation(programId, index, location);
-
     }
 
     public void create(){
@@ -89,7 +88,12 @@ public abstract class Shader {
         if(GL20.glGetProgrami(programId, GL20.GL_VALIDATE_STATUS) == GL20.GL_FALSE){
             System.err.println("Programme failed to validate - "+ GL20.glGetProgramInfoLog(programId));
         }
-        getAllUniforms();
+        if(useVertex){
+            bindAllAttributes();
+        }
+        if(useFrag) {
+            getAllUniforms();
+        }
     }
 
     public void bind(){
@@ -131,6 +135,10 @@ public abstract class Shader {
 
     protected void loadColorUniform(int location, Color value){
         GL20.glUniform3f(location, value.r, value.g, value.b);
+    }
+
+    protected void loadColorAUniform(int location, Color value){
+        GL20.glUniform4f(location, value.r, value.g, value.b, value.a);
     }
 
 

@@ -6,11 +6,20 @@ import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.elements.Texture;
 import org.polyscape.rendering.elements.Vector2;
 import org.polyscape.rendering.events.RenderEvent;
+import org.polyscape.rendering.shaders.Shader;
+import org.polyscape.rendering.shaders.TextureColorShader;
 
 import static org.lwjgl.opengl.GL11.*;
 public final class RenderEngine {
     public static int fps = 0;
     public static double deltaTime = 0;
+
+    private static TextureColorShader textureColorShader;
+
+    public RenderEngine(){
+        textureColorShader = new TextureColorShader();
+        textureColorShader.create();
+    }
 
     public void render(final Renderer renderer, final Display display) {
         double time = GLFW.glfwGetTime();
@@ -147,6 +156,9 @@ public final class RenderEngine {
     }
 
     public static void drawQuadTexture(final Vector2 vector2, final float width, final float height, final float tx, final float ty, final float tw, final float th,final Texture texture, final Color color){
+        //textureColorShader.bind();
+
+        //textureColorShader.loadTextureColor(color);
         texture.bind();
         final float[] c = Color.convertColorToFloatAlpha(color);
         glColor4f(c[0], c[1], c[2], c[3]);
@@ -166,6 +178,7 @@ public final class RenderEngine {
 
         glEnd();
         texture.disable();
+       // textureColorShader.unbind();
     }
 
     public static float normalize(float val, float max, float min){
