@@ -34,6 +34,11 @@ public final class Profile {
 
     }
 
+    public final static class Font{
+        public static final String FONT_LOCATION = "res/fonts/";
+        public static final String FONT_FILEFORMAT = "ttf";
+    }
+
     public final static class Shaders{
         public static final String SHADER_LOCATION = "res/shaders/";
         public static final String SHADER_FILEFORMAT = "glsl";
