@@ -190,10 +190,10 @@ public final class Font {
             int charHeight = charImage.getHeight();
 
             /* Create glyph and draw char on image */
-            Glyph ch = new Glyph(charWidth, charHeight, x, image.getHeight() - charHeight, 0f);
+            //Glyph ch = new Glyph(charWidth, charHeight, x, image.getHeight() - charHeight, 0f);
             g.drawImage(charImage, x, 0, null);
-            x += ch.width;
-            glyphs.put(c, ch);
+            x += 0;
+            //glyphs.put(c, ch);
         }
 
         /* Flip image Horizontal to get the origin to bottom left */
@@ -320,7 +320,7 @@ public final class Font {
                 continue;
             }
             Glyph g = glyphs.get(c);
-            lineHeight = Math.max(lineHeight, g.height);
+            lineHeight = 0;
         }
         height += lineHeight;
         return height;

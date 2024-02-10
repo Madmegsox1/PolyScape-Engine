@@ -58,10 +58,6 @@ public final class Texture {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.getTexture());
     }
 
-    public void bindwShader() {
-        glActiveTexture(GL_TEXTURE0);
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.getTexture());
-    }
 
     public void disable() {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);

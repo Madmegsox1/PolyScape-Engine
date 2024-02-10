@@ -30,7 +30,7 @@ public class MacTest extends Engine {
         renderer = new Renderer(display);
         renderer.init();
 
-        FontMac test = new FontMac();
+        FontMac test = new FontMac("Segoe UI", 47);
 
 
 
@@ -58,7 +58,7 @@ public class MacTest extends Engine {
         IEvent<RenderEvent> renderEvent = e -> {
             ObjectManager.collisionCheck();
             ObjectManager.renderObjects();
-            test.generateGlyphs(100, 100);
+            test.renderText("Hello World", new Vector2(0, 100), Color.BLACK);
         };
 
         RenderEvent.addEvent(renderEvent, RenderEvent.class);
