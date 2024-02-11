@@ -5,6 +5,7 @@ import org.polyscape.object.RenderProperty;
 import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.elements.Vector2;
 import org.polyscape.ui.IScreen;
+import org.polyscape.ui.Screen;
 
 /**
  * @author Madmegsox1
@@ -20,13 +21,18 @@ public abstract class Component extends RenderProperty implements IComponent {
 
     protected Color accent;
 
-    protected IScreen screen;
+    protected Screen screen;
 
-    public Component(int x, int y, int width, int height, IScreen screen) {
+    protected String text;
+
+    public String componentId;
+
+    public Component(int x, int y, int width, int height, Screen screen, String compId) {
         this.screen = screen;
         this.pos = new Vector2(x, y);
         this.width = width;
         this.height = height;
+        this.componentId = compId;
 
         // todo theme manager etc
         this.backgroundColor = Profile.UiThemes.Dark.background;
@@ -42,9 +48,37 @@ public abstract class Component extends RenderProperty implements IComponent {
         this.pos = new Vector2(x, y);
     }
 
+    public float getX(){
+        return this.pos.x;
+    }
+
+    public float getY(){
+        return this.pos.y;
+    }
+
+    public String getComponentId() {
+        return componentId;
+    }
+
+    public void setComponentId(String componentId) {
+        this.componentId = componentId;
+    }
+
     public void setSize(int width, int height) {
         this.width = width;
         this.height = height;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public boolean inBounds(double bx, double by){
+        return (bx >= pos.x && bx <= pos.x + width) && (by >= pos.y && by <= pos.y + height);
     }
 
 }

@@ -1,9 +1,12 @@
 package org.polyscape.ui;
 
+import org.polyscape.Engine;
+import org.polyscape.font.FontMac;
 import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;
 import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.ui.component.Component;
+import org.polyscape.ui.events.ComponentClickEvent;
 
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -16,6 +19,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public abstract class Screen implements IScreen {
 
     protected ArrayList<Component> components;
+    public FontMac font;
+
+    protected ScreenManager manager;
 
     public Screen(){
         components = new ArrayList<>();
@@ -48,6 +54,15 @@ public abstract class Screen implements IScreen {
         keyComponents(event);
     }
 
+    public Component getComponentById(String id) {
+        for (Component c : components) {
+            if (c.getComponentId().equals(id)) {
+                return c;
+            }
+        }
+        return null;
+    }
+
     public void addComponent(Component component) {
         components.add(component);
     }
@@ -59,8 +74,19 @@ public abstract class Screen implements IScreen {
         }
     }
 
+    protected void setFont(FontMac font){
+        this.font = font;
+    }
+
     private void clickComponents(MouseClickEvent event){
         for (Component c : components){
+            if(c.inBounds(event.mX, event.mY)){
+                final ComponentClickEvent componentClickEvent = new ComponentClickEvent(event.mX, event.mY, c, event.action);
+
+                Engine.getEventBus().postEvent(componentClickEvent);
+                c.onComponentClick(componentClickEvent);
+            }
+
             c.onClick(event);
         }
     }

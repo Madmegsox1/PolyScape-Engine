@@ -7,7 +7,6 @@ import org.polyscape.rendering.sprite.SpriteSheet;
 import org.polyscape.rendering.sprite.action.ActionInvoker;
 import org.polyscape.rendering.sprite.action.IAction;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -25,9 +24,9 @@ public abstract class RenderProperty {
 
     protected SpriteSheet spriteSheet;
 
-    protected Color baseColor = Color.WHITE;
+    protected Color baseColor = Color.BLACK;
 
-    protected boolean shadered = false;
+    protected boolean hasShader = false;
 
     protected Shader shader;
 
@@ -35,23 +34,31 @@ public abstract class RenderProperty {
 
     protected boolean wireframeTextured = false;
 
-    protected ConcurrentHashMap<String, IAction> actionMap = new ConcurrentHashMap<>();
+    protected ConcurrentHashMap<String, IAction> actionRegistry = new ConcurrentHashMap<>();
 
     public void loadShaderProperty(){
 
     }
 
     public void addAction(String actionName ,IAction action){
-        actionMap.put(actionName, action);
+        actionRegistry.put(actionName, action);
     }
 
     public void runAction(String actionName){
         boolean running = ActionInvoker.runningActions.getOrDefault(actionName, false);
         if(!running) {
-            IAction action = actionMap.get(actionName);
+            IAction action = actionRegistry.get(actionName);
             ActionInvoker invoker = new ActionInvoker(action, actionName, this);
             invoker.start();
         }
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
     }
 
     public boolean isTextured() {
@@ -91,12 +98,12 @@ public abstract class RenderProperty {
         this.baseColor = baseColor;
     }
 
-    public boolean isShadered() {
-        return shadered;
+    public boolean hasShader() {
+        return hasShader;
     }
 
-    public void setShadered(boolean shadered) {
-        this.shadered = shadered;
+    public void usesShader (boolean hasShader) {
+        this.hasShader = hasShader;
     }
 
     public Shader getShader() {

@@ -170,6 +170,13 @@ public final class RenderEngine {
         texture.disable();
     }
 
+    public static void drawQuadLines(final Vector2 pos, final float width, final float height, final float lineWidth, final Color color){
+        RenderEngine.drawLine(pos, new Vector2(pos.x, pos.y + height), lineWidth ,color);
+        RenderEngine.drawLine(new Vector2(pos.x, pos.y + height), new Vector2(pos.x + width, pos.y + height), lineWidth ,color);
+        RenderEngine.drawLine(new Vector2(pos.x + width, pos.y + height), new Vector2(pos.x + width, pos.y), lineWidth ,color);
+        RenderEngine.drawLine(new Vector2(pos.x + width, pos.y), pos, lineWidth ,color);
+    }
+
     public static float normalize(float val, float max, float min){
         return (val - min)/(max - min);
     }

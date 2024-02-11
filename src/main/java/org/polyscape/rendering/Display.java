@@ -45,6 +45,9 @@ public final class Display {
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
+        // Check if user is on MacOS if not the disable this hint
+        glfwWindowHint(GLFW.GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW.GLFW_FALSE);
+
         if(aa) {
             glfwWindowHint(GLFW_SAMPLES, 4);
         }
@@ -76,16 +79,6 @@ public final class Display {
 
         org.lwjgl.glfw.GLFW.glfwSetFramebufferSizeCallback(this.window, resizeWindow);
 
-
-        // This accounts fo HIGH DPI displays.
-        try(MemoryStack stack = MemoryStack.stackPush()){
-            IntBuffer width = stack.mallocInt(1);
-            IntBuffer height = stack.mallocInt(1);
-            org.lwjgl.glfw.GLFW.glfwGetFramebufferSize(window, width, height);
-
-            Profile.Display.HEIGHT = height.get();
-            Profile.Display.WIDTH = width.get();
-        }
     }
 
     private static GLFWFramebufferSizeCallback resizeWindow = new GLFWFramebufferSizeCallback()

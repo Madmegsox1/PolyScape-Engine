@@ -1,6 +1,5 @@
 package org.polyscape.test;
 
-import org.joml.Vector2f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.polyscape.Engine;
@@ -16,25 +15,18 @@ import org.polyscape.rendering.Display;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.Renderer;
 import org.polyscape.rendering.elements.Color;
-import org.polyscape.rendering.elements.Texture;
 import org.polyscape.rendering.elements.Vector2;
 import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;
 import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.rendering.shaders.LightingShader;
-import org.polyscape.rendering.sprite.SpriteSheet;
-import org.polyscape.ui.HomeScreen;
-import org.polyscape.ui.ScreenManager;
 
-import java.io.IOException;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.lang.Thread.sleep;
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL20.glUseProgram;
 
 public class EngineTest extends Engine {
 

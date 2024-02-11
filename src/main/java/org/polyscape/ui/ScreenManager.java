@@ -39,7 +39,8 @@ public class ScreenManager {
         KeyEvent.addEvent(keyEvent, KeyEvent.class);
     }
 
-    public void addScreen(String key, IScreen screen) {
+    public void addScreen(String key, Screen screen) {
+        screen.manager = this;
         screenMap.put(key, screen);
     }
     public void removeScreen(String key) {
