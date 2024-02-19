@@ -1,5 +1,6 @@
 package org.polyscape.rendering;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
@@ -7,9 +8,11 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
 import org.polyscape.Engine;
 import org.polyscape.Profile;
+import org.polyscape.rendering.elements.Vector2;
 import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;
 
+import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -24,6 +27,18 @@ public final class Display {
     public Display(final String title)
     {
         this.title = title;
+    }
+
+
+    public static Vector2 getMousePosition(long display){
+        DoubleBuffer posX = BufferUtils.createDoubleBuffer(1);
+        DoubleBuffer posY = BufferUtils.createDoubleBuffer(1);
+
+        glfwGetCursorPos(display, posX, posY);
+        double mouseX = posX.get(0);
+        double mouseY = posY.get(0);
+
+        return new Vector2(mouseX, mouseY);
     }
 
     public void init(boolean aa)

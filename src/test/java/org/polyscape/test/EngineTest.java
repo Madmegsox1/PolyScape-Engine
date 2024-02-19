@@ -121,9 +121,6 @@ public class EngineTest extends Engine {
             glStencilFunc(GL_ALWAYS, 1, 1);
             glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
 
-            ObjectManager.collisionCheck();
-
-
 
             glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
             glStencilFunc(GL_EQUAL, 0, 1);

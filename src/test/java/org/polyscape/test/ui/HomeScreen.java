@@ -43,7 +43,7 @@ public class HomeScreen extends Screen {
 
     @Override
     public void render(RenderEvent event) {
-        RenderEngine.drawQuad(new Vector2(0, 0), Profile.Display.WIDTH, Profile.Display.HEIGHT, new Color(200, 200, 200));
+        //RenderEngine.drawQuad(new Vector2(0, 0), Profile.Display.WIDTH, Profile.Display.HEIGHT, new Color(200, 200, 200));
     }
 
     @Override

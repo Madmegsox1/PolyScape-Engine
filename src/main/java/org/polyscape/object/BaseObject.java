@@ -1,12 +1,20 @@
 package org.polyscape.object;
 
+import org.jbox2d.collision.shapes.CircleShape;
+import org.jbox2d.collision.shapes.PolygonShape;
+import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.*;
 import org.polyscape.Profile;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.elements.Vector2;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+
+import static org.polyscape.object.ObjectManager.PIXELS_PER_METER;
+import static org.polyscape.object.ObjectManager.worldToScreen;
 
 /**
  * @author Madmegsox1
@@ -18,36 +26,12 @@ public class BaseObject extends RenderProperty {
     private int objectId;
 
     private Vector2 position;
+    private BodyDef bodyDef;
 
-    /*
-     * Velocity is applied in pixels per second.
-     * TODO replace with conventional measuring system as pixels very from pc to pc
-     */
-    private Vector2 velocity;
-
-    private final Vector2 acceleration;
-
-    private static final Vector2 GRAVITY = new Vector2(0, 9.8f); // Gravity force
-    private static final float AIR_RESISTANCE = 0.01f;
-    private float mass;
-    private Vector2 velocityMax = new Vector2(10, 10);
-
-    private HashMap<BaseObject, Integer> collisionCountMap = new HashMap<>();
-
-    private float velocityDecay = Profile.ObjectSettings.BaseVelocityDecay;
-
-    private CollisionType collisionType = CollisionType.NONE;
-
-    private float velocityThresholdX = 10f;
-    private float velocityThresholdY = 20f;
-
-    private Vector2 previousPosition;
+    private Body body;
 
     public BaseObject() {
-        acceleration = new Vector2(0, 0);
-        velocity = new Vector2(0, 0);
-        this.previousPosition = new Vector2(0, 0);
-        this.mass = 5f;
+        bodyDef = new BodyDef();
     }
 
     public int getObjectId() {
@@ -67,11 +51,12 @@ public class BaseObject extends RenderProperty {
     }
 
     public Vector2 getVelocity() {
-        return velocity;
+        var v = this.body.getLinearVelocity();
+        return new Vector2(v.x, v.y);
     }
 
     public void setVelocity(Vector2 velocity) {
-        this.velocity = velocity;
+        this.body.setLinearVelocity(new Vec2(velocity.x, velocity.y));
     }
 
     public void setWidth(int width) {
@@ -101,105 +86,13 @@ public class BaseObject extends RenderProperty {
     }
 
 
-    public Vector2 getPreviousPosition() {
-        return previousPosition;
-    }
-
-    public void setPreviousPosition(Vector2 previousPosition) {
-        this.previousPosition = previousPosition;
-    }
-
-
-    public Rectangle getBounds() {
-        return new Rectangle((int) position.x, (int) position.y, width, height);
-    }
-    public boolean collidesWithX(BaseObject other) {
-
-        return this.position.x + this.height >= other.position.x && this.position.x <= other.position.x + other.width;
-    }
-    public boolean collidesWithY(BaseObject other){
-        return this.position.y + this.height >= other.position.y && this.position.y <= other.position.y + other.height;
-    }
-
-    public boolean collidesWith(BaseObject other) {
-        return collidesWithY(other) && collidesWithX(other);
-    }
-
-    public void handleCollision(BaseObject other){
-        if(!collisionCountMap.containsKey(other)){
-            collisionCountMap.put(other, 0);
-        }else{
-            collisionCountMap.put(other, collisionCountMap.get(other) + 1);
-        }
-
-        this.position = previousPosition;
-
-        collisionType = getCollisionData(getVectorPoints(), other.getVectorPoints());
-
-    }
-
-    private CollisionType getCollisionData(Vector2[] rect1, Vector2[] rect2){
-        Vector2 bottomLeft1 = rect1[1];
-        Vector2 bottomRight1 = rect1[2];
-        Vector2 topLeft1 = rect1[0];
-        Vector2 topRight1 = rect1[3];
-
-        Vector2 bottomLeft2 = rect2[1];
-        Vector2 bottomRight2 = rect2[2];
-        Vector2 topLeft2 = rect2[0];
-        Vector2 topRight2 = rect2[3];
-
-        if(
-                ((bottomLeft1.x >= topLeft2.x && bottomRight1.x <= topRight2.x) ||
-                        (bottomLeft1.x <= topLeft2.x && bottomRight1.x <= topRight2.x && bottomRight1.x >= topLeft2.x) ||
-                        (bottomLeft1.x >= topLeft2.x && bottomRight1.x >= topRight2.x && bottomLeft1.x <= topRight2.x) ||
-                        (bottomLeft1.x <= topLeft2.x && bottomRight1.x >= topRight2.x)
-                ) && (bottomLeft1.y <= topLeft2.y + 2 && bottomRight1.y <= topRight2.y + 2) && (topLeft1.y <= topLeft2.y && topRight1.y <= topRight2.y)
-
-        ){
-            return CollisionType.UP;
-        }
-
-        else if(
-                ((topLeft1.x >= bottomLeft2.x && topRight1.x <= bottomRight2.x) ||
-                        (topLeft1.x <= bottomLeft2.x && topRight1.x <= bottomRight2.x && topRight1.x >= bottomLeft2.x) ||
-                        (topLeft1.x >= bottomLeft2.x && topRight1.x >= bottomRight2.x && topLeft1.x <= bottomRight2.x) ||
-                        (topLeft1.x <= bottomLeft2.x && topRight1.x >= bottomRight2.x)
-                ) && (topLeft1.y >= bottomLeft2.y - 2 && topRight1.y >= bottomRight2.y - 2) && (bottomLeft1.y >= bottomLeft2.y && bottomRight1.y >= bottomRight2.y)
-
-        ){
-            return CollisionType.DOWN;
-        }
-
-        else if(
-                ((bottomRight1.y <= bottomLeft2.y && topRight1.y >= topLeft2.y) ||
-                  (bottomRight1.y >= bottomLeft2.y && topRight1.y >= topLeft2.y && topRight1.y <= bottomLeft2.y) ||
-                  (bottomRight1.y <= bottomLeft2.y && topRight1.y <= topLeft2.y && bottomRight1.y >= topLeft2.y) ||
-                  (bottomRight1.y >= bottomLeft2.y && topRight1.y <= topLeft2.y)
-                ) && (bottomRight1.x >= bottomLeft2.x - 2 && topRight1.x >= topLeft2.x - 2) && (bottomLeft1.x <= bottomLeft2.x && bottomRight1.x <= bottomRight2.x)
-        ){
-            return CollisionType.LEFT;
-        }
-
-        else if(
-                ((bottomLeft1.y <= bottomRight2.y && topLeft1.y >= topRight2.y) ||
-                        (bottomLeft1.y >= bottomRight2.y && topLeft1.y >= topRight2.y && topLeft1.y <= bottomRight2.y) ||
-                        (bottomLeft1.y <= bottomRight2.y && topLeft1.y <= topRight2.y && bottomLeft1.y >= topRight2.y) ||
-                        (bottomLeft1.y >= bottomRight2.y && topLeft1.y <= topRight2.y)
-                ) && (bottomLeft1.x <= bottomRight2.x + 2 && topLeft1.x <= topRight2.x + 2) && (bottomLeft1.x >= bottomLeft2.x && topLeft1.x >= topLeft2.x)
-        ){
-            return CollisionType.RIGHT;
-        }
-
-        return CollisionType.NONE;
-    }
-
     /*
         Pixels Per Second
      */
-    public Vector2 getSpeed(){
-        float speedX = (RenderEngine.fps * velocityDecay) * velocity.x;
-        float speedY = (RenderEngine.fps * velocityDecay) * velocity.y;
+    public Vector2 getSpeed() {
+        var v = body.getLinearVelocity();
+        float speedX = RenderEngine.fps* v.x;
+        float speedY = RenderEngine.fps * v.y;
 
         return new Vector2(Math.abs(speedX), Math.abs(speedY));
     }
@@ -211,105 +104,98 @@ public class BaseObject extends RenderProperty {
     public boolean isWireframe() {
         return this.wireframe;
     }
-    public float getVelocityDecay() {
-        return velocityDecay;
+
+    public Body getBody() {
+        return this.body;
+    }
+    public void addForce(float x, float y) {
+        body.applyForceToCenter(new Vec2(x, y));
     }
 
-    public void setVelocityDecay(float velocityDecay) {
-        this.velocityDecay = velocityDecay;
+    public void removeBody(){
+        ObjectManager.world.destroyBody(this.body);
     }
 
-    public void addForce(float x, float y){
+    public boolean isPointInObject(Vector2 point){
+        Vector2[] ver = getVectorPoints();
+        for(int i = 0; i < ver.length; i++){
+            Vector2 start = ver[i];
+            Vector2 end = ver[(i + 1) % ver.length];
 
-        this.acceleration.addToVect((x / mass) * RenderEngine.fps, (y / mass) * RenderEngine.fps);
+            float edgeVecX = end.x - start.x;
+            float edgeVecY = end.y - start.y;
+
+            float pointVecX = point.x - start.x;
+            float pointVecY = point.y - start.y;
+
+            if ((edgeVecX * pointVecY - edgeVecY * pointVecX) < 0) {
+                return false; // Point is outside this edge, so it's outside the quad
+            }
+        }
+        return true;
     }
 
-    public void applyPhysics() {
-        float deltaTime = (float) RenderEngine.deltaTime;
-        this.previousPosition = new Vector2(this.position.x, this.position.y);
-        // Add the acceleration to the velocity
-        this.velocity.addToVect(this.acceleration.x , this.acceleration.y);
+    public void setUpPhysicsBody(BodyType type) {
+        this.bodyDef.type = type;
+        var width = ObjectManager.toMeters(this.width / 2f);
+        var height = ObjectManager.toMeters(this.height / 2f);
 
-        // Apply the damping factor
-        this.velocity.x *= velocityDecay;
-        this.velocity.y *= velocityDecay;
+        this.bodyDef.position.set(ObjectManager.screenToWorld(position.x, position.y, this.width, this.height));
+        this.body = ObjectManager.world.createBody(bodyDef);
+        PolygonShape shape = new PolygonShape();
 
-        this.velocity.y += deltaTime * ((GRAVITY.y * mass) * RenderEngine.fps);
+        shape.setAsBox(width,height);
+        FixtureDef fixture =new FixtureDef ();
+        fixture.friction = 0.5f;
+        fixture.density= 1f;
+        fixture.shape = shape;
 
-        this.velocity.x -= AIR_RESISTANCE * this.velocity.x * Math.abs(this.velocity.x) * deltaTime;
-        this.velocity.y -= AIR_RESISTANCE * this.velocity.y * Math.abs(this.velocity.y) * deltaTime;
-
-        // Add the velocity to the position
-        if(Math.abs(velocity.x) <= velocityThresholdX){
-            velocity.x = 0;
-        }
-        if(Math.abs(velocity.y) <= velocityThresholdY){
-            velocity.y = 0;
-        }
-
-        if(collisionType == CollisionType.UP && velocity.y > 0){
-            velocity.y = 0;
-        }
-        if(collisionType == CollisionType.DOWN && velocity.y < 0){
-            velocity.y = 0;
-        }
-        if(collisionType == CollisionType.LEFT && velocity.x > 0){
-            velocity.x = 0;
-        }
-        if(collisionType == CollisionType.RIGHT && velocity.x < 0){
-            velocity.x = 0;
-        }
-
-        this.position.addToVect(deltaTime * this.velocity.x, deltaTime * this.velocity.y);
-
-
-        // Reset the acceleration for the next frame
-        this.acceleration.x = 0;
-        this.acceleration.y = 0;
-        collisionType = CollisionType.NONE;
+        body.createFixture(fixture);
     }
 
 
     public void renderObject() {
+        position = worldToScreen(body.getPosition());
+        position.x -= (this.width / 2f);
+        position.y -= (this.height / 2f);
 
         if (this.isTextured) {
-            RenderEngine.drawQuadTexture(position, width, height, texture, baseColor);
+            RenderEngine.drawQuadTextureAngle(position, -body.getAngle(), width, height, texture, baseColor);
         } else {
-            RenderEngine.drawQuadA(position, width, height, baseColor);
+            RenderEngine.drawQuadAngleA(position, -body.getAngle(), width, height, baseColor);
         }
 
     }
 
     public void renderObjectWireframe() {
-        if (this.isTextured && this.wireframeTextured) {
-            RenderEngine.drawQuadTexture(position, width, height, texture, baseColor);
-        }
+        renderObject();
         drawWireframe();
     }
 
     private void drawWireframe() {
-        Vector2[] points = getVectorPoints();
-        RenderEngine.drawLine(points[0], points[1], 1f, Color.WHITE);
-        RenderEngine.drawLine(points[1], points[2], 1f, Color.WHITE);
-        RenderEngine.drawLine(points[2], points[3], 1f, Color.WHITE);
-        RenderEngine.drawLine(points[3], points[0], 1f, Color.WHITE);
+        PolygonShape shape = (PolygonShape) body.getFixtureList().getShape();
+
+        Vec2 position = body.getPosition(); // Center position of the body in Box2D world
+        float angle = body.getAngle(); // Rotation of the body in radians
+
+        // Assuming the shape is a rectangle, get width and height (Box2D stores them as half-width and half-height)
+        Vec2 size = shape.getVertex(1); // Top-right vertex relative to body position gives half-width and half-height
+        float width = size.x * 2; // Full width
+        float height = size.y * 2; // Full height
+        Vector2 screenPos = worldToScreen(position); // Convert position
+        float screenWidth = width * PIXELS_PER_METER; // Convert width
+        float screenHeight = height * PIXELS_PER_METER; // Convert height
+
+        RenderEngine.drawWireframe(screenPos, screenWidth, screenHeight, angle);
+
     }
 
     public void render() {
-        if(this.wireframe){
+        if (this.wireframe) {
             renderObjectWireframe();
-        }else{
+        } else {
             renderObject();
         }
-        applyPhysics();
     }
 
-
-    public Vector2 getVelocityMax() {
-        return velocityMax;
-    }
-
-    public void setVelocityMax(Vector2 velocityMax) {
-        this.velocityMax = velocityMax;
-    }
 }
