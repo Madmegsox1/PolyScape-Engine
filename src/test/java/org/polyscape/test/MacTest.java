@@ -15,14 +15,18 @@ import org.polyscape.rendering.Display;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.Renderer;
 import org.polyscape.rendering.elements.Color;
+import org.polyscape.rendering.elements.Texture;
 import org.polyscape.rendering.elements.Vector2;
 import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;
 import org.polyscape.rendering.events.RenderEvent;
+import org.polyscape.rendering.sprite.SpriteSheet;
 import org.polyscape.test.ui.HomeScreen;
 import org.polyscape.ui.ScreenManager;
 
 import java.util.concurrent.atomic.AtomicReference;
+
+import static org.lwjgl.opengl.GL11.glGetError;
 
 public class MacTest extends Engine {
     public static void main(String[] args) {
@@ -37,6 +41,9 @@ public class MacTest extends Engine {
         eventBus = new EventBus();
 
 
+
+
+        SpriteSheet spriteSheet = new SpriteSheet("003", 10, 10);
         ObjectManager.clearObjects();
 
         BaseObject object = new BaseObject();
@@ -44,7 +51,8 @@ public class MacTest extends Engine {
         object.setWidth(50);
         object.setHeight(50);
         object.setUpPhysicsBody(BodyType.DYNAMIC);
-        object.setWireframe(false);
+        object.setTextured(true);
+        object.setTexture(new Texture("003"));
 
         StaticObject object1 = new StaticObject();
         object1.setPosition(new Vector2(25, 500));
@@ -87,6 +95,10 @@ public class MacTest extends Engine {
             }
             if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_D)) {
                 xv += 20f;
+            }
+
+            if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_E)) {
+
             }
 
             if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_R)){

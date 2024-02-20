@@ -8,6 +8,7 @@ import org.polyscape.rendering.events.MouseClickEvent;
 import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.ui.Screen;
 import org.polyscape.ui.component.Component;
+import org.polyscape.ui.component.checkbox.ICheckBoxClick;
 import org.polyscape.ui.events.ComponentClickEvent;
 
 public class Button extends Component {
@@ -15,9 +16,14 @@ public class Button extends Component {
     private boolean buttonDown;
 
     public Color pressedColor;
-    public Button(int x, int y, Screen screen, String compId) {
+
+    public IButtonClick clickAction;
+
+
+    public Button(int x, int y, Screen screen, String text,String compId) {
         super(x, y, 40, 25, screen, compId);
         pressedColor = new Color(100, 100, 100);
+        this.setText(text);
     }
 
     @Override
@@ -39,12 +45,23 @@ public class Button extends Component {
         if(event.action == 0){
             //baseColor = Color.BLACK;
             buttonDown = false;
+            clickAction.run(this);
         }
 
         if(event.action == 1){
             //baseColor = pressedColor;
             buttonDown = true;
         }
+    }
+
+    @Override
+    public void setText(String text){
+        this.text = text;
+        // TODO get width
+    }
+
+    public void setClickAction(IButtonClick action){
+        this.clickAction = action;
     }
 
     @Override

@@ -24,24 +24,31 @@ public final class RenderEngine {
         final float timeStep = 1.0f / 60.0f;
         final int velocityIterations = 6;
         final int positionIterations = 2;
+        double accumulator = 0.0;
 
         while (!renderer.shouldClose()) {
 
-            if (renderer.isUpdateReady()) {
-                final double currentTime = GLFW.glfwGetTime();
-                deltaTime = currentTime - time;
-                time = currentTime;
+
+            final double currentTime = GLFW.glfwGetTime();
+            deltaTime = currentTime - time;
+            time = currentTime;
+            accumulator += deltaTime;
+
+            while (accumulator >= timeStep) {
                 ObjectManager.world.step(timeStep, velocityIterations, positionIterations);
-                renderer.prepare();
-                Engine.getEventBus().postEvent(new RenderEvent(renderer, this));
-                renderer.render(display.getWindow());
-                fpsOld++;
-                if (GLFW.glfwGetTime() - fpsTime >= 1.0) {
-                    fps = fpsOld;
-                    fpsOld = 0;
-                    fpsTime = GLFW.glfwGetTime();
-                }
+                accumulator -= timeStep;
             }
+
+            renderer.prepare();
+            Engine.getEventBus().postEvent(new RenderEvent(renderer, this));
+            renderer.render(display.getWindow());
+            fpsOld++;
+            if (GLFW.glfwGetTime() - fpsTime >= 1.0) {
+                fps = fpsOld;
+                fpsOld = 0;
+                fpsTime = GLFW.glfwGetTime();
+            }
+
         }
         System.exit(0);
     }
@@ -152,9 +159,9 @@ public final class RenderEngine {
         float halfWidth = width / 2.0f;
         float halfHeight = height / 2.0f;
         final float[] c = Color.convertColorToFloatAlpha(color);
-
-        glPushMatrix();
         texture.bind();
+        glPushMatrix();
+
         glColor4f(c[0], c[1], c[2], c[3]);
         glTranslatef(vector2.x + halfWidth, vector2.y + halfHeight, 0);
         glRotatef(angle, 0, 0, 1);
@@ -175,8 +182,9 @@ public final class RenderEngine {
         glVertex2f(0, height);
 
         glEnd();
-        texture.disable();
+
         glPopMatrix();
+        texture.disable();
     }
 
     public static void drawQuadTexture(final Vector2 vector2, final float width, final float height, final Texture texture, final Color color) {

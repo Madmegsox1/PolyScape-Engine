@@ -37,7 +37,11 @@ public class HomeScreen extends Screen {
         });
 
 
-        addComponent(new Button(200, 300, this,"Button1"));
+        addComponent(new Button(200, 300, this,"Click Me!","Button1"));
+        Button button = (Button) this.getComponentById("Button1");
+        button.setClickAction((b) -> {
+
+        });
 
     }
 
