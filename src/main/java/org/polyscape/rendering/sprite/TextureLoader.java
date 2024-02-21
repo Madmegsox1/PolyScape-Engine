@@ -41,14 +41,12 @@ public final class TextureLoader {
 
     public static int readTexture(String filename) {
         filename = Profile.Textures.TEXTURE_LOCATION + filename + "." + Profile.Textures.TEXTURE_FILEFORMAT;
-        final IntBuffer tmp = BufferUtils.createIntBuffer(1);
-
+        int id = -1;
         try {
-            GL11.glGenTextures(tmp);
+            id = GL11.glGenTextures();
         } catch (final Exception e) {
             System.err.println("Init engine before loading textures!");
         }
-        tmp.rewind();
 
         try {
             final InputStream in = new FileInputStream(filename);
@@ -58,23 +56,20 @@ public final class TextureLoader {
             decoder.decode(buf, decoder.getWidth() * 4, PNGDecoder.Format.RGBA);
             buf.flip();
 
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, tmp.get(0));
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, id);
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
             GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
             GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
             GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 4);
             GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, decoder.getWidth(), decoder.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buf);
-
         } catch (final java.io.FileNotFoundException ex) {
             System.out.println("Error " + filename + " not found");
         } catch (final java.io.IOException e) {
             System.out.println("Error decoding " + filename);
         }
 
-        tmp.rewind();
-
-        return tmp.get(0);
+        return id;
     }
 
     public static BufferedImage readTextureToBufferedImage(String filename) {

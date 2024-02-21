@@ -43,7 +43,7 @@ public class MacTest extends Engine {
 
 
 
-        SpriteSheet spriteSheet = new SpriteSheet("003", 10, 10);
+        SpriteSheet spriteSheet = new SpriteSheet("002", 25, 25);
         ObjectManager.clearObjects();
 
         BaseObject object = new BaseObject();
@@ -51,15 +51,15 @@ public class MacTest extends Engine {
         object.setWidth(50);
         object.setHeight(50);
         object.setUpPhysicsBody(BodyType.DYNAMIC);
-        object.setTextured(true);
-        object.setTexture(new Texture("003"));
+        object.setSpriteSheet(spriteSheet);
+        object.setTexture(0);
+
 
         StaticObject object1 = new StaticObject();
         object1.setPosition(new Vector2(25, 500));
         object1.setWidth(400);
         object1.setHeight(50);
         object1.setUpPhysicsBody(BodyType.STATIC);
-        object1.setWireframe(false);
         ObjectManager.addObject(object);
         ObjectManager.addObject(object1);
 
@@ -97,9 +97,6 @@ public class MacTest extends Engine {
                 xv += 20f;
             }
 
-            if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_E)) {
-
-            }
 
             if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_R)){
                 Vector2 pos = Display.getMousePosition(display.getWindow());

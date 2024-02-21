@@ -137,6 +137,7 @@ public class BaseObject extends RenderProperty {
 
     public void setUpPhysicsBody(BodyType type) {
         this.bodyDef.type = type;
+        //bodyDef.fixedRotation = true;
         var width = ObjectManager.toMeters(this.width / 2f);
         var height = ObjectManager.toMeters(this.height / 2f);
 
@@ -149,7 +150,7 @@ public class BaseObject extends RenderProperty {
         fixture.friction = 0.5f;
         fixture.density= 1f;
         fixture.shape = shape;
-
+        this.body.setLinearDamping(2.0f);
         body.createFixture(fixture);
     }
 

@@ -162,9 +162,9 @@ public final class RenderEngine {
         texture.bind();
         glPushMatrix();
 
-        glColor4f(c[0], c[1], c[2], c[3]);
+        glColor4f(1, 1, 1, 1);
         glTranslatef(vector2.x + halfWidth, vector2.y + halfHeight, 0);
-        glRotatef(angle, 0, 0, 1);
+        glRotatef((float) Math.toDegrees(angle), 0, 0, 1);
         glTranslatef(-halfWidth, -halfHeight, 0);
 
         glBegin(GL_QUADS);
