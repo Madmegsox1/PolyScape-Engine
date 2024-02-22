@@ -38,7 +38,7 @@ Polyscape uses Gradle for building the project, ensuring a smooth setup process.
 
 1. Clone the repository:
      ```bash
-    git clone https://github.com/yourusername/polyscape.git
+    git clone https://github.com/Madmegsox1/PolyScape-Engine.git
      ```
 2. Navigate to the Polyscape directory:
      ```bash
