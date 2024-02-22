@@ -1,0 +1,21 @@
+plugins {
+    id 'java'
+}
+
+group = 'org.polyscape'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven { url "https://s01.oss.sonatype.org/content/groups/public" }
+}
+
+dependencies {
+    implementation project(":PolyScape-Engine")
+    testImplementation platform('org.junit:junit-bom:5.9.1')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}

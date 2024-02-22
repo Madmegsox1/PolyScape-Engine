@@ -1,0 +1,3 @@
+rootProject.name = 'polyscape-editor'
+include(":PolyScape-Engine")
+project(":PolyScape-Engine").projectDir = new File("../")
