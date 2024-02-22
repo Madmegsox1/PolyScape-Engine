@@ -23,6 +23,7 @@ This License and the rights granted hereunder will terminate automatically if yo
 Governing Law
 
 This License shall be governed by the laws of the jurisdiction in which the original creators of the Polyscape Engine are based, without regard to conflict of law principles.
-Acknowledgement
+
+## Acknowledgement
 
 **YOU ACKNOWLEDGE THAT YOU HAVE READ THIS LICENSE, UNDERSTAND IT, AND AGREE TO BE BOUND BY ITS TERMS.**
