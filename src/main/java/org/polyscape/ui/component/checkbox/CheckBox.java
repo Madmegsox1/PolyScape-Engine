@@ -1,5 +1,6 @@
 package org.polyscape.ui.component.checkbox;
 
+import org.polyscape.Profile;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.elements.Vector2;
@@ -24,10 +25,13 @@ public class CheckBox extends Component {
 
     public ICheckBoxClick clickAction;
 
+    public Color baseColor;
+
 
     public CheckBox(int x, int y, String id,CheckBoxType type, Screen screen) {
         super(x, y, 25, 25, screen, id);
         this.type = type;
+        baseColor = Profile.UiThemes.Dark.foreground;
         if(type == CheckBoxType.Textured) {
             SpriteSheet checkBox = new SpriteSheet("CheckBoxSheet", 100, 100);
             setTextured(true);
@@ -48,7 +52,7 @@ public class CheckBox extends Component {
             }
         }
 
-        screen.font.renderText(this.text, new Vector2(pos.x + width + 5, pos.y + height));
+        screen.font.renderText(this.text, new Vector2(pos.x + width + 5, pos.y + height), baseColor);
 
     }
 

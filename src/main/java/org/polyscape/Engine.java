@@ -6,6 +6,7 @@ import org.polyscape.font.FontRenderer;
 import org.polyscape.rendering.Display;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.Renderer;
+import org.polyscape.ui.ScreenManager;
 
 public abstract class Engine {
     protected static EventBus eventBus;
@@ -13,6 +14,8 @@ public abstract class Engine {
     protected static Renderer renderer;
     protected static RenderEngine renderEngine;
     protected static FontRenderer fontRenderer;
+
+    protected static ScreenManager screenManager;
 
 
     public Engine(){
@@ -40,6 +43,10 @@ public abstract class Engine {
 
     public static FontRenderer getFontRenderer() {
         return fontRenderer;
+    }
+
+    public static ScreenManager getScreenManager() {
+        return screenManager;
     }
 
 

@@ -67,10 +67,14 @@ public final class Profile {
     public final static class UiThemes
     {
         public final static class Dark {
-            public static Color background = new Color(61, 61, 61);
+            public static Color background = new Color(27, 27, 27);
             public static Color foreground = Colors.white;
 
-            public static Color accent = new Color(175, 255, 178);
+            public static Color foregroundDark = Colors.grey;
+
+            public static Color accent = new Color(255, 139, 18);
+
+            public static Color accent2 = new Color(18,134,255);
 
         }
     }

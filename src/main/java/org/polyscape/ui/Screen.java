@@ -1,6 +1,7 @@
 package org.polyscape.ui;
 
 import org.polyscape.Engine;
+import org.polyscape.Profile;
 import org.polyscape.font.FontMac;
 import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;
@@ -95,6 +96,10 @@ public abstract class Screen implements IScreen {
         for (Component c : components){
             c.onKey(event);
         }
+    }
+
+    public int getCenterX(){
+        return Profile.Display.WIDTH / 2;
     }
 
 

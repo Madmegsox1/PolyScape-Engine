@@ -21,6 +21,8 @@ public abstract class Component extends RenderProperty implements IComponent {
 
     protected Color accent;
 
+    protected Color accent2;
+
     protected Screen screen;
 
     protected String text;
@@ -38,6 +40,7 @@ public abstract class Component extends RenderProperty implements IComponent {
         this.backgroundColor = Profile.UiThemes.Dark.background;
         this.foregroundColor = Profile.UiThemes.Dark.foreground;
         this.accent = Profile.UiThemes.Dark.accent;
+        this.accent2 = Profile.UiThemes.Dark.accent2;
     }
 
     public Vector2 getPosition(){

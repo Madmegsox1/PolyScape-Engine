@@ -17,18 +17,21 @@ public class Button extends Component {
 
     public Color pressedColor;
 
+    public Color baseColor;
+
     public IButtonClick clickAction;
 
-
     public Button(int x, int y, Screen screen, String text,String compId) {
-        super(x, y, 40, 25, screen, compId);
+        super(x, y, screen.font.getWidth(text) + 15, screen.font.getHeight(text) +5, screen, compId);
         pressedColor = new Color(100, 100, 100);
+        this.baseColor = accent;
         this.setText(text);
     }
 
     @Override
     public void draw(RenderEvent event) {
         RenderEngine.drawQuad(pos, width, height, (buttonDown) ? pressedColor : baseColor);
+        screen.font.renderText(text, new Vector2(pos.x + 5, pos.y + screen.font.getHeight(text)), foregroundColor);
     }
 
     @Override
@@ -45,7 +48,9 @@ public class Button extends Component {
         if(event.action == 0){
             //baseColor = Color.BLACK;
             buttonDown = false;
-            clickAction.run(this);
+            if(clickAction != null) {
+                clickAction.run(this);
+            }
         }
 
         if(event.action == 1){

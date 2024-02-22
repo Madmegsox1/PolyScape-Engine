@@ -16,6 +16,7 @@ import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 
@@ -104,12 +105,24 @@ public final class Display {
             // Keep ratio when resizing window
             //final int newHeight = (int) (width / 1.777777777777778D);
 
-            Profile.Display.HEIGHT = height;
-            Profile.Display.WIDTH = width;
-
-            Engine.getRenderer().init();
+            resizeWindow(width, height, true, window);
         }
     };
+
+    public void resizeWindow(int width, int height){
+        resizeWindow(width, height, false, window);
+    }
+
+    public static void resizeWindow(int width, int height, boolean callback, long window){
+        Profile.Display.HEIGHT = height;
+        Profile.Display.WIDTH = width;
+
+        if(!callback){
+            glfwSetWindowSize(window, width, height);
+        }
+
+        Engine.getRenderer().init();
+    }
 
     public GLFWErrorCallback getErrorCallback()
     {

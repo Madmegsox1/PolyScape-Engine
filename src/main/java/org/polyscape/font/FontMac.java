@@ -103,6 +103,25 @@ public class FontMac {
         }
     }
 
+    public int getWidth(String text){
+        int size = 0;
+        for (char c : text.toCharArray()){
+            size += (int) glyphs.get(c).advance;
+        }
+        return size;
+    }
+
+    public int getHeight(String text) {
+        int maxHeight = 0;
+        for (char c : text.toCharArray()) {
+            var g = glyphs.get(c);
+            if (g.height > maxHeight) {
+                maxHeight = (int) g.height;
+            }
+        }
+        return maxHeight;
+    }
+
     public void renderText(String text, Vector2 vector,Color color){
         for (char c : text.toCharArray()){
             Glyph g = glyphs.get(c);

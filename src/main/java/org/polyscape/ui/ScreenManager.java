@@ -10,7 +10,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
+
+import static java.util.concurrent.ConcurrentMap.*;
 
 /**
  * @author Madmegsox1
@@ -20,11 +23,11 @@ import java.util.stream.Collectors;
 public class ScreenManager {
     private final HashMap<String, IScreen> screenMap;
 
-    private HashMap<Integer, IScreen> currentViewMap; // <Z-Index, UI>
+    private ConcurrentHashMap<Integer, IScreen> currentViewMap; // <Z-Index, UI>
 
     public ScreenManager(){
         this.screenMap = new HashMap<>();
-        this.currentViewMap = new HashMap<>();
+        this.currentViewMap = new ConcurrentHashMap<>();
         subscribeEvents();
     }
 
@@ -57,6 +60,13 @@ public class ScreenManager {
     public Map<Integer, IScreen> getCurrentUiMap() {
         return Collections.unmodifiableMap(currentViewMap);
     }
+
+    public void removeCurrentUi(int z){
+        currentViewMap.remove(z);
+        sortCurrentUiMap();
+    }
+
+
     public void setCurrentUi(int z, String screen) {
         currentViewMap.put(z, getUi(screen));
         sortCurrentUiMap();
@@ -65,11 +75,11 @@ public class ScreenManager {
     public void sortCurrentUiMap() {
         currentViewMap = currentViewMap.entrySet()
                 .stream()
-                .sorted(Map.Entry.comparingByKey())
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        Map.Entry::getValue,
+                .sorted(ConcurrentMap.Entry.comparingByKey())
+                .collect(Collectors.toConcurrentMap(
+                        Entry::getKey,
+                        Entry::getValue,
                         (oldValue, newValue) -> oldValue,
-                        HashMap::new));
+                        ConcurrentHashMap::new));
     }
 }
