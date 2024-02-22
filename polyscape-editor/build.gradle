@@ -12,6 +12,8 @@ repositories {
 
 dependencies {
     implementation project(":PolyScape-Engine")
+    implementation "org.pkl-lang:pkl-core:0.25.2"
+    implementation "org.pkl-lang:pkl-config-java:0.25.2"
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
