@@ -49,6 +49,7 @@ Polyscape uses Gradle for building the project, ensuring a smooth setup process.
      ```bash
     ./gradlew build
      ```
+4. If you are running on a Mac please add this JVM argument `-XstartOnFirstThread` 
 
 ## Usage
 
