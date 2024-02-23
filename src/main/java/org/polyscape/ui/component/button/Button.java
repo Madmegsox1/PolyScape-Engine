@@ -22,7 +22,7 @@ public class Button extends Component {
     public IButtonClick clickAction;
 
     public Button(int x, int y, Screen screen, String text,String compId) {
-        super(x, y, screen.font.getWidth(text) + 15, screen.font.getHeight(text) +5, screen, compId);
+        super(x, y, screen.font.getWidth(text) + 10, screen.font.getHeight(text) + 8, screen, compId);
         pressedColor = new Color(100, 100, 100);
         this.baseColor = accent;
         this.setText(text);

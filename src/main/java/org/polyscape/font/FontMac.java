@@ -105,10 +105,13 @@ public class FontMac {
 
     public int getWidth(String text){
         int size = 0;
-        for (char c : text.toCharArray()){
-            size += (int) glyphs.get(c).advance;
+        var ar = text.toCharArray();
+        for (char c : ar){
+            var g = glyphs.get(c);
+            size += (int) g.advance;
         }
-        return size;
+        var last = ar[ar.length - 1];
+        return size + (int) glyphs.get(last).advance;
     }
 
     public int getHeight(String text) {

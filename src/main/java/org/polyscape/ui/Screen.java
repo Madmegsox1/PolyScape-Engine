@@ -22,11 +22,13 @@ public abstract class Screen implements IScreen {
     protected ArrayList<Component> components;
     public FontMac font;
 
+    public Object model;
+
     protected ScreenManager manager;
 
     public Screen(){
         components = new ArrayList<>();
-        onLoad();
+        //onLoad();
     }
 
 
@@ -35,6 +37,8 @@ public abstract class Screen implements IScreen {
     public abstract void click(MouseClickEvent event);
 
     public abstract void key(KeyEvent event);
+
+    public void model(){}
 
 
     @Override
@@ -68,6 +72,11 @@ public abstract class Screen implements IScreen {
         components.add(component);
     }
 
+
+    public <T> T getModel(){
+        if(model == null) return null;
+        return (T) model;
+    }
 
     private void renderComponents(RenderEvent event){
         for (Component c : components){

@@ -21,9 +21,9 @@ import static java.util.concurrent.ConcurrentMap.*;
  */
 
 public class ScreenManager {
-    private final HashMap<String, IScreen> screenMap;
+    private final HashMap<String, Screen> screenMap;
 
-    private ConcurrentHashMap<Integer, IScreen> currentViewMap; // <Z-Index, UI>
+    private ConcurrentHashMap<Integer, Screen> currentViewMap; // <Z-Index, UI>
 
     public ScreenManager(){
         this.screenMap = new HashMap<>();
@@ -49,15 +49,15 @@ public class ScreenManager {
     public void removeScreen(String key) {
         screenMap.remove(key);
     }
-    public IScreen getUi(String key) {
+    public Screen getUi(String key) {
         return screenMap.get(key);
     }
 
-    public Map<String, IScreen> getAllScreens() {
+    public Map<String, Screen> getAllScreens() {
         return Collections.unmodifiableMap(screenMap);
     }
 
-    public Map<Integer, IScreen> getCurrentUiMap() {
+    public Map<Integer, Screen> getCurrentUiMap() {
         return Collections.unmodifiableMap(currentViewMap);
     }
 
@@ -68,8 +68,22 @@ public class ScreenManager {
 
 
     public void setCurrentUi(int z, String screen) {
-        currentViewMap.put(z, getUi(screen));
+        var ui = getUi(screen);
+
+        ui.components.clear();
+        ui.onLoad();
+
+        currentViewMap.put(z, ui);
         sortCurrentUiMap();
+    }
+
+    public void setScreenModel(int index, Object model){
+        var screen = currentViewMap.get(index);
+        screen.model = model;
+
+        if(model != null) {
+            screen.model();
+        }
     }
 
     public void sortCurrentUiMap() {
