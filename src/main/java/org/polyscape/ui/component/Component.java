@@ -15,13 +15,13 @@ import org.polyscape.ui.Screen;
 public abstract class Component extends RenderProperty implements IComponent {
     protected Vector2 pos;
 
-    protected Color backgroundColor;
+    public Color backgroundColor;
 
-    protected Color foregroundColor;
+    public Color foregroundColor;
 
-    protected Color accent;
+    public Color accent;
 
-    protected Color accent2;
+    public Color accent2;
 
     protected Screen screen;
 

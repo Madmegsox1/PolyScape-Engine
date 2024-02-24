@@ -170,7 +170,7 @@ public class BaseObject extends RenderProperty {
         PolygonShape shape = new PolygonShape();
 
         shape.setAsBox(width,height);
-        FixtureDef fixture =new FixtureDef ();
+        FixtureDef fixture =new FixtureDef();
         fixture.friction = 0.5f;
         fixture.density= 1f;
         fixture.shape = shape;
@@ -190,15 +190,16 @@ public class BaseObject extends RenderProperty {
     }
 
     public void renderObjectWireframe(float alpha) {
-        renderObject(alpha);
         drawWireframe();
+        renderObject(alpha);
+
     }
 
     private void drawWireframe() {
         PolygonShape shape = (PolygonShape) body.getFixtureList().getShape();
 
         Vec2 position = body.getPosition(); // Center position of the body in Box2D world
-        float angle = body.getAngle(); // Rotation of the body in radians
+        float angle = -body.getAngle(); // Rotation of the body in radians
 
         // Assuming the shape is a rectangle, get width and height (Box2D stores them as half-width and half-height)
         Vec2 size = shape.getVertex(1); // Top-right vertex relative to body position gives half-width and half-height

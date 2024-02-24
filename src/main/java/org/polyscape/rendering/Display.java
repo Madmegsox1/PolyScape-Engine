@@ -77,7 +77,7 @@ public final class Display {
 
         // Make fullscreen
         // this.window = glfwCreateWindow(Constants.Display.WIDTH,
-        // Constants.Display.HEIGHT, this.title, GLFW.glfwGetPrimaryMonitor(),
+        // Constants.Display.HEIGHT, this.title, ,
         // NULL);
         glfwMakeContextCurrent(this.window);
         GL.createCapabilities();

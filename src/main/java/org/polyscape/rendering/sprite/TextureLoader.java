@@ -38,7 +38,6 @@ public final class TextureLoader {
         return tmp.get(0);
     }
 
-
     public static int readTexture(String filename) {
         filename = Profile.Textures.TEXTURE_LOCATION + filename + "." + Profile.Textures.TEXTURE_FILEFORMAT;
         int id = -1;

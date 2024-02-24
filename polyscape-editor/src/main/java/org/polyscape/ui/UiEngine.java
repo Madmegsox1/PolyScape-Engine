@@ -12,12 +12,13 @@ import org.polyscape.ui.screens.ProjectScreen;
 
 public final class UiEngine extends Engine {
 
+
     public void init(){
         Profile.Display.BACKGROUND_COLOR = new float[]{27/255f, 27/255f,27/255f, 1.0f};
 
         eventBus = new EventBus();
         display = new Display("Polyscape - Editor");
-        display.init(true);
+        display.init(false);
 
         renderer = new Renderer(display);
         renderer.init();

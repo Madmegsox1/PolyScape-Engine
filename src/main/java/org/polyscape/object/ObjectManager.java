@@ -12,7 +12,7 @@ public final class ObjectManager {
     private static final HashMap<Integer, BaseObject> objects = new HashMap<>();
     private static int currentId = 0;
 
-    public static World world = new World(new Vec2(0, 0f));
+    public static World world = new World(new Vec2(0, 0));
 
     public static final float PIXELS_PER_METER = 100.0f;
 

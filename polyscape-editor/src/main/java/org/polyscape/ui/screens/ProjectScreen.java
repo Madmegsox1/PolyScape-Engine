@@ -19,8 +19,6 @@ public final class ProjectScreen extends Screen {
 
     @Override
     public void onLoad() {
-        //titleFont = new FontMac("Segoe UI", 20);
-
         config = Loader.projectLoader.config;
 
         FontMac font = new FontMac("Segoe UI", 25);
