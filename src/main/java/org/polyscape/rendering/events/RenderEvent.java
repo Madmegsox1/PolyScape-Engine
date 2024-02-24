@@ -10,9 +10,12 @@ public class RenderEvent extends Event<RenderEvent> {
     public final Renderer renderer;
     public final RenderEngine renderEngine;
 
+    public final float alpha;
 
-    public RenderEvent(Renderer renderer, RenderEngine renderEngine){
+
+    public RenderEvent(Renderer renderer, RenderEngine renderEngine, float alpha){
         this.renderer = renderer;
         this.renderEngine = renderEngine;
+        this.alpha = alpha;
     }
 }

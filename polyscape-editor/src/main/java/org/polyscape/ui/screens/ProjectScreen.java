@@ -37,13 +37,23 @@ public final class ProjectScreen extends Screen {
         if (config != null && !config.projects.isEmpty()) {
             int y = 90;
             for (var p : config.projects) {
-                Button openProjectButton = new Button(5, y, this, "Edit Project", "openProjectButton:" + p.projectName);
-                openProjectButton.baseColor = Profile.UiThemes.Dark.accent;
-                openProjectButton.setClickAction((Button n) -> {
+                Button editProjectButton = new Button(5, y, this, "Edit Project", "editProjectButton:" + p.projectName);
+                editProjectButton.baseColor = Profile.UiThemes.Dark.accent;
+                editProjectButton.setClickAction((Button n) -> {
                     Engine.getScreenManager().setCurrentUi(0, "NewOrEditProject");
                     Engine.getScreenManager().setScreenModel(0, p);
                 });
 
+                Button openProjectButton = new Button(150, y, this, "Open Project", "openProjectButton:" + p.projectName);
+                openProjectButton.baseColor = Profile.UiThemes.Dark.accent2;
+                openProjectButton.setClickAction((Button n) -> {
+                    Profile.Display.WIDTH = 1920;
+                    Profile.Display.HEIGHT = 1080;
+                    Loader.recreateUiEngine("Editor", p);
+                });
+
+
+                this.addComponent(editProjectButton);
                 this.addComponent(openProjectButton);
                 y += font.getHeight(p.projectName) + 50;
             }

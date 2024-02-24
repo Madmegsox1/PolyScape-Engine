@@ -29,9 +29,19 @@ public class Loader {
         projectLoader.loadProjects();
 
         uiEngine = new UiEngine();
-
+        Profile.Display.WIDTH = 700;
+        Profile.Display.HEIGHT = 400;
         uiEngine.init();
         UiEngine.getScreenManager().setCurrentUi(0, "ProjectScreen");
+        uiEngine.render();
+    }
+
+    public static void recreateUiEngine(String screen, Object model){
+        uiEngine.destroyEngine();
+        uiEngine = new UiEngine();
+        uiEngine.init();
+        UiEngine.getScreenManager().setCurrentUi(0, screen);
+        UiEngine.getScreenManager().setScreenModel(0, model);
         uiEngine.render();
     }
 }

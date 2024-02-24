@@ -8,7 +8,8 @@ import java.nio.DoubleBuffer;
 
 public class MouseClickEvent extends Event<MouseClickEvent> {
     public final int key, action;
-    public final double mX, mY;
+    public double mX;
+    public double mY;
     public final long window;
 
     public MouseClickEvent(int key, int action, long window){

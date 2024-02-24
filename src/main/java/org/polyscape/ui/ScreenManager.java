@@ -31,6 +31,10 @@ public class ScreenManager {
         subscribeEvents();
     }
 
+    public void clearAll(){
+        screenMap.clear();
+        currentViewMap.clear();
+    }
 
     private void subscribeEvents(){
         IEvent<RenderEvent> renderEvent = n -> currentViewMap.values().forEach(view -> view.draw(n));

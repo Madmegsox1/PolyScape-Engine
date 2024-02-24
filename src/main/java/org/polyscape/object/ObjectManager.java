@@ -12,7 +12,7 @@ public final class ObjectManager {
     private static final HashMap<Integer, BaseObject> objects = new HashMap<>();
     private static int currentId = 0;
 
-    public static World world = new World(new Vec2(0, -9f));
+    public static World world = new World(new Vec2(0, 0f));
 
     public static final float PIXELS_PER_METER = 100.0f;
 
@@ -45,6 +45,18 @@ public final class ObjectManager {
         float screenX = pos.x * PIXELS_PER_METER;
         float screenY = Profile.Display.HEIGHT - (pos.y  * PIXELS_PER_METER);
         return new Vector2(screenX, screenY );
+    }
+
+    public static void setPreviousPositions(){
+        for (var o : objects.values()){
+            o.setPreviousPosition();
+        }
+    }
+
+    public static void updatePosition(){
+        for (var o : objects.values()){
+            o.updatePosition();
+        }
     }
 
     public static void removeObject(final BaseObject object) {
@@ -93,9 +105,9 @@ public final class ObjectManager {
         objects.clear();
     }
 
-    public static void renderObjects() {
+    public static void renderObjects(float alpha) {
         for (final BaseObject object : getObjects()) {
-            object.render();
+            object.render(alpha);
         }
     }
 

@@ -35,7 +35,7 @@ public class FluidObject extends BaseObject {
 
 
     @Override
-    public void render() {
+    public void render(float alpha) {
 
 
         for (FluidParticle particle : particles){

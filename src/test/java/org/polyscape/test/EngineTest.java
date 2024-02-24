@@ -177,7 +177,7 @@ public class EngineTest extends Engine {
             s2.unbind();
             glClear(GL_STENCIL_BUFFER_BIT);
             glColor3f(0, 0, 0);
-            ObjectManager.renderObjects();
+            //ObjectManager.renderObjects();
             //ob.runAction("Test");
 
         };

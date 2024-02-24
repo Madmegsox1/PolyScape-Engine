@@ -32,15 +32,18 @@ public final class RenderEngine {
             final double currentTime = GLFW.glfwGetTime();
             deltaTime = currentTime - time;
             time = currentTime;
-            accumulator += deltaTime;
 
+            accumulator += deltaTime;
             while (accumulator >= timeStep) {
+                ObjectManager.setPreviousPositions();
                 ObjectManager.world.step(timeStep, velocityIterations, positionIterations);
+                ObjectManager.updatePosition();
                 accumulator -= timeStep;
             }
 
+            float alpha = (float) (accumulator / timeStep);
             renderer.prepare();
-            Engine.getEventBus().postEvent(new RenderEvent(renderer, this));
+            Engine.getEventBus().postEvent(new RenderEvent(renderer, this, alpha));
             renderer.render(display.getWindow());
             fpsOld++;
             if (GLFW.glfwGetTime() - fpsTime >= 1.0) {

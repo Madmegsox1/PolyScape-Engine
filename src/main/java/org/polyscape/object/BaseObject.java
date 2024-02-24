@@ -26,6 +26,9 @@ public class BaseObject extends RenderProperty {
     private int objectId;
 
     private Vector2 position;
+
+    private Vector2 previousPosition;
+
     private BodyDef bodyDef;
 
     private Body body;
@@ -135,6 +138,27 @@ public class BaseObject extends RenderProperty {
         return true;
     }
 
+    public void setPreviousPosition(){
+        if(position == null) return;
+        this.previousPosition = new Vector2(position.x, position.y);;
+    }
+
+
+    public void updatePosition(){
+        if(body == null) return;
+        position = worldToScreen(body.getPosition());
+        position.x -= (this.width / 2f);
+        position.y -= (this.height / 2f);
+    }
+
+
+    public Vector2 getInterpolatedPosition(float alpha){
+        if(previousPosition == null) return position;
+        float interpX = previousPosition.x + (position.x - previousPosition.x) * alpha;
+        float interpY = previousPosition.y + (position.y - previousPosition.y) * alpha;
+        return new Vector2(interpX, interpY);
+    }
+
     public void setUpPhysicsBody(BodyType type) {
         this.bodyDef.type = type;
         //bodyDef.fixedRotation = true;
@@ -155,21 +179,18 @@ public class BaseObject extends RenderProperty {
     }
 
 
-    public void renderObject() {
-        position = worldToScreen(body.getPosition());
-        position.x -= (this.width / 2f);
-        position.y -= (this.height / 2f);
+    public void renderObject(float alpha) {
 
         if (this.isTextured) {
-            RenderEngine.drawQuadTextureAngle(position, -body.getAngle(), width, height, texture, baseColor);
+            RenderEngine.drawQuadTextureAngle(getInterpolatedPosition(alpha), -body.getAngle(), width, height, texture, baseColor);
         } else {
-            RenderEngine.drawQuadAngleA(position, -body.getAngle(), width, height, baseColor);
+            RenderEngine.drawQuadAngleA(getInterpolatedPosition(alpha), -body.getAngle(), width, height, baseColor);
         }
 
     }
 
-    public void renderObjectWireframe() {
-        renderObject();
+    public void renderObjectWireframe(float alpha) {
+        renderObject(alpha);
         drawWireframe();
     }
 
@@ -191,11 +212,11 @@ public class BaseObject extends RenderProperty {
 
     }
 
-    public void render() {
+    public void render(float alpha) {
         if (this.wireframe) {
-            renderObjectWireframe();
+            renderObjectWireframe(alpha);
         } else {
-            renderObject();
+            renderObject(alpha);
         }
     }
 

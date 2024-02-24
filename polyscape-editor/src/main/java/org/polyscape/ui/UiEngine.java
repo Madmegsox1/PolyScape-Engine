@@ -6,6 +6,7 @@ import org.polyscape.event.EventBus;
 import org.polyscape.rendering.Display;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.Renderer;
+import org.polyscape.ui.screens.Editor;
 import org.polyscape.ui.screens.NewOrEditProject;
 import org.polyscape.ui.screens.ProjectScreen;
 
@@ -13,8 +14,7 @@ public final class UiEngine extends Engine {
 
     public void init(){
         Profile.Display.BACKGROUND_COLOR = new float[]{27/255f, 27/255f,27/255f, 1.0f};
-        Profile.Display.WIDTH = 700;
-        Profile.Display.HEIGHT = 400;
+
         eventBus = new EventBus();
         display = new Display("Polyscape - Editor");
         display.init(true);
@@ -30,7 +30,7 @@ public final class UiEngine extends Engine {
     public void destroyEngine(){
         display.destroyWindow();
         renderer.destroy = true;
-
+        screenManager.clearAll();
         screenManager = null;
         eventBus = null;
         display = null;
@@ -45,5 +45,6 @@ public final class UiEngine extends Engine {
     public void loadScreens(){
         screenManager.addScreen("ProjectScreen", new ProjectScreen());
         screenManager.addScreen("NewOrEditProject", new NewOrEditProject());
+        screenManager.addScreen("Editor", new Editor());
     }
 }
