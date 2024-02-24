@@ -13,6 +13,7 @@ public class Loader {
 
     public static ProjectLoader projectLoader;
 
+    public static UiEngine uiEngine;
 
     public static void main(String[] args) throws IOException {
 
@@ -27,7 +28,7 @@ public class Loader {
         projectLoader.initPath();
         projectLoader.loadProjects();
 
-        UiEngine uiEngine = new UiEngine();
+        uiEngine = new UiEngine();
 
         uiEngine.init();
         UiEngine.getScreenManager().setCurrentUi(0, "ProjectScreen");

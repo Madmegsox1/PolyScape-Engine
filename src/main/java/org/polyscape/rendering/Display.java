@@ -42,6 +42,10 @@ public final class Display {
         return new Vector2(mouseX, mouseY);
     }
 
+    public void destroyWindow(){
+        glfwDestroyWindow(window);
+    }
+
     public void init(boolean aa)
     {
         // Error callback.

@@ -1,15 +1,11 @@
 package org.polyscape.rendering;
 
 
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.system.MemoryStack;
 import org.polyscape.Profile;
 import org.polyscape.rendering.elements.Color;
-
-import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -27,6 +23,8 @@ public final class Renderer {
     private double time;
 
     private double processedTime = 0;
+
+    public boolean destroy = false;
 
     private Display display;
 
@@ -143,6 +141,6 @@ public final class Renderer {
     }
 
     public boolean shouldClose() {
-        return glfwWindowShouldClose(display.getWindow());
+        return glfwWindowShouldClose(display.getWindow()) || destroy;
     }
 }

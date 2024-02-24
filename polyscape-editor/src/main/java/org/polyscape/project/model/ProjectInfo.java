@@ -6,4 +6,6 @@ public class ProjectInfo {
     public long lastOpened;
 
     public String projectPath;
+
+    public int gameType;
 }

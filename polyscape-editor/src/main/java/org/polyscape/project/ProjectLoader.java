@@ -6,9 +6,7 @@ import org.polyscape.Loader;
 import org.polyscape.project.model.ProjectConfig;
 import org.polyscape.project.model.ProjectInfo;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Comparator;
 
 public class ProjectLoader {
@@ -18,6 +16,8 @@ public class ProjectLoader {
 
     private File projectConfig = new File(projectConfigFileName);
     public ProjectConfig config;
+
+
 
 
     public void initPath() throws IOException {
@@ -31,6 +31,25 @@ public class ProjectLoader {
 
     }
 
+    public void saveProjectConfig(){
+        try {
+            FileWriter fw = new FileWriter(projectConfig);
+
+            Gson gson = new Gson();
+
+            gson.toJson(config, fw);
+
+            Comparator<ProjectInfo> compareInfo = Comparator.comparingLong((ProjectInfo o) -> o.lastOpened).reversed();
+
+            config.projects.sort(compareInfo);
+
+            fw.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
     public void loadProjects() throws IOException {
         FileReader fr = new FileReader(projectConfig);
 
@@ -40,8 +59,9 @@ public class ProjectLoader {
 
         Comparator<ProjectInfo> compareInfo = Comparator.comparingLong((ProjectInfo o) -> o.lastOpened).reversed();
 
-        config.projects.sort(compareInfo);
-
+        if(config != null) {
+            config.projects.sort(compareInfo);
+        }
         fr.close();
     }
 }
