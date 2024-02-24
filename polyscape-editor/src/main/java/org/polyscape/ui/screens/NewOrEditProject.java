@@ -35,7 +35,7 @@ public final class NewOrEditProject extends Screen {
         });
         addComponent(backButton);
 
-        Input projectName = new Input(5, 70, 200, 25, 2f, "projectName", this);
+        Input projectName = new Input(5, 130, 200, 25, 2f, "projectName", this);
         projectName.setBaseColor(Profile.UiThemes.Dark.foreground);
         addComponent(projectName);
     }
@@ -48,6 +48,7 @@ public final class NewOrEditProject extends Screen {
             font.renderText("Editing Project Config: " + info.projectName, new Vector2(5, 60), Profile.UiThemes.Dark.foreground);
         }
 
+        font.renderText("Project Name", new Vector2(5,120), Profile.UiThemes.Dark.foreground);
     }
 
     @Override

@@ -37,8 +37,7 @@ public final class ProjectScreen extends Screen {
         if (config != null && !config.projects.isEmpty()) {
             int y = 90;
             for (var p : config.projects) {
-
-                Button openProjectButton = new Button(5, y, this, "Open Project", "openProjectButton:" + p.projectName);
+                Button openProjectButton = new Button(5, y, this, "Edit Project", "openProjectButton:" + p.projectName);
                 openProjectButton.baseColor = Profile.UiThemes.Dark.accent;
                 openProjectButton.setClickAction((Button n) -> {
                     Engine.getScreenManager().setCurrentUi(0, "NewOrEditProject");
