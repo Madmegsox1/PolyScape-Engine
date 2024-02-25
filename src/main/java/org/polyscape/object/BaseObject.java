@@ -159,6 +159,13 @@ public class BaseObject extends RenderProperty {
         return new Vector2(interpX, interpY);
     }
 
+    public void addToPos(int x, int y){
+        position.addToVect(x, y);
+        //ObjectManager.world.destroyBody(this.body);
+        //setUpPhysicsBody(this.bodyDef.type);
+        body.setTransform(ObjectManager.screenToWorld(position.x, position.y, this.width, this.height), body.getAngle());
+    }
+
     public void setUpPhysicsBody(BodyType type) {
         this.bodyDef.type = type;
         //bodyDef.fixedRotation = true;

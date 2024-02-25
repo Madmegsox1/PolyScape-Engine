@@ -35,6 +35,8 @@ public final class Editor extends Screen {
 
     int selectedId = -1;
 
+    BaseObject selectedObject;
+
     int objectButtonY = 30;
 
     @Override
@@ -73,6 +75,10 @@ public final class Editor extends Screen {
 
         RenderEngine.drawQuadA(new Vector2(0, 0), leftWidth, Profile.Display.HEIGHT, Profile.UiThemes.Dark.background);
         RenderEngine.drawLine(new Vector2(leftWidth, 0), new Vector2(leftWidth, Profile.Display.HEIGHT), 8f, Profile.UiThemes.Dark.foregroundDark);
+
+        if(selectedId != -1){
+            font.renderText(selectedObject.getPosition().toString(), new Vector2(leftWidth + 10, 30), Profile.UiThemes.Dark.foregroundDark);
+        }
 
     }
 
@@ -130,6 +136,27 @@ public final class Editor extends Screen {
                 }
             }
         }
+
+        if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_UP)){
+            if(selectedId != -1) {
+                selectedObject.addToPos(0, -1);
+            }
+        }
+        if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_DOWN)){
+            if(selectedId != -1) {
+                selectedObject.addToPos(0, 1);
+            }
+        }
+        if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_LEFT)){
+            if(selectedId != -1) {
+                selectedObject.addToPos(-1, 0);
+            }
+        }
+        if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_RIGHT)){
+            if(selectedId != -1) {
+                selectedObject.addToPos(1, 0);
+            }
+        }
     }
 
     private boolean inBoundsOfLLine(MouseClickEvent event){
@@ -147,15 +174,15 @@ public final class Editor extends Screen {
 
     public void setSelectedId(int id){
         if(selectedId != -1){
-            BaseObject prevObj = ObjectManager.getObject(selectedId);
-            var comp = getComponentById("ObjectButton:" + prevObj.getObjectId());
+            var comp = getComponentById("ObjectButton:" + selectedObject.getObjectId());
             if(comp != null){
                 comp.foregroundColor = Profile.UiThemes.Dark.foreground;
             }
-            prevObj.setWireframe(false);
+            selectedObject.setWireframe(false);
         }
         this.selectedId = id;
         var obj = ObjectManager.getObject(id);
+        selectedObject = obj;
         obj.setWireframe(true);
 
         var comp = getComponentById("ObjectButton:" + id);
