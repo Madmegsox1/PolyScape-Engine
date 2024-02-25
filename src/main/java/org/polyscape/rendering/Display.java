@@ -42,6 +42,16 @@ public final class Display {
         return new Vector2(mouseX, mouseY);
     }
 
+    public static Vector2 getWorldMousePosition(long display, Vector2 cameraPosition){
+        DoubleBuffer posX = BufferUtils.createDoubleBuffer(1);
+        DoubleBuffer posY = BufferUtils.createDoubleBuffer(1);
+
+        glfwGetCursorPos(display, posX, posY);
+        double mouseX = posX.get(0);
+        double mouseY = posY.get(0);
+
+        return new Vector2(mouseX - cameraPosition.x, mouseY - cameraPosition.y);
+    }
     public void destroyWindow(){
         glfwDestroyWindow(window);
     }

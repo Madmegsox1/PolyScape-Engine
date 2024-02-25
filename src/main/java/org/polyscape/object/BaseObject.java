@@ -45,12 +45,25 @@ public class BaseObject extends RenderProperty {
         this.objectId = objectId;
     }
 
+    public float getAngle(){
+        return body.getAngle();
+    }
+
     public Vector2 getPosition() {
         return position;
     }
 
     public void setPosition(Vector2 position) {
         this.position = position;
+        if(body != null) {
+            body.setTransform(ObjectManager.screenToWorld(position.x, position.y, this.width, this.height), body.getAngle());
+        }
+    }
+
+    public void setAngle(double angle){
+        if(body != null) {
+            body.setTransform(ObjectManager.screenToWorld(position.x, position.y, this.width, this.height),(float) Math.toRadians(angle));
+        }
     }
 
     public Vector2 getVelocity() {
@@ -64,10 +77,17 @@ public class BaseObject extends RenderProperty {
 
     public void setWidth(int width) {
         this.width = width;
+
+        if(body != null) {
+            setUpPhysicsBody(body.getType());
+        }
     }
 
     public void setHeight(int height) {
         this.height = height;
+        if(body != null) {
+            setUpPhysicsBody(body.getType());
+        }
     }
 
     public Vector2 getCenter() {

@@ -20,16 +20,23 @@ import org.polyscape.ui.Screen;
 import org.polyscape.ui.UiEngine;
 import org.polyscape.ui.component.button.Button;
 
+import static org.lwjgl.opengl.GL11.*;
+
 
 public final class Editor extends Screen {
     ProjectInfo info;
     Texture t;
 
-    int lowerY = 940;
-    int lowerHeight = 140;
+    public static int lowerY = 940;
+    public static int lowerHeight = 140;
     boolean draggingLower;
 
-    int leftWidth = 250;
+    public static int leftWidth = 250;
+
+    public Vector2 startCameraDrag;
+    public static Vector2 cameraVector;
+
+    public boolean draggingCamera;
 
     boolean draggingLeft;
 
@@ -54,6 +61,19 @@ public final class Editor extends Screen {
         FontMac font = new FontMac("Segoe UI", 25);
         setFont(font);
         ObjectManager.clearObjects();
+        cameraVector = new Vector2(0,0);
+        startCameraDrag = new Vector2(0,0);
+
+        GLFW.glfwSetCursorPosCallback(Engine.getDisplay().getWindow(), (w, mx, my) ->{
+           if(draggingCamera){
+               float dx = (float) (mx - startCameraDrag.x);
+               float dy = (float) (my - startCameraDrag.y);
+
+               cameraVector.addToVect(dx, dy);
+
+               startCameraDrag = new Vector2(mx, my);
+           }
+        });
     }
 
     @Override
@@ -63,12 +83,17 @@ public final class Editor extends Screen {
             lowerHeight = Profile.Display.HEIGHT - lowerY;
         }
 
+
         if (draggingLeft) {
             leftWidth = (int) Display.getMousePosition(Engine.getDisplay().getWindow()).x;
         }
+        glLoadIdentity(); // Load the identity matrix to reset transformations
+        glPushMatrix();
+        glTranslatef(cameraVector.x, cameraVector.y, 0.0f);
         RenderEngine.drawQuadTexture(new Vector2(0,0), Profile.Display.WIDTH, Profile.Display.HEIGHT,0,0,35,20, t);
 
         ObjectManager.renderObjects(event.alpha);
+        glPopMatrix();
 
         RenderEngine.drawQuadA(new Vector2(leftWidth, lowerY), Profile.Display.WIDTH, lowerHeight, Profile.UiThemes.Dark.background);
         RenderEngine.drawLine(new Vector2(leftWidth, lowerY), new Vector2(Profile.Display.WIDTH, lowerY), 8f, Profile.UiThemes.Dark.foregroundDark);
@@ -113,6 +138,15 @@ public final class Editor extends Screen {
         if(event.action == 0 && draggingLeft){
             draggingLeft = false;
         }
+
+        if(event.action == 1 && isInStageBounds((float) event.mX, (float) event.mY)){
+            startCameraDrag = Display.getMousePosition(Engine.getDisplay().getWindow());
+            draggingCamera = true;
+        }
+
+        if(draggingCamera && event.action == 0){
+            draggingCamera = false;
+        }
     }
 
     public boolean isInStageBounds(float mx, float my){
@@ -123,8 +157,9 @@ public final class Editor extends Screen {
     public void key(KeyEvent event) {
         if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL)){
             if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_N)){
-                Vector2 v2 = Display.getMousePosition(Engine.getDisplay().getWindow());
-                if(isInStageBounds(v2.x, v2.y)) {
+                Vector2 v2M = Display.getMousePosition(Engine.getDisplay().getWindow());
+                Vector2 v2 = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector);
+                if(isInStageBounds(v2M.x, v2M.y)) {
                     var base = new BaseObject();
                     base.setPosition(v2);
                     base.setWidth(100);
@@ -188,6 +223,8 @@ public final class Editor extends Screen {
         var comp = getComponentById("ObjectButton:" + id);
         if(comp != null){
             comp.foregroundColor = Color.BLUE;
+            UiEngine.getScreenManager().setCurrentUi(1, "ObjectEditor");
+            UiEngine.getScreenManager().setScreenModel(1, obj);
         }
     }
 }

@@ -19,6 +19,8 @@ public class Input extends Component {
 
     public float boarder;
 
+    public IUpdateText updateText;
+
     public Input(int x, int y, int width, int height, float boarder, String id, Screen screen) {
         super(x, y, width, height, screen, id);
         this.boarder = boarder;
@@ -46,13 +48,20 @@ public class Input extends Component {
                 this.text += KeyEvent.convertKey(event.key);
             } else if(event.key == GLFW.GLFW_KEY_SPACE && (screen.font.getWidth(this.text + KeyEvent.convertKey(event.key)) < this.width - 10)){
                 this.text += " ";
+            }else if(event.key == GLFW.GLFW_KEY_ENTER){
+                this.editing = false;
             }
+            updateText.update(this, this.text);
         }
+
     }
 
     @Override
     public void onComponentClick(ComponentClickEvent event) {
         if (event.action == 0) {
+            if(editing){
+                updateText.update(this, this.text);
+            }
             editing = !editing;
         }
     }
@@ -61,6 +70,11 @@ public class Input extends Component {
     public String getName() {
         return "Input";
     }
+
+    public void setUpdateAction(IUpdateText action){
+        this.updateText = action;
+    }
+
 
     private String getCaret() {
         if (this.timer.passedMs(1000L)) {
