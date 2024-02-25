@@ -11,7 +11,7 @@ import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 public final class Texture {
-    private final static Map<Integer, String> loadedTextures = new HashMap<>();
+    public final static Map<Integer, String> loadedTextures = new HashMap<>();
     private int texture;
 
     public Texture(final String textureName) {

@@ -36,6 +36,8 @@ public final class Editor extends Screen {
     public Vector2 startCameraDrag;
     public static Vector2 cameraVector;
 
+    public static float cameraZoom;
+
     public boolean draggingCamera;
 
     boolean draggingLeft;
@@ -62,6 +64,7 @@ public final class Editor extends Screen {
         setFont(font);
         ObjectManager.clearObjects();
         cameraVector = new Vector2(0,0);
+        cameraZoom = 1f;
         startCameraDrag = new Vector2(0,0);
 
         GLFW.glfwSetCursorPosCallback(Engine.getDisplay().getWindow(), (w, mx, my) ->{
@@ -73,6 +76,14 @@ public final class Editor extends Screen {
 
                startCameraDrag = new Vector2(mx, my);
            }
+        });
+
+        GLFW.glfwSetScrollCallback(Engine.getDisplay().getWindow(), (w, sx, sy) -> {
+            Vector2 v2M = Display.getMousePosition(Engine.getDisplay().getWindow());
+            if(isInStageBounds(v2M.x, v2M.y)){
+                float scaleFactor = 0.01f;
+                updateScale((float) (sy * scaleFactor));
+            }
         });
     }
 
@@ -89,7 +100,8 @@ public final class Editor extends Screen {
         }
         glLoadIdentity(); // Load the identity matrix to reset transformations
         glPushMatrix();
-        glTranslatef(cameraVector.x, cameraVector.y, 0.0f);
+        glTranslatef(cameraVector.x, cameraVector.y, 1.0f);
+        glScalef(cameraZoom, cameraZoom, 0f);
         RenderEngine.drawQuadTexture(new Vector2(0,0), Profile.Display.WIDTH, Profile.Display.HEIGHT,0,0,35,20, t);
 
         ObjectManager.renderObjects(event.alpha);
@@ -158,7 +170,7 @@ public final class Editor extends Screen {
         if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL)){
             if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_N)){
                 Vector2 v2M = Display.getMousePosition(Engine.getDisplay().getWindow());
-                Vector2 v2 = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector);
+                Vector2 v2 = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
                 if(isInStageBounds(v2M.x, v2M.y)) {
                     var base = new BaseObject();
                     base.setPosition(v2);
@@ -226,5 +238,11 @@ public final class Editor extends Screen {
             UiEngine.getScreenManager().setCurrentUi(1, "ObjectEditor");
             UiEngine.getScreenManager().setScreenModel(1, obj);
         }
+    }
+
+    public static void updateScale(float scaleFactor) {
+        cameraZoom += scaleFactor;
+        // Clamp the scale to prevent it from becoming too small or too large
+        cameraZoom = Math.max(0.1f, Math.min(cameraZoom, 10.0f));
     }
 }

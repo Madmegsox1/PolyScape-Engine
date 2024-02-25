@@ -13,8 +13,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static org.polyscape.object.ObjectManager.PIXELS_PER_METER;
-import static org.polyscape.object.ObjectManager.worldToScreen;
+import static org.polyscape.object.ObjectManager.*;
 
 /**
  * @author Madmegsox1
@@ -79,14 +78,18 @@ public class BaseObject extends RenderProperty {
         this.width = width;
 
         if(body != null) {
+            var angle = Math.toDegrees(body.getAngle());
             setUpPhysicsBody(body.getType());
+            setAngle(angle);
         }
     }
 
     public void setHeight(int height) {
         this.height = height;
         if(body != null) {
+            var angle = Math.toDegrees(body.getAngle());
             setUpPhysicsBody(body.getType());
+            setAngle(angle);
         }
     }
 
@@ -187,6 +190,9 @@ public class BaseObject extends RenderProperty {
     }
 
     public void setUpPhysicsBody(BodyType type) {
+        if(body != null){
+            world.destroyBody(body);
+        }
         this.bodyDef.type = type;
         //bodyDef.fixedRotation = true;
         var width = ObjectManager.toMeters(this.width / 2f);
