@@ -45,7 +45,7 @@ public class BaseObject extends RenderProperty {
     }
 
     public float getAngle(){
-        return body.getAngle();
+        return (float) Math.toDegrees(body.getAngle());
     }
 
     public Vector2 getPosition() {

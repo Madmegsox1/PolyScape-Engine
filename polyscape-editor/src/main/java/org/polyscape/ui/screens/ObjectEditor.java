@@ -26,7 +26,7 @@ public class ObjectEditor extends Screen {
         object = getModel();
         getComponentById("posX").setText(String.valueOf((int) object.getPosition().x));
         getComponentById("posY").setText(String.valueOf((int) object.getPosition().y));
-        getComponentById("angle").setText(String.valueOf((int) Math.toDegrees(object.getAngle())));
+        getComponentById("angle").setText(String.valueOf((int) object.getAngle()));
         getComponentById("width").setText(String.valueOf(object.getWidth()));
         getComponentById("height").setText(String.valueOf(object.getHeight()));
         var txt = object.getTexture();

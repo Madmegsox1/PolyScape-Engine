@@ -100,6 +100,7 @@ public class ProjectLoader {
 
         if(obj.physicsBody != null){
             baseObject.setUpPhysicsBody(BodyType.values()[obj.physicsBody.bodyType]);
+            baseObject.setAngle(obj.physicsBody.angle);
         }
         return baseObject;
     }

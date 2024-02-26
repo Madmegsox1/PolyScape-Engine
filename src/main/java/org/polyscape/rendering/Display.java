@@ -11,6 +11,7 @@ import org.polyscape.Profile;
 import org.polyscape.rendering.elements.Vector2;
 import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;
+import org.polyscape.rendering.events.ResizeWindowEvent;
 
 import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
@@ -128,6 +129,7 @@ public final class Display {
             //final int newHeight = (int) (width / 1.777777777777778D);
 
             resizeWindow(width, height, true, window);
+            Engine.getEventBus().postEvent(new ResizeWindowEvent(window, width, height));
         }
     };
 

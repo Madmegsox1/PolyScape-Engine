@@ -5,6 +5,7 @@ import org.lwjgl.glfw.GLFW;
 import org.polyscape.Engine;
 import org.polyscape.Loader;
 import org.polyscape.Profile;
+import org.polyscape.event.IEvent;
 import org.polyscape.font.FontMac;
 import org.polyscape.object.BaseObject;
 import org.polyscape.object.ObjectManager;
@@ -17,6 +18,7 @@ import org.polyscape.rendering.elements.Vector2;
 import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;
 import org.polyscape.rendering.events.RenderEvent;
+import org.polyscape.rendering.events.ResizeWindowEvent;
 import org.polyscape.ui.Screen;
 import org.polyscape.ui.UiEngine;
 import org.polyscape.ui.component.button.Button;
@@ -66,6 +68,28 @@ public final class Editor extends Screen {
     }
 
 
+    public void loadObject(){
+        try {
+            var objs = Loader.projectLoader.loadObject(info.projectPath);
+            for (var obj : objs){
+                addObject(obj);
+            }
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+    }
+
+    public void loadObjectPositions(){
+        try {
+            var objs = Loader.projectLoader.loadObject(info.projectPath);
+            for (var obj : objs){
+                ObjectManager.getObject(obj.getObjectId()).setPosition(obj.getPosition());
+            }
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+    }
+
 
     @Override
     public void onLoad() {
@@ -96,6 +120,12 @@ public final class Editor extends Screen {
                 updateScale((float) (sy * scaleFactor));
             }
         });
+
+        IEvent<ResizeWindowEvent> resizeWindowEventIEvent = e -> {
+            loadObjectPositions();
+        };
+
+        ResizeWindowEvent.addEvent(resizeWindowEventIEvent, ResizeWindowEvent.class);
     }
 
     @Override
