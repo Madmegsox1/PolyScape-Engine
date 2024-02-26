@@ -47,10 +47,18 @@ public final class Display {
         DoubleBuffer posY = BufferUtils.createDoubleBuffer(1);
 
         glfwGetCursorPos(display, posX, posY);
-        double mouseX = posX.get(0) / scale;
-        double mouseY = posY.get(0) / scale;
+        double mouseX = posX.get(0);
+        double mouseY = posY.get(0);
 
-        return new Vector2(mouseX - cameraPosition.x, mouseY - cameraPosition.y);
+        double worldX = mouseX / scale;
+        double worldY = mouseY / scale;
+
+        // Then, adjust for camera translation
+        // Here, we subtract the camera position to reverse the translation applied for rendering
+        worldX -= cameraPosition.x / scale;
+        worldY -= cameraPosition.y / scale;
+
+        return new Vector2((float)worldX, (float)worldY);
     }
     public void destroyWindow(){
         glfwDestroyWindow(window);
