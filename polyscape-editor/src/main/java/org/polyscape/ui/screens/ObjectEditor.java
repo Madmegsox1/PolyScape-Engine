@@ -15,6 +15,8 @@ import org.polyscape.ui.component.checkbox.CheckBox;
 import org.polyscape.ui.component.checkbox.CheckBoxType;
 import org.polyscape.ui.component.input.Input;
 
+import static org.polyscape.ui.screens.Editor.saveObjects;
+
 public class ObjectEditor extends Screen {
 
     BaseObject object;
@@ -69,30 +71,35 @@ public class ObjectEditor extends Screen {
         posX.setUpdateAction((i, text) -> {
             if(!text.isEmpty()) {
                 object.setPosition(new Vector2(Integer.parseInt(text), object.getPosition().y));
+                saveObjects();
             }
         });
 
         posY.setUpdateAction((i, text) -> {
             if(!text.isEmpty()) {
                 object.setPosition(new Vector2(object.getPosition().x, Integer.parseInt(text)));
+                saveObjects();
             }
         });
 
         angle.setUpdateAction((i, text) -> {
             if(!text.isEmpty()) {
                 object.setAngle(Double.parseDouble(text));
+                saveObjects();
             }
         });
 
         width.setUpdateAction((i, text) -> {
             if(!text.isEmpty()) {
                 object.setWidth(Integer.parseInt(text));
+                saveObjects();
             }
         });
 
         height.setUpdateAction((i, text) -> {
             if(!text.isEmpty()) {
                 object.setHeight(Integer.parseInt(text));
+                saveObjects();
             }
         });
 
@@ -101,6 +108,7 @@ public class ObjectEditor extends Screen {
                 try {
                     Texture texture1 = new Texture(text);
                     object.setTexture(texture1);
+                    saveObjects();
                 }catch (Exception ignored){}
 
             }
@@ -109,8 +117,10 @@ public class ObjectEditor extends Screen {
         dynamic.setClickAction((c, b) -> {
             if(b){
                 object.setUpPhysicsBody(BodyType.DYNAMIC);
+                saveObjects();
             }else{
                 object.setUpPhysicsBody(BodyType.STATIC);
+                saveObjects();
             }
         });
 

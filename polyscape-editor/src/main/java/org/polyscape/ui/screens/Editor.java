@@ -3,6 +3,7 @@ package org.polyscape.ui.screens;
 import org.jbox2d.dynamics.BodyType;
 import org.lwjgl.glfw.GLFW;
 import org.polyscape.Engine;
+import org.polyscape.Loader;
 import org.polyscape.Profile;
 import org.polyscape.font.FontMac;
 import org.polyscape.object.BaseObject;
@@ -20,11 +21,13 @@ import org.polyscape.ui.Screen;
 import org.polyscape.ui.UiEngine;
 import org.polyscape.ui.component.button.Button;
 
+import java.io.IOException;
+
 import static org.lwjgl.opengl.GL11.*;
 
 
 public final class Editor extends Screen {
-    ProjectInfo info;
+    public static ProjectInfo info;
     Texture t;
 
     public static int lowerY = 940;
@@ -52,6 +55,14 @@ public final class Editor extends Screen {
     public void model() {
         info = getModel();
         UiEngine.getDisplay().setTitle("Polyscape - Editing " + info.projectName);
+        try {
+            var objs = Loader.projectLoader.loadObject(info.projectPath);
+            for (var obj : objs){
+                addObject(obj);
+            }
+        } catch (IOException e) {
+            System.err.println(e);
+        }
     }
 
 
@@ -119,7 +130,7 @@ public final class Editor extends Screen {
 
     }
 
-    public void newObject(BaseObject object){
+    public void addObject(BaseObject object){
         ObjectManager.addObject(object);
         Button button = new Button(5, objectButtonY, this, object.getClass().getSimpleName() + object.getObjectId(), "ObjectButton:" + object.getObjectId());
         button.baseColor = Profile.UiThemes.Dark.foregroundDark;
@@ -131,6 +142,11 @@ public final class Editor extends Screen {
 
         objectButtonY += 10;
         objectButtonY += font.getHeight(button.getText());
+    }
+
+    public void newObject(BaseObject object){
+        addObject(object);
+        saveObjects();
     }
 
     @Override
@@ -163,6 +179,14 @@ public final class Editor extends Screen {
 
     public boolean isInStageBounds(float mx, float my){
         return mx >= leftWidth && mx <= Profile.Display.WIDTH && my >= 0 && my <= lowerY;
+    }
+
+    public static void saveObjects(){
+        try {
+            Loader.projectLoader.saveObjects(info.projectPath);
+        } catch (IOException e) {
+            System.err.println(e);
+        }
     }
 
     @Override

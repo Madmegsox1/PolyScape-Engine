@@ -22,7 +22,7 @@ import static org.polyscape.object.ObjectManager.*;
 
 public class BaseObject extends RenderProperty {
 
-    private int objectId;
+    private int objectId = 0;
 
     private Vector2 position;
 

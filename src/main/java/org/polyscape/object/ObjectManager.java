@@ -18,8 +18,10 @@ public final class ObjectManager {
 
     public static void addObject(final BaseObject object) {
         currentId++;
-        object.setObjectId(currentId);
-        objects.put(currentId, object);
+        if(object.getObjectId() == 0) {
+            object.setObjectId(currentId);
+        }
+        objects.put(object.getObjectId(), object);
     }
 
     public static float toPixels(float meters) {
