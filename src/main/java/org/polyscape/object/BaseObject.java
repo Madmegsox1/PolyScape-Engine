@@ -143,22 +143,16 @@ public class BaseObject extends RenderProperty {
     }
 
     public boolean isPointInObject(Vector2 point){
-        Vector2[] ver = getVectorPoints();
-        for(int i = 0; i < ver.length; i++){
-            Vector2 start = ver[i];
-            Vector2 end = ver[(i + 1) % ver.length];
+        Vec2 toWoldPoint = ObjectManager.screenToWorld(point.x, point.y, 1, 1);
 
-            float edgeVecX = end.x - start.x;
-            float edgeVecY = end.y - start.y;
+        if(body == null) return false;
 
-            float pointVecX = point.x - start.x;
-            float pointVecY = point.y - start.y;
-
-            if ((edgeVecX * pointVecY - edgeVecY * pointVecX) < 0) {
-                return false; // Point is outside this edge, so it's outside the quad
+        for (Fixture fixture = body.getFixtureList(); fixture != null; fixture = fixture.getNext()) {
+            if (fixture.testPoint(toWoldPoint)) {
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     public void setPreviousPosition(){

@@ -59,7 +59,7 @@ public final class Editor extends Screen {
         UiEngine.getDisplay().setTitle("Polyscape - Editing " + info.projectName);
         try {
             var objs = Loader.projectLoader.loadObject(info.projectPath);
-            for (var obj : objs){
+            for (var obj : objs) {
                 addObject(obj);
             }
         } catch (IOException e) {
@@ -68,10 +68,10 @@ public final class Editor extends Screen {
     }
 
 
-    public void loadObject(){
+    public void loadObject() {
         try {
             var objs = Loader.projectLoader.loadObject(info.projectPath);
-            for (var obj : objs){
+            for (var obj : objs) {
                 addObject(obj);
             }
         } catch (IOException e) {
@@ -79,10 +79,10 @@ public final class Editor extends Screen {
         }
     }
 
-    public void loadObjectPositions(){
+    public void loadObjectPositions() {
         try {
             var objs = Loader.projectLoader.loadObject(info.projectPath);
-            for (var obj : objs){
+            for (var obj : objs) {
                 ObjectManager.getObject(obj.getObjectId()).setPosition(obj.getPosition());
             }
         } catch (IOException e) {
@@ -98,24 +98,24 @@ public final class Editor extends Screen {
         FontMac font = new FontMac("Segoe UI", 25);
         setFont(font);
         ObjectManager.clearObjects();
-        cameraVector = new Vector2(0,0);
+        cameraVector = new Vector2(0, 0);
         cameraZoom = 1f;
-        startCameraDrag = new Vector2(0,0);
+        startCameraDrag = new Vector2(0, 0);
 
-        GLFW.glfwSetCursorPosCallback(Engine.getDisplay().getWindow(), (w, mx, my) ->{
-           if(draggingCamera){
-               float dx = (float) (mx - startCameraDrag.x);
-               float dy = (float) (my - startCameraDrag.y);
+        GLFW.glfwSetCursorPosCallback(Engine.getDisplay().getWindow(), (w, mx, my) -> {
+            if (draggingCamera) {
+                float dx = (float) (mx - startCameraDrag.x);
+                float dy = (float) (my - startCameraDrag.y);
 
-               cameraVector.addToVect(dx, dy);
+                cameraVector.addToVect(dx, dy);
 
-               startCameraDrag = new Vector2(mx, my);
-           }
+                startCameraDrag = new Vector2(mx, my);
+            }
         });
 
         GLFW.glfwSetScrollCallback(Engine.getDisplay().getWindow(), (w, sx, sy) -> {
             Vector2 v2M = Display.getMousePosition(Engine.getDisplay().getWindow());
-            if(isInStageBounds(v2M.x, v2M.y)){
+            if (isInStageBounds(v2M.x, v2M.y)) {
                 float scaleFactor = 0.01f;
                 updateScale((float) (sy * scaleFactor));
             }
@@ -143,7 +143,7 @@ public final class Editor extends Screen {
         glPushMatrix();
         glTranslatef(cameraVector.x, cameraVector.y, 1.0f);
         glScalef(cameraZoom, cameraZoom, 0f);
-        RenderEngine.drawQuadTexture(new Vector2(0,0), Profile.Display.WIDTH, Profile.Display.HEIGHT,0,0,35,20, t);
+        RenderEngine.drawQuadTexture(new Vector2(0, 0), Profile.Display.WIDTH, Profile.Display.HEIGHT, 0, 0, 35, 20, t);
 
         ObjectManager.renderObjects(event.alpha);
         glPopMatrix();
@@ -154,13 +154,13 @@ public final class Editor extends Screen {
         RenderEngine.drawQuadA(new Vector2(0, 0), leftWidth, Profile.Display.HEIGHT, Profile.UiThemes.Dark.background);
         RenderEngine.drawLine(new Vector2(leftWidth, 0), new Vector2(leftWidth, Profile.Display.HEIGHT), 8f, Profile.UiThemes.Dark.foregroundDark);
 
-        if(selectedId != -1){
+        if (selectedId != -1) {
             font.renderText(selectedObject.getPosition().toString(), new Vector2(leftWidth + 10, 30), Profile.UiThemes.Dark.foregroundDark);
         }
 
     }
 
-    public void addObject(BaseObject object){
+    public void addObject(BaseObject object) {
         ObjectManager.addObject(object);
         Button button = new Button(5, objectButtonY, this, object.getClass().getSimpleName() + object.getObjectId(), "ObjectButton:" + object.getObjectId());
         button.baseColor = Profile.UiThemes.Dark.foregroundDark;
@@ -174,44 +174,55 @@ public final class Editor extends Screen {
         objectButtonY += font.getHeight(button.getText());
     }
 
-    public void newObject(BaseObject object){
+    public void newObject(BaseObject object) {
         addObject(object);
         saveObjects();
     }
 
     @Override
     public void click(MouseClickEvent event) {
-        if(event.action == 1 && inBoundsOfBLine(event)){
+        if (event.action == 1 && inBoundsOfBLine(event)) {
             draggingLower = true;
         }
 
-        if(event.action == 0 && draggingLower){
+        if (event.action == 0 && draggingLower) {
             draggingLower = false;
         }
 
-        if(event.action == 1 && inBoundsOfLLine(event)){
+        if (event.action == 1 && inBoundsOfLLine(event)) {
             draggingLeft = true;
         }
 
-        if(event.action == 0 && draggingLeft){
+        if (event.action == 0 && draggingLeft) {
             draggingLeft = false;
         }
 
-        if(event.action == 1 && isInStageBounds((float) event.mX, (float) event.mY)){
+        if (event.action == 1 && isInStageBounds((float) event.mX, (float) event.mY)) {
             startCameraDrag = Display.getMousePosition(Engine.getDisplay().getWindow());
             draggingCamera = true;
         }
 
-        if(draggingCamera && event.action == 0){
+        if (draggingCamera && event.action == 0) {
             draggingCamera = false;
+        }
+
+        if (event.action == 0) {
+            Vector2 v2 = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+            ObjectManager.iterateObjects(n -> {
+
+                if (n.isPointInObject(v2)) {
+                    setSelectedId(n.getObjectId());
+                }
+
+            });
         }
     }
 
-    public boolean isInStageBounds(float mx, float my){
+    public boolean isInStageBounds(float mx, float my) {
         return mx >= leftWidth && mx <= Profile.Display.WIDTH && my >= 0 && my <= lowerY;
     }
 
-    public static void saveObjects(){
+    public static void saveObjects() {
         try {
             Loader.projectLoader.saveObjects(info.projectPath);
         } catch (IOException e) {
@@ -221,11 +232,11 @@ public final class Editor extends Screen {
 
     @Override
     public void key(KeyEvent event) {
-        if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL)){
-            if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_N)){
+        if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL)) {
+            if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_N)) {
                 Vector2 v2M = Display.getMousePosition(Engine.getDisplay().getWindow());
                 Vector2 v2 = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
-                if(isInStageBounds(v2M.x, v2M.y)) {
+                if (isInStageBounds(v2M.x, v2M.y)) {
                     var base = new BaseObject();
                     base.setPosition(v2);
                     base.setWidth(100);
@@ -238,45 +249,46 @@ public final class Editor extends Screen {
             }
         }
 
-        if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_UP)){
-            if(selectedId != -1) {
+        if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_UP)) {
+            if (selectedId != -1) {
                 selectedObject.addToPos(0, -1);
             }
         }
-        if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_DOWN)){
-            if(selectedId != -1) {
+        if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_DOWN)) {
+            if (selectedId != -1) {
                 selectedObject.addToPos(0, 1);
             }
         }
-        if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_LEFT)){
-            if(selectedId != -1) {
+        if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_LEFT)) {
+            if (selectedId != -1) {
                 selectedObject.addToPos(-1, 0);
             }
         }
-        if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_RIGHT)){
-            if(selectedId != -1) {
+        if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_RIGHT)) {
+            if (selectedId != -1) {
                 selectedObject.addToPos(1, 0);
             }
         }
     }
 
-    private boolean inBoundsOfLLine(MouseClickEvent event){
+    private boolean inBoundsOfLLine(MouseClickEvent event) {
         if (event.mX >= leftWidth - 4 && event.mX <= leftWidth + 4) {
             return event.mY >= 0 && event.mY <= Profile.Display.HEIGHT;
         }
         return false;
     }
-    private boolean inBoundsOfBLine(MouseClickEvent event){
-        if(event.mX >= leftWidth && event.mX <= Profile.Display.WIDTH){
+
+    private boolean inBoundsOfBLine(MouseClickEvent event) {
+        if (event.mX >= leftWidth && event.mX <= Profile.Display.WIDTH) {
             return event.mY >= lowerY - 4 && event.mY <= lowerY + 4;
         }
         return false;
     }
 
-    public void setSelectedId(int id){
-        if(selectedId != -1){
+    public void setSelectedId(int id) {
+        if (selectedId != -1) {
             var comp = getComponentById("ObjectButton:" + selectedObject.getObjectId());
-            if(comp != null){
+            if (comp != null) {
                 comp.foregroundColor = Profile.UiThemes.Dark.foreground;
             }
             selectedObject.setWireframe(false);
@@ -287,7 +299,7 @@ public final class Editor extends Screen {
         obj.setWireframe(true);
 
         var comp = getComponentById("ObjectButton:" + id);
-        if(comp != null){
+        if (comp != null) {
             comp.foregroundColor = Color.BLUE;
             UiEngine.getScreenManager().setCurrentUi(1, "ObjectEditor");
             UiEngine.getScreenManager().setScreenModel(1, obj);
