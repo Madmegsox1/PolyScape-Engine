@@ -99,7 +99,12 @@ public class ProjectLoader {
         }
 
         if(obj.physicsBody != null){
-            baseObject.setUpPhysicsBody(BodyType.values()[obj.physicsBody.bodyType]);
+            baseObject.setBodyType(BodyType.values()[obj.physicsBody.bodyType], false);
+            baseObject.setAngleCals(obj.physicsBody.angleCals, false);
+            baseObject.setDensity(obj.physicsBody.density, false);
+            baseObject.setFriction(obj.physicsBody.friction, false);
+            baseObject.setLinearDamping(obj.physicsBody.linearDamping, false);
+            baseObject.setUpPhysicsBody();
             baseObject.setAngle(obj.physicsBody.angle);
         }
         return baseObject;

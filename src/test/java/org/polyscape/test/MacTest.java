@@ -47,7 +47,7 @@ public class MacTest extends Engine {
         object.setPosition(new Vector2(100, 200));
         object.setWidth(50);
         object.setHeight(50);
-        object.setUpPhysicsBody(BodyType.DYNAMIC);
+        object.setBodyType(BodyType.DYNAMIC, true);
         object.setSpriteSheet(spriteSheet);
         object.setWireframe(true);
         object.setTexture(0);
@@ -57,7 +57,7 @@ public class MacTest extends Engine {
         object1.setPosition(new Vector2(25, 500));
         object1.setWidth(400);
         object1.setHeight(50);
-        object1.setUpPhysicsBody(BodyType.STATIC);
+        object.setBodyType(BodyType.STATIC, true);
         object1.setWireframe(true);
         ObjectManager.addObject(object);
         ObjectManager.addObject(object1);
@@ -175,7 +175,7 @@ public class MacTest extends Engine {
                 object4.setPosition(startDrag.get());
                 object4.setWidth((int) (e.mX - startDrag.get().x));
                 object4.setHeight((int) (e.mY - startDrag.get().y));
-                object4.setUpPhysicsBody(BodyType.DYNAMIC);
+                object4.setBodyType(BodyType.DYNAMIC, true);
                 object4.setWireframe(false);
                 startDrag.set(null);
                 ObjectManager.addObject(object4);

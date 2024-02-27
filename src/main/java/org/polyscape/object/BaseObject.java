@@ -32,8 +32,23 @@ public class BaseObject extends RenderProperty {
 
     private Body body;
 
+    private BodyType bodyType;
+
+    private float friction;
+
+    private float density;
+
+    private float linearDamping;
+
+    private boolean angleCals;
+
     public BaseObject() {
         bodyDef = new BodyDef();
+        friction = 0.5f;
+        density = 1f;
+        linearDamping = 2f;
+        bodyType = BodyType.STATIC;
+        angleCals = false;
     }
 
     public int getObjectId() {
@@ -44,7 +59,7 @@ public class BaseObject extends RenderProperty {
         this.objectId = objectId;
     }
 
-    public float getAngle(){
+    public float getAngle() {
         return (float) Math.toDegrees(body.getAngle());
     }
 
@@ -54,14 +69,14 @@ public class BaseObject extends RenderProperty {
 
     public void setPosition(Vector2 position) {
         this.position = position;
-        if(body != null) {
+        if (body != null) {
             body.setTransform(ObjectManager.screenToWorld(position.x, position.y, this.width, this.height), body.getAngle());
         }
     }
 
-    public void setAngle(double angle){
-        if(body != null) {
-            body.setTransform(ObjectManager.screenToWorld(position.x, position.y, this.width, this.height),(float) Math.toRadians(angle));
+    public void setAngle(double angle) {
+        if (body != null) {
+            body.setTransform(ObjectManager.screenToWorld(position.x, position.y, this.width, this.height), (float) Math.toRadians(angle));
         }
     }
 
@@ -77,18 +92,18 @@ public class BaseObject extends RenderProperty {
     public void setWidth(int width) {
         this.width = width;
 
-        if(body != null) {
+        if (body != null) {
             var angle = Math.toDegrees(body.getAngle());
-            setUpPhysicsBody(body.getType());
+            setUpPhysicsBody();
             setAngle(angle);
         }
     }
 
     public void setHeight(int height) {
         this.height = height;
-        if(body != null) {
+        if (body != null) {
             var angle = Math.toDegrees(body.getAngle());
-            setUpPhysicsBody(body.getType());
+            setUpPhysicsBody();
             setAngle(angle);
         }
     }
@@ -117,7 +132,7 @@ public class BaseObject extends RenderProperty {
      */
     public Vector2 getSpeed() {
         var v = body.getLinearVelocity();
-        float speedX = RenderEngine.fps* v.x;
+        float speedX = RenderEngine.fps * v.x;
         float speedY = RenderEngine.fps * v.y;
 
         return new Vector2(Math.abs(speedX), Math.abs(speedY));
@@ -134,18 +149,19 @@ public class BaseObject extends RenderProperty {
     public Body getBody() {
         return this.body;
     }
+
     public void addForce(float x, float y) {
         body.applyForceToCenter(new Vec2(x, y));
     }
 
-    public void removeBody(){
+    public void removeBody() {
         ObjectManager.world.destroyBody(this.body);
     }
 
-    public boolean isPointInObject(Vector2 point){
+    public boolean isPointInObject(Vector2 point) {
         Vec2 toWoldPoint = ObjectManager.screenToWorld(point.x, point.y, 1, 1);
 
-        if(body == null) return false;
+        if (body == null) return false;
 
         for (Fixture fixture = body.getFixtureList(); fixture != null; fixture = fixture.getNext()) {
             if (fixture.testPoint(toWoldPoint)) {
@@ -155,40 +171,41 @@ public class BaseObject extends RenderProperty {
         return false;
     }
 
-    public void setPreviousPosition(){
-        if(position == null) return;
-        this.previousPosition = new Vector2(position.x, position.y);;
+    public void setPreviousPosition() {
+        if (position == null) return;
+        this.previousPosition = new Vector2(position.x, position.y);
+        ;
     }
 
 
-    public void updatePosition(){
-        if(body == null) return;
+    public void updatePosition() {
+        if (body == null) return;
         position = worldToScreen(body.getPosition());
         position.x -= (this.width / 2f);
         position.y -= (this.height / 2f);
     }
 
 
-    public Vector2 getInterpolatedPosition(float alpha){
-        if(previousPosition == null) return position;
+    public Vector2 getInterpolatedPosition(float alpha) {
+        if (previousPosition == null) return position;
         float interpX = previousPosition.x + (position.x - previousPosition.x) * alpha;
         float interpY = previousPosition.y + (position.y - previousPosition.y) * alpha;
         return new Vector2(interpX, interpY);
     }
 
-    public void addToPos(int x, int y){
+    public void addToPos(int x, int y) {
         position.addToVect(x, y);
         //ObjectManager.world.destroyBody(this.body);
         //setUpPhysicsBody(this.bodyDef.type);
         body.setTransform(ObjectManager.screenToWorld(position.x, position.y, this.width, this.height), body.getAngle());
     }
 
-    public void setUpPhysicsBody(BodyType type) {
-        if(body != null){
+    public void setUpPhysicsBody(BodyType type, float friction, float density, float linearDamping, boolean angleCals) {
+        if (body != null) {
             world.destroyBody(body);
         }
         this.bodyDef.type = type;
-        //bodyDef.fixedRotation = true;
+        bodyDef.fixedRotation = angleCals;
         var width = ObjectManager.toMeters(this.width / 2f);
         var height = ObjectManager.toMeters(this.height / 2f);
 
@@ -196,15 +213,77 @@ public class BaseObject extends RenderProperty {
         this.body = ObjectManager.world.createBody(bodyDef);
         PolygonShape shape = new PolygonShape();
 
-        shape.setAsBox(width,height);
-        FixtureDef fixture =new FixtureDef();
-        fixture.friction = 0.5f;
-        fixture.density= 1f;
+        shape.setAsBox(width, height);
+        FixtureDef fixture = new FixtureDef();
+        fixture.friction = friction;
+        fixture.density = density;
         fixture.shape = shape;
-        this.body.setLinearDamping(2.0f);
+        this.body.setLinearDamping(linearDamping);
         body.createFixture(fixture);
     }
 
+
+    public void setUpPhysicsBody() {
+
+        setUpPhysicsBody(bodyType, friction, density, linearDamping, angleCals);
+
+    }
+
+
+    public float getFriction() {
+        return friction;
+    }
+
+    public void setFriction(float friction, boolean recreate) {
+        this.friction = friction;
+        if (recreate) {
+            setUpPhysicsBody(bodyType, friction, density, linearDamping, angleCals);
+        }
+    }
+
+    public float getDensity() {
+        return density;
+    }
+
+    public void setDensity(float density, boolean recreate) {
+        this.density = density;
+        if (recreate) {
+            setUpPhysicsBody(bodyType, friction, density, linearDamping, angleCals);
+        }
+    }
+
+    public float getLinearDamping() {
+        return linearDamping;
+    }
+
+    public void setLinearDamping(float linearDamping, boolean recreate) {
+        this.linearDamping = linearDamping;
+        if (recreate) {
+            setUpPhysicsBody(bodyType, friction, density, linearDamping, angleCals);
+        }
+    }
+
+    public boolean isAngleCals() {
+        return angleCals;
+    }
+
+    public void setAngleCals(boolean angleCals, boolean recreate) {
+        this.angleCals = angleCals;
+        if (recreate) {
+            setUpPhysicsBody(bodyType, friction, density, linearDamping, angleCals);
+        }
+    }
+
+    public BodyType getBodyType() {
+        return bodyType;
+    }
+
+    public void setBodyType(BodyType bodyType, boolean recreate) {
+        this.bodyType = bodyType;
+        if (recreate) {
+            setUpPhysicsBody(bodyType, friction, density, linearDamping, angleCals);
+        }
+    }
 
     public void renderObject(float alpha) {
 

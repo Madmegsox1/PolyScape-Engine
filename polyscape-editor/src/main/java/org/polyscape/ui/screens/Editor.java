@@ -242,7 +242,7 @@ public final class Editor extends Screen {
                     base.setWidth(100);
                     base.setHeight(100);
                     base.setBaseColor(Color.BLACK);
-                    base.setUpPhysicsBody(BodyType.STATIC);
+                    base.setBodyType(BodyType.STATIC, true);
                     newObject(base);
                     setSelectedId(base.getObjectId());
                 }

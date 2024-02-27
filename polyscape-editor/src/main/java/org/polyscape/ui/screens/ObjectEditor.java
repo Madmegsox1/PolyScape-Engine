@@ -17,7 +17,7 @@ import org.polyscape.ui.component.input.Input;
 
 import static org.polyscape.ui.screens.Editor.saveObjects;
 
-public class ObjectEditor extends Screen {
+public final class ObjectEditor extends Screen {
 
     BaseObject object;
 
@@ -39,6 +39,8 @@ public class ObjectEditor extends Screen {
 
         var dynamic = (CheckBox) getComponentById("dynamic");
         dynamic.state = object.getBody().m_type == BodyType.DYNAMIC ? 1 : 0;
+
+        getComponentById("friction").setText(String.valueOf(object.getFriction()));
 
     }
 
@@ -67,6 +69,9 @@ public class ObjectEditor extends Screen {
         CheckBox dynamic = new CheckBox(Editor.leftWidth + 20 + 150 + 20, Editor.lowerY + 80, "dynamic", CheckBoxType.Untextured, this);
         dynamic.setText("Dynamic Object");
         dynamic.baseColor = (Profile.UiThemes.Dark.foregroundDark);
+
+        Input friction = new Input(Editor.leftWidth + 20 + 150 + 200, Editor.lowerY + 80, 70,30,2f,"friction", this);
+        friction.setText("Friction");
 
         posX.setUpdateAction((i, text) -> {
             if(!text.isEmpty()) {
@@ -116,10 +121,17 @@ public class ObjectEditor extends Screen {
 
         dynamic.setClickAction((c, b) -> {
             if(b){
-                object.setUpPhysicsBody(BodyType.DYNAMIC);
+                object.setBodyType(BodyType.DYNAMIC, true);
                 saveObjects();
             }else{
-                object.setUpPhysicsBody(BodyType.STATIC);
+                object.setBodyType(BodyType.STATIC, true);
+                saveObjects();
+            }
+        });
+
+        friction.setUpdateAction((Input i, String text) -> {
+            if (!text.isEmpty()) {
+                object.setFriction(Float.parseFloat(text), true);
                 saveObjects();
             }
         });
@@ -132,6 +144,7 @@ public class ObjectEditor extends Screen {
         addComponent(height);
         addComponent(texture);
         addComponent(dynamic);
+        addComponent(friction);
     }
 
     @Override
