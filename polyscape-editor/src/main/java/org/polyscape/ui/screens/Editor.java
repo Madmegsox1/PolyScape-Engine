@@ -79,7 +79,7 @@ public final class Editor extends Screen {
         }
     }
 
-    public void loadObjectPositions() {
+    public static void loadObjectPositions() {
         try {
             var objs = Loader.projectLoader.loadObject(info.projectPath);
             for (var obj : objs) {

@@ -42,6 +42,9 @@ public class BaseObject extends RenderProperty {
 
     private boolean angleCals;
 
+    private int onLevel;
+
+
     public BaseObject() {
         bodyDef = new BodyDef();
         friction = 0.5f;
@@ -49,6 +52,16 @@ public class BaseObject extends RenderProperty {
         linearDamping = 2f;
         bodyType = BodyType.STATIC;
         angleCals = false;
+        onLevel = -1;
+    }
+
+
+    public int getLevel(){
+        return this.onLevel;
+    }
+
+    public void setLevel(int level){
+        this.onLevel = level;
     }
 
     public int getObjectId() {

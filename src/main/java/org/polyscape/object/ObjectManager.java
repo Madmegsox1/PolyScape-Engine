@@ -5,14 +5,20 @@ import org.jbox2d.dynamics.World;
 import org.polyscape.Profile;
 import org.polyscape.rendering.elements.Vector2;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 public final class ObjectManager {
     private static final HashMap<Integer, BaseObject> objects = new HashMap<>();
+
+    private static final HashMap<Integer, Level> levels = new HashMap<>();
     private static int currentId = 0;
 
     public static World world = new World(new Vec2(0, 0));
+
+    private static int currentLevel;
 
     public static final float PIXELS_PER_METER = 100.0f;
 
@@ -61,6 +67,15 @@ public final class ObjectManager {
         }
     }
 
+    public static void removeLevel(final Level level){
+        levels.remove(level.getLevelNumber());
+    }
+
+    public static void removeLevel(final int levelId){
+        levels.remove(levelId);
+    }
+
+
     public static void removeObject(final BaseObject object) {
         objects.remove(object.getObjectId());
     }
@@ -97,8 +112,48 @@ public final class ObjectManager {
         return ObjectManager.objects;
     }
 
+    public static Collection<Level> getLevels(){
+        return levels.values();
+    }
+
+
+    public static Collection<BaseObject> getAllObject(){
+        return objects.values();
+    }
+
     public static Collection<BaseObject> getObjects() {
-        return ObjectManager.objects.values();
+
+        List<BaseObject> objectList = new ArrayList<>();
+
+        for (var obj : ObjectManager.objects.values()){
+            if(obj.getLevel() == currentLevel || obj.getLevel() == -1) {
+                objectList.add(obj);
+            }
+        }
+
+
+        return objectList;
+    }
+
+    public static void clearLevels(){
+        levels.clear();
+    }
+
+    public static void loadLevel(int level){
+        currentLevel = level;
+    }
+
+    public static Level getCurrentLevel(){
+        return levels.get(currentLevel);
+    }
+
+
+    public static void clearAllObjects(){
+        currentId = 0;
+        for (var i : getAllObject()){
+            i.removeBody();
+        }
+        objects.clear();
     }
 
     public static void clearObjects() {
