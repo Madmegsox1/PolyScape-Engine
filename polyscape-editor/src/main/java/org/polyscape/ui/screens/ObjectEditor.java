@@ -38,9 +38,15 @@ public final class ObjectEditor extends Screen {
         }
 
         var dynamic = (CheckBox) getComponentById("dynamic");
-        dynamic.state = object.getBody().m_type == BodyType.DYNAMIC ? 1 : 0;
+        dynamic.state = object.getBodyType() == BodyType.DYNAMIC ? 1 : 0;
 
         getComponentById("friction").setText(String.valueOf(object.getFriction()));
+        getComponentById("density").setText(String.valueOf(object.getDensity()));
+        getComponentById("linearDamping").setText(String.valueOf(object.getLinearDamping()));
+
+        var angleCals = (CheckBox) getComponentById("angleCals");
+        angleCals.state = object.isAngleCals() ? 1 : 0;
+
 
     }
 
@@ -72,6 +78,17 @@ public final class ObjectEditor extends Screen {
 
         Input friction = new Input(Editor.leftWidth + 20 + 150 + 200, Editor.lowerY + 80, 70,30,2f,"friction", this);
         friction.setText("Friction");
+
+        Input density = new Input(Editor.leftWidth + 20 + 150 + 300, Editor.lowerY + 80, 70,30,2f,"density", this);
+        density.setText("Density");
+
+        Input linearDamping = new Input(Editor.leftWidth + 20 + 150 + 400, Editor.lowerY + 80, 70,30,2f,"linearDamping", this);
+        linearDamping.setText("Damping");
+
+
+        CheckBox angleCals = new CheckBox(Editor.leftWidth + 20 + 150 + 500, Editor.lowerY + 80, "angleCals", CheckBoxType.Untextured, this);
+        angleCals.setText("Fixed Angles");
+        angleCals.baseColor = (Profile.UiThemes.Dark.foregroundDark);
 
         posX.setUpdateAction((i, text) -> {
             if(!text.isEmpty()) {
@@ -136,6 +153,30 @@ public final class ObjectEditor extends Screen {
             }
         });
 
+        density.setUpdateAction((Input i, String text) -> {
+            if (!text.isEmpty()) {
+                object.setDensity(Float.parseFloat(text), true);
+                saveObjects();
+            }
+        });
+
+        linearDamping.setUpdateAction((Input i, String text) -> {
+            if (!text.isEmpty()) {
+                object.setLinearDamping(Float.parseFloat(text), true);
+                saveObjects();
+            }
+        });
+
+        angleCals.setClickAction((c, b) -> {
+            if(b){
+                object.setAngleCals(true, true);
+                saveObjects();
+            }else{
+                object.setAngleCals(false, true);
+                saveObjects();
+            }
+        });
+
 
         addComponent(posX);
         addComponent(posY);
@@ -145,6 +186,9 @@ public final class ObjectEditor extends Screen {
         addComponent(texture);
         addComponent(dynamic);
         addComponent(friction);
+        addComponent(density);
+        addComponent(linearDamping);
+        addComponent(angleCals);
     }
 
     @Override
