@@ -11,6 +11,8 @@ public class Object {
 
     public int height;
 
+    public int level;
+
     public RenderProperty renderProperty;
 
     public PhysicsBody physicsBody;

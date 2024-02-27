@@ -41,7 +41,7 @@ public final class ObjectManager {
     public static Vec2 screenToWorld(float screenX, float screenY, float objectWidth, float objectHeight) {
         float worldX = screenX / PIXELS_PER_METER;
         // Directly convert y-coordinate from screen to world coordinates
-        float worldY = (Profile.Display.HEIGHT - screenY) / PIXELS_PER_METER;
+        float worldY = (getCurrentLevel().levelHeight - screenY) / PIXELS_PER_METER;
         worldX += (objectWidth / 2f) / PIXELS_PER_METER; // Adjust X for object's half width
         worldY -= (objectHeight / 2f) / PIXELS_PER_METER;
 
@@ -51,7 +51,7 @@ public final class ObjectManager {
 
     public static Vector2 worldToScreen(Vec2 pos){
         float screenX = pos.x * PIXELS_PER_METER;
-        float screenY = Profile.Display.HEIGHT - (pos.y  * PIXELS_PER_METER);
+        float screenY = getCurrentLevel().levelHeight - (pos.y  * PIXELS_PER_METER);
         return new Vector2(screenX, screenY );
     }
 
@@ -137,6 +137,11 @@ public final class ObjectManager {
 
     public static void clearLevels(){
         levels.clear();
+    }
+
+
+    public static void addLevel(Level level){
+        levels.put(level.getLevelNumber(), level);
     }
 
     public static void loadLevel(int level){

@@ -299,11 +299,19 @@ public class BaseObject extends RenderProperty {
     }
 
     public void renderObject(float alpha) {
-
-        if (this.isTextured) {
-            RenderEngine.drawQuadTextureAngle(getInterpolatedPosition(alpha), -body.getAngle(), width, height, texture, baseColor);
-        } else {
-            RenderEngine.drawQuadAngleA(getInterpolatedPosition(alpha), -body.getAngle(), width, height, baseColor);
+        if(body != null) {
+            if (this.isTextured) {
+                RenderEngine.drawQuadTextureAngle(getInterpolatedPosition(alpha), -body.getAngle(), width, height, texture, baseColor);
+            } else {
+                RenderEngine.drawQuadAngleA(getInterpolatedPosition(alpha), -body.getAngle(), width, height, baseColor);
+            }
+        }
+        else{
+            if (this.isTextured) {
+                RenderEngine.drawQuadTextureAngle(position, 0, width, height, texture, baseColor);
+            } else {
+                RenderEngine.drawQuadAngleA(position, 0, width, height, baseColor);
+            }
         }
 
     }

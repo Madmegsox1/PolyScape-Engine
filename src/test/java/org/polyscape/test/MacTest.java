@@ -40,6 +40,8 @@ public class MacTest extends Engine {
         eventBus = new EventBus();
 
 
+        SpriteSheet forestTiles = new SpriteSheet("ForestTiles", 16,16);
+
         SpriteSheet spriteSheet = new SpriteSheet("002", 25, 25);
         ObjectManager.clearObjects();
 
@@ -57,11 +59,44 @@ public class MacTest extends Engine {
         object1.setPosition(new Vector2(25, 500));
         object1.setWidth(400);
         object1.setHeight(50);
-        object.setBodyType(BodyType.STATIC, true);
+        object1.setBodyType(BodyType.STATIC, true);
         object1.setWireframe(true);
-        ObjectManager.addObject(object);
+
         ObjectManager.addObject(object1);
 
+
+        BaseObject object2 = new BaseObject();
+        object2.setPosition(new Vector2(0,0));
+        object2.setWidth(100);
+        object2.setHeight(100);
+        object2.setSpriteSheet(forestTiles);
+        object2.setTexture(0);
+        BaseObject object3 = new BaseObject();
+        object3.setPosition(new Vector2(100,0));
+        object3.setWidth(100);
+        object3.setHeight(100);
+        object3.setSpriteSheet(forestTiles);
+        object3.setTexture(1);
+        BaseObject object5 = new BaseObject();
+        object5.setPosition(new Vector2(200,0));
+        object5.setWidth(100);
+        object5.setHeight(100);
+        object5.setSpriteSheet(forestTiles);
+        object5.setTexture(2);
+
+        BaseObject object6 = new BaseObject();
+        object6.setPosition(new Vector2(300,0));
+        object6.setWidth(100);
+        object6.setHeight(100);
+        object6.setSpriteSheet(forestTiles);
+        object6.setTexture(3);
+
+        ObjectManager.addObject(object2);
+        ObjectManager.addObject(object3);
+        ObjectManager.addObject(object5);
+        ObjectManager.addObject(object6);
+
+        ObjectManager.addObject(object);
 
         FluidObject fluidObject = new FluidObject(10f);
 

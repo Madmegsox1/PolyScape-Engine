@@ -8,6 +8,7 @@ import org.polyscape.Profile;
 import org.polyscape.event.IEvent;
 import org.polyscape.font.FontMac;
 import org.polyscape.object.BaseObject;
+import org.polyscape.object.Level;
 import org.polyscape.object.ObjectManager;
 import org.polyscape.project.model.ProjectInfo;
 import org.polyscape.rendering.Display;
@@ -29,6 +30,19 @@ import static org.lwjgl.opengl.GL11.*;
 
 
 public final class Editor extends Screen {
+
+
+    public Editor(){
+        IEvent<ResizeWindowEvent> resizeWindowEventIEvent = e -> {
+            if(UiEngine.getScreenManager().getCurrentUiMap().get(0) == this) {
+                UiEngine.getScreenManager().setCurrentUi(0, "Editor");
+                UiEngine.getScreenManager().setScreenModel(0, model);
+            }
+        };
+
+        ResizeWindowEvent.addEvent(resizeWindowEventIEvent, ResizeWindowEvent.class);
+    }
+
     public static ProjectInfo info;
     Texture t;
 
@@ -60,11 +74,24 @@ public final class Editor extends Screen {
         try {
             var objs = Loader.projectLoader.loadObject(info.projectPath);
             for (var obj : objs) {
+                obj.getBody().setAwake(false);
                 addObject(obj);
             }
+
+            var levels = Loader.projectLoader.loadLevels(info.projectPath);
+            if(!levels.isEmpty() && !ObjectManager.getLevels().isEmpty()){
+                ObjectManager.clearLevels();
+            }
+            for (var lvl : levels.values()){
+                ObjectManager.addLevel(lvl);
+                ObjectManager.loadLevel(lvl.getLevelNumber());
+            }
+
         } catch (IOException e) {
             System.err.println(e);
         }
+
+
     }
 
 
@@ -93,15 +120,22 @@ public final class Editor extends Screen {
 
     @Override
     public void onLoad() {
+        objectButtonY = 30;
         t = new Texture("transparent");
         draggingLower = false;
         FontMac font = new FontMac("Segoe UI", 25);
         setFont(font);
         ObjectManager.clearObjects();
+        Level level = new Level(1, "Untitled Level");
+        level.levelHeight = 1000;
+        level.levelWidth = 1000;
+
+        ObjectManager.addLevel(level);
+        ObjectManager.loadLevel(1);
+
         cameraVector = new Vector2(0, 0);
         cameraZoom = 1f;
         startCameraDrag = new Vector2(0, 0);
-
         GLFW.glfwSetCursorPosCallback(Engine.getDisplay().getWindow(), (w, mx, my) -> {
             if (draggingCamera) {
                 float dx = (float) (mx - startCameraDrag.x);
@@ -121,11 +155,7 @@ public final class Editor extends Screen {
             }
         });
 
-        IEvent<ResizeWindowEvent> resizeWindowEventIEvent = e -> {
-            loadObjectPositions();
-        };
 
-        ResizeWindowEvent.addEvent(resizeWindowEventIEvent, ResizeWindowEvent.class);
     }
 
     @Override
@@ -143,7 +173,7 @@ public final class Editor extends Screen {
         glPushMatrix();
         glTranslatef(cameraVector.x, cameraVector.y, 1.0f);
         glScalef(cameraZoom, cameraZoom, 0f);
-        RenderEngine.drawQuadTexture(new Vector2(0, 0), Profile.Display.WIDTH, Profile.Display.HEIGHT, 0, 0, 35, 20, t);
+        RenderEngine.drawQuadTexture(new Vector2(0, 0), ObjectManager.getCurrentLevel().levelWidth,  ObjectManager.getCurrentLevel().levelHeight, 0, 0, ObjectManager.getCurrentLevel().levelWidth/20f, ObjectManager.getCurrentLevel().levelHeight/20f, t);
 
         ObjectManager.renderObjects(event.alpha);
         glPopMatrix();
@@ -219,12 +249,13 @@ public final class Editor extends Screen {
     }
 
     public boolean isInStageBounds(float mx, float my) {
-        return mx >= leftWidth && mx <= Profile.Display.WIDTH && my >= 0 && my <= lowerY;
+        return mx >= leftWidth && mx <= ObjectManager.getCurrentLevel().levelWidth && my >= 0 && my <= lowerY;
     }
 
     public static void saveObjects() {
         try {
             Loader.projectLoader.saveObjects(info.projectPath);
+            Loader.projectLoader.saveLevels(info.projectPath);
         } catch (IOException e) {
             System.err.println(e);
         }
@@ -243,6 +274,7 @@ public final class Editor extends Screen {
                     base.setHeight(100);
                     base.setBaseColor(Color.BLACK);
                     base.setBodyType(BodyType.STATIC, true);
+                    base.getBody().setAwake(false);
                     newObject(base);
                     setSelectedId(base.getObjectId());
                 }

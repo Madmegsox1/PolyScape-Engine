@@ -9,10 +9,14 @@ public class Level {
 
     private Vec2 worldSettings;
 
+    public int levelWidth;
+
+    public int levelHeight;
 
     public Level(int levelNumber, String levelName) {
         this.levelNumber = levelNumber;
         this.levelName = levelName;
+        this.worldSettings = new Vec2(0,0);
     }
 
     public int getLevelNumber() {
