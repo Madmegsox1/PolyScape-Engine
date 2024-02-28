@@ -38,7 +38,7 @@ public final class ObjectManager {
         return pixels / PIXELS_PER_METER;
     }
 
-    public static Vec2 screenToWorld(float screenX, float screenY, float objectWidth, float objectHeight) {
+    public static Vec2 screenToWorld(float screenX, float screenY, float objectWidth, float objectHeight, int lvl) {
         float worldX = screenX / PIXELS_PER_METER;
         // Directly convert y-coordinate from screen to world coordinates
         float worldY = (getCurrentLevel().levelHeight - screenY) / PIXELS_PER_METER;
@@ -49,7 +49,7 @@ public final class ObjectManager {
         return new Vec2(worldX, worldY);
     }
 
-    public static Vector2 worldToScreen(Vec2 pos){
+    public static Vector2 worldToScreen(Vec2 pos, int lvl){
         float screenX = pos.x * PIXELS_PER_METER;
         float screenY = getCurrentLevel().levelHeight - (pos.y  * PIXELS_PER_METER);
         return new Vector2(screenX, screenY );

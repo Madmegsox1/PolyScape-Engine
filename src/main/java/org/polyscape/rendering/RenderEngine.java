@@ -139,7 +139,6 @@ public final class RenderEngine {
         float halfWidth = width / 2.0f;
         float halfHeight = height / 2.0f;
         final float[] c = Color.convertColorToFloatAlpha(color);
-
         glPushMatrix();
 
         glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);

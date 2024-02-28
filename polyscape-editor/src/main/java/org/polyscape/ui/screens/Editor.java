@@ -72,11 +72,6 @@ public final class Editor extends Screen {
         info = getModel();
         UiEngine.getDisplay().setTitle("Polyscape - Editing " + info.projectName);
         try {
-            var objs = Loader.projectLoader.loadObject(info.projectPath);
-            for (var obj : objs) {
-                obj.getBody().setAwake(false);
-                addObject(obj);
-            }
 
             var levels = Loader.projectLoader.loadLevels(info.projectPath);
             if(!levels.isEmpty() && !ObjectManager.getLevels().isEmpty()){
@@ -86,6 +81,13 @@ public final class Editor extends Screen {
                 ObjectManager.addLevel(lvl);
                 ObjectManager.loadLevel(lvl.getLevelNumber());
             }
+
+            var objs = Loader.projectLoader.loadObject(info.projectPath);
+            for (var obj : objs) {
+                obj.getBody().setAwake(false);
+                addObject(obj);
+            }
+
 
         } catch (IOException e) {
             System.err.println(e);
@@ -144,10 +146,10 @@ public final class Editor extends Screen {
         objButton.baseColor = Profile.UiThemes.Dark.accent2;
 
 
+
         addComponent(lvlButton);
         addComponent(objButton);
 
-        UiEngine.getScreenManager().setCurrentUi(2, "ObjectList");
 
 
         ObjectManager.clearObjects();
@@ -304,6 +306,7 @@ public final class Editor extends Screen {
                     base.setBaseColor(Color.BLACK);
                     base.setBodyType(BodyType.STATIC, true);
                     base.getBody().setAwake(false);
+                    base.setLevel(ObjectManager.getCurrentLevel().getLevelNumber());
                     newObject(base);
                     setSelectedId(base.getObjectId());
                 }
@@ -358,6 +361,7 @@ public final class Editor extends Screen {
         }
         this.selectedId = id;
         var obj = ObjectManager.getObject(id);
+
         selectedObject = obj;
         obj.setWireframe(true);
         var comp = objectList.getComponentById("ObjectButton:" + id);

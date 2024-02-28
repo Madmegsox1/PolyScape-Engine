@@ -42,7 +42,7 @@ public class FluidObject extends BaseObject {
             glBegin(GL_POLYGON);
             glColor3f(0.0f, 0.5f, 1.0f);
             Vec2 pos = particle.body.getPosition();
-            Vector2 screenPos = ObjectManager.worldToScreen(pos);
+            Vector2 screenPos = ObjectManager.worldToScreen(pos, getLevel());
             glVertex2f(screenPos.x, screenPos.y);
             glVertex2f(screenPos.x + this.radius, screenPos.y);
             glVertex2f(screenPos.x + this.radius, screenPos.y+ this.radius);
@@ -58,7 +58,7 @@ public class FluidObject extends BaseObject {
         public FluidParticle(float x, float y, float radius) {
             BodyDef bd = new BodyDef();
             bd.type = BodyType.DYNAMIC;
-            bd.position.set(ObjectManager.screenToWorld(x, y, radius*2, radius*2));
+            //bd.position.set(ObjectManager.screenToWorld(x, y, radius*2, radius*2));
 
             CircleShape cs = new CircleShape();
             cs.m_radius = ObjectManager.toMeters(radius / 2f);

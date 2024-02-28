@@ -83,13 +83,13 @@ public class BaseObject extends RenderProperty {
     public void setPosition(Vector2 position) {
         this.position = position;
         if (body != null) {
-            body.setTransform(ObjectManager.screenToWorld(position.x, position.y, this.width, this.height), body.getAngle());
+            body.setTransform(ObjectManager.screenToWorld(position.x, position.y, this.width, this.height, onLevel), body.getAngle());
         }
     }
 
     public void setAngle(double angle) {
         if (body != null) {
-            body.setTransform(ObjectManager.screenToWorld(position.x, position.y, this.width, this.height), (float) Math.toRadians(angle));
+            body.setTransform(ObjectManager.screenToWorld(position.x, position.y, this.width, this.height, onLevel), (float) Math.toRadians(angle));
         }
     }
 
@@ -172,7 +172,7 @@ public class BaseObject extends RenderProperty {
     }
 
     public boolean isPointInObject(Vector2 point) {
-        Vec2 toWoldPoint = ObjectManager.screenToWorld(point.x, point.y, 1, 1);
+        Vec2 toWoldPoint = ObjectManager.screenToWorld(point.x, point.y, 1, 1, onLevel);
 
         if (body == null) return false;
 
@@ -193,7 +193,7 @@ public class BaseObject extends RenderProperty {
 
     public void updatePosition() {
         if (body == null) return;
-        position = worldToScreen(body.getPosition());
+        position = worldToScreen(body.getPosition(), onLevel);
         position.x -= (this.width / 2f);
         position.y -= (this.height / 2f);
     }
@@ -210,7 +210,7 @@ public class BaseObject extends RenderProperty {
         position.addToVect(x, y);
         //ObjectManager.world.destroyBody(this.body);
         //setUpPhysicsBody(this.bodyDef.type);
-        body.setTransform(ObjectManager.screenToWorld(position.x, position.y, this.width, this.height), body.getAngle());
+        body.setTransform(ObjectManager.screenToWorld(position.x, position.y, this.width, this.height, onLevel), body.getAngle());
     }
 
     public void setUpPhysicsBody(BodyType type, float friction, float density, float linearDamping, boolean angleCals) {
@@ -222,7 +222,7 @@ public class BaseObject extends RenderProperty {
         var width = ObjectManager.toMeters(this.width / 2f);
         var height = ObjectManager.toMeters(this.height / 2f);
 
-        this.bodyDef.position.set(ObjectManager.screenToWorld(position.x, position.y, this.width, this.height));
+        this.bodyDef.position.set(ObjectManager.screenToWorld(position.x, position.y, this.width, this.height, onLevel));
         this.body = ObjectManager.world.createBody(bodyDef);
         PolygonShape shape = new PolygonShape();
 
@@ -332,7 +332,7 @@ public class BaseObject extends RenderProperty {
         Vec2 size = shape.getVertex(1); // Top-right vertex relative to body position gives half-width and half-height
         float width = size.x * 2; // Full width
         float height = size.y * 2; // Full height
-        Vector2 screenPos = worldToScreen(position); // Convert position
+        Vector2 screenPos = worldToScreen(position, onLevel); // Convert position
         float screenWidth = width * PIXELS_PER_METER; // Convert width
         float screenHeight = height * PIXELS_PER_METER; // Convert height
 
