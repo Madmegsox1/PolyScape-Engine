@@ -51,7 +51,9 @@ public class Input extends Component {
             }else if(event.key == GLFW.GLFW_KEY_ENTER){
                 this.editing = false;
             }
+            if(updateText != null){
             updateText.update(this, this.text);
+            }
         }
 
     }
@@ -60,7 +62,9 @@ public class Input extends Component {
     public void onComponentClick(ComponentClickEvent event) {
         if (event.action == 0) {
             if(editing){
-                updateText.update(this, this.text);
+                if(updateText != null) {
+                    updateText.update(this, this.text);
+                }
             }
             editing = !editing;
         }

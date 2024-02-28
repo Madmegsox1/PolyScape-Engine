@@ -3,6 +3,7 @@ package org.polyscape.ui.screens;
 import org.polyscape.Loader;
 import org.polyscape.Profile;
 import org.polyscape.font.FontMac;
+import org.polyscape.object.Level;
 import org.polyscape.object.ObjectManager;
 import org.polyscape.project.model.ProjectInfo;
 import org.polyscape.rendering.elements.Color;
@@ -24,14 +25,7 @@ public class LevelList extends Screen {
 
         components.clear();
         for (var lvl : ObjectManager.getLevels()) {
-            Button button = new Button(5, buttonY, this, lvl.getLevelName(), "LvlButton:" + lvl.getLevelNumber());
-            button.setClickAction(n -> {
-                int previousLvl = ObjectManager.getCurrentLevel().getLevelNumber();
-                ObjectManager.loadLevel(lvl.getLevelNumber());
-
-                getComponentById("LvlButton:" + previousLvl).foregroundColor = Profile.UiThemes.Dark.foreground;
-                n.foregroundColor = Color.BLUE;
-            });
+            Button button = getButton(lvl);
             buttonY += 10;
             buttonY += font.getHeight(button.getText());
             button.baseColor = Profile.UiThemes.Dark.foregroundDark;
@@ -42,6 +36,20 @@ public class LevelList extends Screen {
 
         getComponentById("LvlButton:" + ObjectManager.getCurrentLevel().getLevelNumber()).foregroundColor = Color.BLUE;
 
+    }
+
+    private Button getButton(Level lvl) {
+        Button button = new Button(5, buttonY, this, lvl.getLevelName(), "LvlButton:" + lvl.getLevelNumber());
+        button.setClickAction(n -> {
+            int previousLvl = ObjectManager.getCurrentLevel().getLevelNumber();
+            ObjectManager.loadLevel(lvl.getLevelNumber());
+
+            getComponentById("LvlButton:" + previousLvl).foregroundColor = Profile.UiThemes.Dark.foreground;
+            n.foregroundColor = Color.BLUE;
+            UiEngine.getScreenManager().setCurrentUi(1, "LevelEditor");
+            UiEngine.getScreenManager().setScreenModel(1, lvl);
+        });
+        return button;
     }
 
     @Override

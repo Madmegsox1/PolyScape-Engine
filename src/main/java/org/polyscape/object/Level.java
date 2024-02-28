@@ -40,4 +40,13 @@ public class Level {
             ObjectManager.world.setGravity(worldSettings);
         }
     }
+
+    public void setLevelNumber(int levelNumber) {
+        this.levelNumber = levelNumber;
+    }
+
+    public void setLevelName(String levelName) {
+        this.levelName = levelName;
+    }
+
 }

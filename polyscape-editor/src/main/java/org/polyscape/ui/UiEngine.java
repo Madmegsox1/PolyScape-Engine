@@ -48,5 +48,6 @@ public final class UiEngine extends Engine {
         screenManager.addScreen("ObjectEditor", new ObjectEditor());
         screenManager.addScreen("LevelList", new LevelList());
         screenManager.addScreen("ObjectList", new ObjectList());
+        screenManager.addScreen("LevelEditor", new LevelEditor());
     }
 }
