@@ -77,7 +77,6 @@ public abstract class Screen implements IScreen {
         if(model == null) return null;
         return (T) model;
     }
-
     private void renderComponents(RenderEvent event){
         for (Component c : components){
             c.draw(event);

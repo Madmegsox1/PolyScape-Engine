@@ -67,7 +67,7 @@ public class ProjectLoader {
 
         String levelPath = path + "/levels.json";
         File levelFile = new File(levelPath);
-        if(levelFile.exists()) return levels;
+        if(!levelFile.exists()) return levels;
 
         Gson gson = new Gson();
         FileReader fr = new FileReader(levelFile);

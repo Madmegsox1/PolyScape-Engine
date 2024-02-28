@@ -6,10 +6,7 @@ import org.polyscape.event.EventBus;
 import org.polyscape.rendering.Display;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.Renderer;
-import org.polyscape.ui.screens.Editor;
-import org.polyscape.ui.screens.NewOrEditProject;
-import org.polyscape.ui.screens.ObjectEditor;
-import org.polyscape.ui.screens.ProjectScreen;
+import org.polyscape.ui.screens.*;
 
 public final class UiEngine extends Engine {
 
@@ -49,5 +46,7 @@ public final class UiEngine extends Engine {
         screenManager.addScreen("NewOrEditProject", new NewOrEditProject());
         screenManager.addScreen("Editor", new Editor());
         screenManager.addScreen("ObjectEditor", new ObjectEditor());
+        screenManager.addScreen("LevelList", new LevelList());
+        screenManager.addScreen("ObjectList", new ObjectList());
     }
 }

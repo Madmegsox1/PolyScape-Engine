@@ -120,11 +120,36 @@ public final class Editor extends Screen {
 
     @Override
     public void onLoad() {
-        objectButtonY = 30;
         t = new Texture("transparent");
         draggingLower = false;
         FontMac font = new FontMac("Segoe UI", 25);
         setFont(font);
+
+        Button lvlButton = new Button(5, (lowerY + lowerHeight) - 40, this, "Levels", "lvlButton");
+        lvlButton.setClickAction(n -> {
+            UiEngine.getScreenManager().setCurrentUi(2, "LevelList");
+            UiEngine.getScreenManager().setScreenModel(2, info);
+        });
+        lvlButton.baseColor = Profile.UiThemes.Dark.accent2;
+
+
+        Button objButton = new Button(font.getWidth("Levels") + 20, (lowerY + lowerHeight) - 40, this, "Objects", "objButton");
+        objButton.setClickAction(n -> {
+            UiEngine.getScreenManager().setCurrentUi(2, "ObjectList");
+            UiEngine.getScreenManager().setScreenModel(2, info);
+            if(selectedId != -1) {
+                setSelectedId(selectedId);
+            }
+        });
+        objButton.baseColor = Profile.UiThemes.Dark.accent2;
+
+
+        addComponent(lvlButton);
+        addComponent(objButton);
+
+        UiEngine.getScreenManager().setCurrentUi(2, "ObjectList");
+
+
         ObjectManager.clearObjects();
         Level level = new Level(1, "Untitled Level");
         level.levelHeight = 1000;
@@ -191,17 +216,21 @@ public final class Editor extends Screen {
     }
 
     public void addObject(BaseObject object) {
+
+        ObjectList objList = (ObjectList) UiEngine.getScreenManager().getUi("ObjectList");
+
         ObjectManager.addObject(object);
-        Button button = new Button(5, objectButtonY, this, object.getClass().getSimpleName() + object.getObjectId(), "ObjectButton:" + object.getObjectId());
+        Button button = new Button(5, objList.buttonY, this, object.getClass().getSimpleName() + object.getObjectId(), "ObjectButton:" + object.getObjectId());
         button.baseColor = Profile.UiThemes.Dark.foregroundDark;
         button.setClickAction(n -> {
-            setSelectedId(object.getObjectId());
+            Editor editor = (Editor) UiEngine.getScreenManager().getUi("Editor");
+            editor.setSelectedId(object.getObjectId());
         });
-        addComponent(button);
+        objList.addComponent(button);
 
 
-        objectButtonY += 10;
-        objectButtonY += font.getHeight(button.getText());
+        objList.buttonY += 10;
+        objList.buttonY += font.getHeight(button.getText());
     }
 
     public void newObject(BaseObject object) {
@@ -249,7 +278,7 @@ public final class Editor extends Screen {
     }
 
     public boolean isInStageBounds(float mx, float my) {
-        return mx >= leftWidth && mx <= ObjectManager.getCurrentLevel().levelWidth && my >= 0 && my <= lowerY;
+        return mx >= leftWidth && mx <= Profile.Display.WIDTH && my >= 0 && my <= lowerY;
     }
 
     public static void saveObjects() {
@@ -318,8 +347,10 @@ public final class Editor extends Screen {
     }
 
     public void setSelectedId(int id) {
+        ObjectList objectList = (ObjectList) UiEngine.getScreenManager().getUi("ObjectList");
+
         if (selectedId != -1) {
-            var comp = getComponentById("ObjectButton:" + selectedObject.getObjectId());
+            var comp = objectList.getComponentById("ObjectButton:" + selectedObject.getObjectId());
             if (comp != null) {
                 comp.foregroundColor = Profile.UiThemes.Dark.foreground;
             }
@@ -329,8 +360,7 @@ public final class Editor extends Screen {
         var obj = ObjectManager.getObject(id);
         selectedObject = obj;
         obj.setWireframe(true);
-
-        var comp = getComponentById("ObjectButton:" + id);
+        var comp = objectList.getComponentById("ObjectButton:" + id);
         if (comp != null) {
             comp.foregroundColor = Color.BLUE;
             UiEngine.getScreenManager().setCurrentUi(1, "ObjectEditor");
