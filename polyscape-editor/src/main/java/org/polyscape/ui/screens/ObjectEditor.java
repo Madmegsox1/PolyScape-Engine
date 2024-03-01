@@ -11,6 +11,7 @@ import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;
 import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.ui.Screen;
+import org.polyscape.ui.component.button.Button;
 import org.polyscape.ui.component.checkbox.CheckBox;
 import org.polyscape.ui.component.checkbox.CheckBoxType;
 import org.polyscape.ui.component.input.Input;
@@ -37,15 +38,30 @@ public final class ObjectEditor extends Screen {
             }
         }
 
-        var dynamic = (CheckBox) getComponentById("dynamic");
-        dynamic.state = object.getBodyType() == BodyType.DYNAMIC ? 1 : 0;
+        if(!object.getBody().isActive()){
+            getComponentById("dynamic").hidden = true;
+            getComponentById("friction").hidden = true;
+            getComponentById("density").hidden = true;
+            getComponentById("linearDamping").hidden = true;
+            getComponentById("angleCals").hidden = true;
+        }
+        else {
+            getComponentById("dynamic").hidden = false;
+            getComponentById("friction").hidden = false;
+            getComponentById("density").hidden = false;
+            getComponentById("linearDamping").hidden = false;
+            getComponentById("angleCals").hidden = false;
 
-        getComponentById("friction").setText(String.valueOf(object.getFriction()));
-        getComponentById("density").setText(String.valueOf(object.getDensity()));
-        getComponentById("linearDamping").setText(String.valueOf(object.getLinearDamping()));
+            var dynamic = (CheckBox) getComponentById("dynamic");
+            dynamic.state = object.getBodyType() == BodyType.DYNAMIC ? 1 : 0;
 
-        var angleCals = (CheckBox) getComponentById("angleCals");
-        angleCals.state = object.isAngleCals() ? 1 : 0;
+            getComponentById("friction").setText(String.valueOf(object.getFriction()));
+            getComponentById("density").setText(String.valueOf(object.getDensity()));
+            getComponentById("linearDamping").setText(String.valueOf(object.getLinearDamping()));
+
+            var angleCals = (CheckBox) getComponentById("angleCals");
+            angleCals.state = object.isAngleCals() ? 1 : 0;
+        }
 
 
     }
@@ -68,6 +84,8 @@ public final class ObjectEditor extends Screen {
 
         Input height = new Input(Editor.leftWidth + 20 + (70*4) + 120, Editor.lowerY + 40, 70, 30, 2f, "height", this);
         posY.setText("height");
+
+        Button bodyButton = getButton();
 
         Input texture = new Input(Editor.leftWidth + 20, Editor.lowerY + 80, 150, 30, 2f, "texture", this);
         texture.setText("Texture");
@@ -189,6 +207,32 @@ public final class ObjectEditor extends Screen {
         addComponent(density);
         addComponent(linearDamping);
         addComponent(angleCals);
+        addComponent(bodyButton);
+    }
+
+    private Button getButton() {
+        Button bodyButton = new Button(Editor.leftWidth + 20 + (70*5) + 160, Editor.lowerY + 40, this, "Destroy Physics", "bodyButton");
+        bodyButton.setClickAction(n -> {
+            if(object.getBody().isActive()) {
+                object.destroyPhysicsBody();
+                n.setText("Create Physics");
+                getComponentById("dynamic").hidden = true;
+                getComponentById("friction").hidden = true;
+                getComponentById("density").hidden = true;
+                getComponentById("linearDamping").hidden = true;
+                getComponentById("angleCals").hidden = true;
+            }else{
+                object.setBodyActive();
+                n.setText("Destroy Physics");
+                getComponentById("dynamic").hidden = false;
+                getComponentById("friction").hidden = false;
+                getComponentById("density").hidden = false;
+                getComponentById("linearDamping").hidden = false;
+                getComponentById("angleCals").hidden = false;
+            }
+            Editor.saveObjects();
+        });
+        return bodyButton;
     }
 
     @Override

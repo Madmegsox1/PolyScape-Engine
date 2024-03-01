@@ -29,12 +29,15 @@ public abstract class Component extends RenderProperty implements IComponent {
 
     public String componentId;
 
+    public boolean hidden;
+
     public Component(int x, int y, int width, int height, Screen screen, String compId) {
         this.screen = screen;
         this.pos = new Vector2(x, y);
         this.width = width;
         this.height = height;
         this.componentId = compId;
+        this.hidden = false;
 
         // todo theme manager etc
         this.backgroundColor = Profile.UiThemes.Dark.background;

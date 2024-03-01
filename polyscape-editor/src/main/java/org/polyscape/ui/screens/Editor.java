@@ -84,7 +84,9 @@ public final class Editor extends Screen {
 
             var objs = Loader.projectLoader.loadObject(info.projectPath);
             for (var obj : objs) {
-                obj.getBody().setAwake(false);
+                if(obj.getBody() != null) {
+                    obj.getBody().setAwake(false);
+                }
                 addObject(obj);
             }
 

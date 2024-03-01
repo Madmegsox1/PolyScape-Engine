@@ -12,4 +12,6 @@ public class PhysicsBody {
     public float linearDamping;
 
     public float angle;
+
+    public boolean active;
 }

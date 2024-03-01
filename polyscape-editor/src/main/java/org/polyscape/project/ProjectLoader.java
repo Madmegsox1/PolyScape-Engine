@@ -175,6 +175,11 @@ public class ProjectLoader {
             baseObject.setLinearDamping(obj.physicsBody.linearDamping, false);
             baseObject.setUpPhysicsBody();
             baseObject.setAngle(obj.physicsBody.angle);
+            if(obj.physicsBody.active){
+                baseObject.setBodyActive();
+            }else{
+                baseObject.destroyPhysicsBody();
+            }
         }
         return baseObject;
     }
@@ -242,6 +247,7 @@ public class ProjectLoader {
             object.physicsBody.density = baseObject.getBody().getFixtureList().getDensity();
             object.physicsBody.friction = baseObject.getBody().getFixtureList().getFriction();
             object.physicsBody.linearDamping = baseObject.getBody().getLinearDamping();
+            object.physicsBody.active = baseObject.getBody().isActive();
         }
 
         return object;

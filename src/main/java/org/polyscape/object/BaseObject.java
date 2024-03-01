@@ -73,6 +73,7 @@ public class BaseObject extends RenderProperty {
     }
 
     public float getAngle() {
+        if(body == null) return 0f;
         return (float) Math.toDegrees(body.getAngle());
     }
 
@@ -151,6 +152,13 @@ public class BaseObject extends RenderProperty {
         return new Vector2(Math.abs(speedX), Math.abs(speedY));
     }
 
+    public void destroyPhysicsBody(){
+        if(this.body != null) {
+            this.body.setActive(false);
+            //this.body = null;
+        }
+    }
+
     public void setWireframe(boolean wireframe) {
         this.wireframe = wireframe;
     }
@@ -168,6 +176,7 @@ public class BaseObject extends RenderProperty {
     }
 
     public void removeBody() {
+        if(this.body == null) return;
         ObjectManager.world.destroyBody(this.body);
     }
 
@@ -235,6 +244,12 @@ public class BaseObject extends RenderProperty {
         body.createFixture(fixture);
     }
 
+
+    public void setBodyActive(){
+        if(this.body != null){
+            this.body.setActive(true);
+        }
+    }
 
     public void setUpPhysicsBody() {
 
@@ -323,20 +338,25 @@ public class BaseObject extends RenderProperty {
     }
 
     private void drawWireframe() {
-        PolygonShape shape = (PolygonShape) body.getFixtureList().getShape();
+        if(body == null){
+            //getInterpolatedPosition()
+            RenderEngine.drawWireframe(position, width, height, 0f);
+        }else {
+            PolygonShape shape = (PolygonShape) body.getFixtureList().getShape();
 
-        Vec2 position = body.getPosition(); // Center position of the body in Box2D world
-        float angle = -body.getAngle(); // Rotation of the body in radians
+            Vec2 position = body.getPosition(); // Center position of the body in Box2D world
+            float angle = -body.getAngle(); // Rotation of the body in radians
 
-        // Assuming the shape is a rectangle, get width and height (Box2D stores them as half-width and half-height)
-        Vec2 size = shape.getVertex(1); // Top-right vertex relative to body position gives half-width and half-height
-        float width = size.x * 2; // Full width
-        float height = size.y * 2; // Full height
-        Vector2 screenPos = worldToScreen(position, onLevel); // Convert position
-        float screenWidth = width * PIXELS_PER_METER; // Convert width
-        float screenHeight = height * PIXELS_PER_METER; // Convert height
+            // Assuming the shape is a rectangle, get width and height (Box2D stores them as half-width and half-height)
+            Vec2 size = shape.getVertex(1); // Top-right vertex relative to body position gives half-width and half-height
+            float width = size.x * 2; // Full width
+            float height = size.y * 2; // Full height
+            Vector2 screenPos = worldToScreen(position, onLevel); // Convert position
+            float screenWidth = width * PIXELS_PER_METER; // Convert width
+            float screenHeight = height * PIXELS_PER_METER; // Convert height
 
-        RenderEngine.drawWireframe(screenPos, screenWidth, screenHeight, angle);
+            RenderEngine.drawWireframe(screenPos, screenWidth, screenHeight, angle);
+        }
 
     }
 

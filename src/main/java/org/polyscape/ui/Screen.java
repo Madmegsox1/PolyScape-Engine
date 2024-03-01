@@ -79,7 +79,9 @@ public abstract class Screen implements IScreen {
     }
     private void renderComponents(RenderEvent event){
         for (Component c : components){
-            c.draw(event);
+            if(!c.hidden) {
+                c.draw(event);
+            }
         }
     }
 
