@@ -52,7 +52,7 @@ public class BaseObject extends RenderProperty {
         linearDamping = 2f;
         bodyType = BodyType.STATIC;
         angleCals = false;
-        onLevel = -1;
+        onLevel = ObjectManager.getCurrentLevel().getLevelNumber();
     }
 
 

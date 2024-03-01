@@ -24,6 +24,7 @@ public final class ObjectEditor extends Screen {
 
     @Override
     public void model() {
+
         object = getModel();
         getComponentById("posX").setText(String.valueOf((int) object.getPosition().x));
         getComponentById("posY").setText(String.valueOf((int) object.getPosition().y));
@@ -39,6 +40,7 @@ public final class ObjectEditor extends Screen {
         }
 
         if(!object.getBody().isActive()){
+            getComponentById("bodyButton").setText("Create Physics");
             getComponentById("dynamic").hidden = true;
             getComponentById("friction").hidden = true;
             getComponentById("density").hidden = true;
@@ -46,28 +48,30 @@ public final class ObjectEditor extends Screen {
             getComponentById("angleCals").hidden = true;
         }
         else {
+            getComponentById("bodyButton").setText("Destroy Physics");
             getComponentById("dynamic").hidden = false;
             getComponentById("friction").hidden = false;
             getComponentById("density").hidden = false;
             getComponentById("linearDamping").hidden = false;
             getComponentById("angleCals").hidden = false;
-
-            var dynamic = (CheckBox) getComponentById("dynamic");
-            dynamic.state = object.getBodyType() == BodyType.DYNAMIC ? 1 : 0;
-
-            getComponentById("friction").setText(String.valueOf(object.getFriction()));
-            getComponentById("density").setText(String.valueOf(object.getDensity()));
-            getComponentById("linearDamping").setText(String.valueOf(object.getLinearDamping()));
-
-            var angleCals = (CheckBox) getComponentById("angleCals");
-            angleCals.state = object.isAngleCals() ? 1 : 0;
         }
+
+        var dynamic = (CheckBox) getComponentById("dynamic");
+        dynamic.state = object.getBodyType() == BodyType.DYNAMIC ? 1 : 0;
+
+        getComponentById("friction").setText(String.valueOf(object.getFriction()));
+        getComponentById("density").setText(String.valueOf(object.getDensity()));
+        getComponentById("linearDamping").setText(String.valueOf(object.getLinearDamping()));
+
+        var angleCals = (CheckBox) getComponentById("angleCals");
+        angleCals.state = object.isAngleCals() ? 1 : 0;
 
 
     }
 
     @Override
     public void onLoad() {
+        components.clear();
         FontMac font = new FontMac("Segoe UI", 22);
         setFont(font);
         Input posX = new Input(Editor.leftWidth + 20, Editor.lowerY + 40, 70, 30, 2f, "posX", this);
@@ -212,6 +216,7 @@ public final class ObjectEditor extends Screen {
 
     private Button getButton() {
         Button bodyButton = new Button(Editor.leftWidth + 20 + (70*5) + 160, Editor.lowerY + 40, this, "Destroy Physics", "bodyButton");
+
         bodyButton.setClickAction(n -> {
             if(object.getBody().isActive()) {
                 object.destroyPhysicsBody();

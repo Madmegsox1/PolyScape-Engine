@@ -83,11 +83,12 @@ public final class Editor extends Screen {
             }
 
             var objs = Loader.projectLoader.loadObject(info.projectPath);
+            ObjectManager.clearAllObjects();
             for (var obj : objs) {
-                if(obj.getBody() != null) {
+                if(obj.getBody() != null && obj.getBody().isActive()) {
                     obj.getBody().setAwake(false);
                 }
-                addObject(obj);
+                addObject(obj , false);
             }
 
 
@@ -96,29 +97,6 @@ public final class Editor extends Screen {
         }
 
 
-    }
-
-
-    public void loadObject() {
-        try {
-            var objs = Loader.projectLoader.loadObject(info.projectPath);
-            for (var obj : objs) {
-                addObject(obj);
-            }
-        } catch (IOException e) {
-            System.err.println(e);
-        }
-    }
-
-    public static void loadObjectPositions() {
-        try {
-            var objs = Loader.projectLoader.loadObject(info.projectPath);
-            for (var obj : objs) {
-                ObjectManager.getObject(obj.getObjectId()).setPosition(obj.getPosition());
-            }
-        } catch (IOException e) {
-            System.err.println(e);
-        }
     }
 
 
@@ -219,26 +197,27 @@ public final class Editor extends Screen {
 
     }
 
-    public void addObject(BaseObject object) {
+    public void addObject(BaseObject object, boolean b) {
 
         ObjectList objList = (ObjectList) UiEngine.getScreenManager().getUi("ObjectList");
-
         ObjectManager.addObject(object);
-        Button button = new Button(5, objList.buttonY, this, object.getClass().getSimpleName() + object.getObjectId(), "ObjectButton:" + object.getObjectId());
-        button.baseColor = Profile.UiThemes.Dark.foregroundDark;
-        button.setClickAction(n -> {
-            Editor editor = (Editor) UiEngine.getScreenManager().getUi("Editor");
-            editor.setSelectedId(object.getObjectId());
-        });
-        objList.addComponent(button);
+        if(b) {
+            Button button = new Button(5, objList.buttonY, this, object.getClass().getSimpleName() + object.getObjectId(), "ObjectButton:" + object.getObjectId());
+            button.baseColor = Profile.UiThemes.Dark.foregroundDark;
+            button.setClickAction(n -> {
+                Editor editor = (Editor) UiEngine.getScreenManager().getUi("Editor");
+                editor.setSelectedId(object.getObjectId());
+            });
+            objList.addComponent(button);
 
 
-        objList.buttonY += 10;
-        objList.buttonY += font.getHeight(button.getText());
+            objList.buttonY += 10;
+            objList.buttonY += font.getHeight(button.getText());
+        }
     }
 
     public void newObject(BaseObject object) {
-        addObject(object);
+        addObject(object, true);
         saveObjects();
     }
 
@@ -314,27 +293,71 @@ public final class Editor extends Screen {
                 }
             }
         }
+        else if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_LEFT_SHIFT)){
+            if(selectedObject != null) {
+                if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_UP)) {
+                    var oldVector = selectedObject.getPosition();
+                    var newVector = new Vector2(oldVector.x, oldVector.y - selectedObject.getHeight());
+                    duplicateObject(newVector);
+                }
+                if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_DOWN)) {
+                    var oldVector = selectedObject.getPosition();
+                    var newVector = new Vector2(oldVector.x, oldVector.y + selectedObject.getHeight());
+                    duplicateObject(newVector);
+                }
+                if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_LEFT)) {
+                    var oldVector = selectedObject.getPosition();
+                    var newVector = new Vector2(oldVector.x - selectedObject.getWidth(), oldVector.y);
+                    duplicateObject(newVector);
+                }
+                if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_RIGHT)) {
+                    var oldVector = selectedObject.getPosition();
+                    var newVector = new Vector2(oldVector.x + selectedObject.getHeight(), oldVector.y);
+                    duplicateObject(newVector);
+                }
+            }
+        }
+        else {
 
-        if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_UP)) {
-            if (selectedId != -1) {
-                selectedObject.addToPos(0, -1);
+            if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_UP)) {
+                if (selectedId != -1) {
+                    selectedObject.addToPos(0, -1);
+                }
+            }
+            if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_DOWN)) {
+                if (selectedId != -1) {
+                    selectedObject.addToPos(0, 1);
+                }
+            }
+            if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_LEFT)) {
+                if (selectedId != -1) {
+                    selectedObject.addToPos(-1, 0);
+                }
+            }
+            if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_RIGHT)) {
+                if (selectedId != -1) {
+                    selectedObject.addToPos(1, 0);
+                }
             }
         }
-        if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_DOWN)) {
-            if (selectedId != -1) {
-                selectedObject.addToPos(0, 1);
-            }
+    }
+
+    private void duplicateObject(Vector2 pos) {
+        var base = new BaseObject();
+        base.setPosition(pos);
+        base.setWidth(selectedObject.getWidth());
+        base.setHeight(selectedObject.getHeight());
+        base.setBaseColor(selectedObject.getBaseColor());
+        base.setUpPhysicsBody(selectedObject.getBodyType(), selectedObject.getFriction(), selectedObject.getDensity(), selectedObject.getLinearDamping(), selectedObject.isAngleCals());
+        if (selectedObject.getBody().isActive()) {
+            base.setBodyActive();
+        } else {
+            base.destroyPhysicsBody();
         }
-        if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_LEFT)) {
-            if (selectedId != -1) {
-                selectedObject.addToPos(-1, 0);
-            }
-        }
-        if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_RIGHT)) {
-            if (selectedId != -1) {
-                selectedObject.addToPos(1, 0);
-            }
-        }
+        base.setLevel(selectedObject.getLevel());
+        //base.getBody().setActive(false);
+        newObject(base);
+        setSelectedId(base.getObjectId());
     }
 
     private boolean inBoundsOfLLine(MouseClickEvent event) {

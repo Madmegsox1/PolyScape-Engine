@@ -91,6 +91,7 @@ public abstract class Screen implements IScreen {
 
     private void clickComponents(MouseClickEvent event){
         for (Component c : components){
+            if(c.hidden) continue;
             if(c.inBounds(event.mX, event.mY)){
                 final ComponentClickEvent componentClickEvent = new ComponentClickEvent(event.mX, event.mY, c, event.action);
 
@@ -104,12 +105,18 @@ public abstract class Screen implements IScreen {
 
     private void keyComponents(KeyEvent event){
         for (Component c : components){
+            if(c.hidden) continue;
             c.onKey(event);
         }
     }
 
     public int getCenterX(){
         return Profile.Display.WIDTH / 2;
+    }
+
+
+    public void clearComponents(){
+        this.components.clear();
     }
 
 

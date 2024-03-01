@@ -54,6 +54,7 @@ public class LevelList extends Screen {
 
     @Override
     public void onLoad() {
+        components.clear();
         FontMac font = new FontMac("Segoe UI", 25);
         setFont(font);
 

@@ -20,6 +20,7 @@ public class ObjectList extends Screen {
     public void model() {
         projectInfo = getModel();
         Editor editor = (Editor) UiEngine.getScreenManager().getUi("Editor");
+        components.clear();
 
         for (var obj : ObjectManager.getObjects()) {
             Button button = new Button(5, buttonY, this, obj.getClass().getSimpleName() + obj.getObjectId(), "ObjectButton:" + obj.getObjectId());

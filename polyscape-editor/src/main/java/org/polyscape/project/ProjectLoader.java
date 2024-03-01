@@ -176,7 +176,7 @@ public class ProjectLoader {
             baseObject.setUpPhysicsBody();
             baseObject.setAngle(obj.physicsBody.angle);
             if(obj.physicsBody.active){
-                baseObject.setBodyActive();
+                //baseObject.setBodyActive();
             }else{
                 baseObject.destroyPhysicsBody();
             }
