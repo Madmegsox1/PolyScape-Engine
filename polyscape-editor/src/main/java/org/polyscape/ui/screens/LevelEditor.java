@@ -34,22 +34,22 @@ public class LevelEditor extends Screen {
     public void onLoad() {
         FontMac font = new FontMac("Segoe UI", 22);
         setFont(font);
-        Input levelName = new Input(Editor.leftWidth + 20, Editor.lowerY + 40, 100, 30, 2f, "levelName", this);
+        Input levelName = new Input(Editor.leftWidth + 20, Editor.lowerY + 40, 300, 30, 2f, "levelName", this);
         levelName.setText("Level Name");
 
-        Input levelId = new Input(Editor.leftWidth + 20 + 100 + 20, Editor.lowerY + 40, 70, 30, 2f, "levelId", this);
+        Input levelId = new Input(Editor.leftWidth + 20 + 300 + 20, Editor.lowerY + 40, 70, 30, 2f, "levelId", this);
         levelId.setText("Level Id");
 
-        Input levelGForceX = new Input(Editor.leftWidth + 20 + 100 + 70 + 100, Editor.lowerY + 40, 70, 30, 2f, "levelGForceX", this);
+        Input levelGForceX = new Input(Editor.leftWidth + 20 + 300 + 70 + 100, Editor.lowerY + 40, 70, 30, 2f, "levelGForceX", this);
         levelGForceX.setText("GForce X");
 
-        Input levelGForceY = new Input(Editor.leftWidth + 20 + 100 + 140 + 120, Editor.lowerY + 40, 70, 30, 2f, "levelGForceY", this);
+        Input levelGForceY = new Input(Editor.leftWidth + 20 + 300 + 140 + 120, Editor.lowerY + 40, 70, 30, 2f, "levelGForceY", this);
         levelGForceY.setText("GForce Y");
 
-        Input levelWidth = new Input(Editor.leftWidth + 20 + 100 + 210 + 180, Editor.lowerY + 40, 70, 30, 2f, "levelWidth", this);
+        Input levelWidth = new Input(Editor.leftWidth + 20 + 300 + 210 + 180, Editor.lowerY + 40, 70, 30, 2f, "levelWidth", this);
         levelWidth.setText("Width");
 
-        Input levelHeight = new Input(Editor.leftWidth + 20 + 100 + 280 + 180, Editor.lowerY + 40, 70, 30, 2f, "levelHeight", this);
+        Input levelHeight = new Input(Editor.leftWidth + 20 + 300 + 280 + 180, Editor.lowerY + 40, 70, 30, 2f, "levelHeight", this);
         levelHeight.setText("Width");
 
         Button saveButton = new Button(Editor.leftWidth + 20, Editor.lowerY + 80, this, "Save", "saveButton");
