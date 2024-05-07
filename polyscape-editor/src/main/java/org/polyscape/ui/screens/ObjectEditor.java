@@ -15,6 +15,7 @@ import org.polyscape.ui.component.button.Button;
 import org.polyscape.ui.component.checkbox.CheckBox;
 import org.polyscape.ui.component.checkbox.CheckBoxType;
 import org.polyscape.ui.component.input.Input;
+import org.polyscape.ui.component.lable.Label;
 
 import static org.polyscape.ui.screens.Editor.saveObjects;
 
@@ -74,11 +75,16 @@ public final class ObjectEditor extends Screen {
         components.clear();
         FontMac font = new FontMac("Segoe UI", 22);
         setFont(font);
+
         Input posX = new Input(Editor.leftWidth + 20, Editor.lowerY + 40, 70, 30, 2f, "posX", this);
         posX.setText("X");
 
+        Label posXLabel = new Label(0, -5, "Pos X", "posXLabel", this, posX);
+
         Input posY = new Input(Editor.leftWidth + 20 + 70 + 20, Editor.lowerY + 40, 70, 30, 2f, "posY", this);
         posY.setText("Y");
+
+        Label posYLabel = new Label(0, -5, "Pos Y", "posYLabel", this, posY);
 
         Input angle = new Input(Editor.leftWidth + 20 + (70*2) + 40, Editor.lowerY + 40, 70, 30, 2f, "angle", this);
         posY.setText("Angle");
@@ -201,7 +207,9 @@ public final class ObjectEditor extends Screen {
 
 
         addComponent(posX);
+        addComponent(posXLabel);
         addComponent(posY);
+        addComponent(posYLabel);
         addComponent(angle);
         addComponent(width);
         addComponent(height);

@@ -2,6 +2,7 @@ package org.polyscape.rendering;
 
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.polyscape.Profile;
@@ -10,6 +11,8 @@ import org.polyscape.rendering.elements.Color;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
+import static org.lwjgl.opengl.GL15C.GL_ARRAY_BUFFER;
+import static org.lwjgl.opengl.GL15C.glGenBuffers;
 
 
 public final class Renderer {
@@ -17,6 +20,7 @@ public final class Renderer {
 
     private int fbo;
     private int rbo;
+    private int vbo;
 
     private double fpsCap = 1d / 120d;
 
@@ -63,6 +67,10 @@ public final class Renderer {
 
         this.fbo = GL30.glGenFramebuffers();
         GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, this.fbo);
+
+        this.vbo = glGenBuffers();
+        GL30.glBindBuffer(GL_ARRAY_BUFFER, this.vbo);
+
 
         this.rbo = GL30.glGenRenderbuffers();
         GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, this.rbo);

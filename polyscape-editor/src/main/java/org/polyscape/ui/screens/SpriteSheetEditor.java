@@ -23,6 +23,8 @@ public final class SpriteSheetEditor extends Screen {
         setFont(font);
 
         Input fileName = new Input(Editor.leftWidth + 20, Editor.lowerY + 40, 70, 30, 2f, "fileName", this);
+
+
     }
 
     @Override
