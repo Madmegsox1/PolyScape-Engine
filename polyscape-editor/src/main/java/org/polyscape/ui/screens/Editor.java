@@ -107,7 +107,7 @@ public final class Editor extends Screen {
         FontMac font = new FontMac("Segoe UI", 25);
         setFont(font);
 
-        Button lvlButton = new Button(5, (lowerY + lowerHeight) - 40, this, "Levels", "lvlButton");
+        Button lvlButton = new Button(5, (lowerY + lowerHeight) - 60, this, "Levels", "lvlButton");
         lvlButton.setClickAction(n -> {
             UiEngine.getScreenManager().setCurrentUi(2, "LevelList");
             UiEngine.getScreenManager().setScreenModel(2, info);
@@ -115,7 +115,7 @@ public final class Editor extends Screen {
         lvlButton.baseColor = Profile.UiThemes.Dark.accent2;
 
 
-        Button objButton = new Button(font.getWidth("Levels") + 20, (lowerY + lowerHeight) - 40, this, "Objects", "objButton");
+        Button objButton = new Button(font.getWidth("Levels") + 20, (lowerY + lowerHeight) - 60, this, "Objects", "objButton");
         objButton.setClickAction(n -> {
             UiEngine.getScreenManager().setCurrentUi(2, "ObjectList");
             UiEngine.getScreenManager().setScreenModel(2, info);

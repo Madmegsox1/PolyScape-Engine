@@ -43,17 +43,25 @@ public final class ObjectEditor extends Screen {
         if(!object.getBody().isActive()){
             getComponentById("bodyButton").setText("Create Physics");
             getComponentById("dynamic").hidden = true;
+
             getComponentById("friction").hidden = true;
+            getComponentById("frictionLabel").hidden = true;
             getComponentById("density").hidden = true;
+            getComponentById("densityLabel").hidden = true;
             getComponentById("linearDamping").hidden = true;
+            getComponentById("linearLabel").hidden = true;
             getComponentById("angleCals").hidden = true;
         }
         else {
             getComponentById("bodyButton").setText("Destroy Physics");
             getComponentById("dynamic").hidden = false;
+
             getComponentById("friction").hidden = false;
+            getComponentById("frictionLabel").hidden = false;
             getComponentById("density").hidden = false;
+            getComponentById("densityLabel").hidden = false;
             getComponentById("linearDamping").hidden = false;
+            getComponentById("linearLabel").hidden = false;
             getComponentById("angleCals").hidden = false;
         }
 
@@ -89,32 +97,45 @@ public final class ObjectEditor extends Screen {
         Input angle = new Input(Editor.leftWidth + 20 + (70*2) + 40, Editor.lowerY + 40, 70, 30, 2f, "angle", this);
         posY.setText("Angle");
 
+        Label angleLabel = new Label(0, -5, "Angle", "angleLabel", this, angle);
+
         Input width = new Input(Editor.leftWidth + 20 + (70*3) + 100, Editor.lowerY + 40, 70, 30, 2f, "width", this);
         posY.setText("Width");
+
+        Label widthLabel = new Label(0, -5, "Width", "widthLabel", this, width);
 
         Input height = new Input(Editor.leftWidth + 20 + (70*4) + 120, Editor.lowerY + 40, 70, 30, 2f, "height", this);
         posY.setText("height");
 
+        Label heightLabel = new Label(0, -5, "Height", "heightLabel", this, height);
+
         Button bodyButton = getButton();
 
-        Input texture = new Input(Editor.leftWidth + 20, Editor.lowerY + 80, 150, 30, 2f, "texture", this);
+        Input texture = new Input(Editor.leftWidth + 20, Editor.lowerY + 95, 150, 30, 2f, "texture", this);
         texture.setText("Texture");
 
-        CheckBox dynamic = new CheckBox(Editor.leftWidth + 20 + 150 + 20, Editor.lowerY + 80, "dynamic", CheckBoxType.Untextured, this);
+        Label textureLabel = new Label(0, -5, "Texture", "textureLabel", this, texture);
+
+        CheckBox dynamic = new CheckBox(Editor.leftWidth + 20 + 150 + 20, Editor.lowerY + 95, "dynamic", CheckBoxType.Untextured, this);
         dynamic.setText("Dynamic Object");
         dynamic.baseColor = (Profile.UiThemes.Dark.foregroundDark);
 
-        Input friction = new Input(Editor.leftWidth + 20 + 150 + 200, Editor.lowerY + 80, 70,30,2f,"friction", this);
+        Input friction = new Input(Editor.leftWidth + 20 + 150 + 200, Editor.lowerY + 95, 70,30,2f,"friction", this);
         friction.setText("Friction");
 
-        Input density = new Input(Editor.leftWidth + 20 + 150 + 300, Editor.lowerY + 80, 70,30,2f,"density", this);
+        Label frictionLabel = new Label(0, -5, "Friction", "frictionLabel", this, friction);
+
+        Input density = new Input(Editor.leftWidth + 20 + 150 + 300, Editor.lowerY + 95, 70,30,2f,"density", this);
         density.setText("Density");
 
-        Input linearDamping = new Input(Editor.leftWidth + 20 + 150 + 400, Editor.lowerY + 80, 70,30,2f,"linearDamping", this);
+        Label densityLabel = new Label(0, -5, "Density", "densityLabel", this, density);
+
+        Input linearDamping = new Input(Editor.leftWidth + 20 + 150 + 400, Editor.lowerY + 95, 70,30,2f,"linearDamping", this);
         linearDamping.setText("Damping");
 
+        Label linearLabel = new Label(0, -5, "Damping", "linearLabel", this, linearDamping);
 
-        CheckBox angleCals = new CheckBox(Editor.leftWidth + 20 + 150 + 500, Editor.lowerY + 80, "angleCals", CheckBoxType.Untextured, this);
+        CheckBox angleCals = new CheckBox(Editor.leftWidth + 20 + 150 + 500, Editor.lowerY + 95, "angleCals", CheckBoxType.Untextured, this);
         angleCals.setText("Fixed Angles");
         angleCals.baseColor = (Profile.UiThemes.Dark.foregroundDark);
 
@@ -211,13 +232,20 @@ public final class ObjectEditor extends Screen {
         addComponent(posY);
         addComponent(posYLabel);
         addComponent(angle);
+        addComponent(angleLabel);
         addComponent(width);
+        addComponent(widthLabel);
         addComponent(height);
+        addComponent(heightLabel);
         addComponent(texture);
+        addComponent(textureLabel);
         addComponent(dynamic);
         addComponent(friction);
+        addComponent(frictionLabel);
         addComponent(density);
+        addComponent(densityLabel);
         addComponent(linearDamping);
+        addComponent(linearLabel);
         addComponent(angleCals);
         addComponent(bodyButton);
     }

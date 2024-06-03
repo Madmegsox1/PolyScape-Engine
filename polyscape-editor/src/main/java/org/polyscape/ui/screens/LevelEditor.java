@@ -11,6 +11,7 @@ import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.ui.Screen;
 import org.polyscape.ui.component.button.Button;
 import org.polyscape.ui.component.input.Input;
+import org.polyscape.ui.component.lable.Label;
 
 public class LevelEditor extends Screen {
     Level level;
@@ -37,20 +38,32 @@ public class LevelEditor extends Screen {
         Input levelName = new Input(Editor.leftWidth + 20, Editor.lowerY + 40, 300, 30, 2f, "levelName", this);
         levelName.setText("Level Name");
 
+        Label nameLabel = new Label(0, -5, "Name", "nameLabel", this, levelName);
+
         Input levelId = new Input(Editor.leftWidth + 20 + 300 + 20, Editor.lowerY + 40, 70, 30, 2f, "levelId", this);
         levelId.setText("Level Id");
+
+        Label idLabel = new Label(0, -5, "ID", "idLabel", this, levelId);
 
         Input levelGForceX = new Input(Editor.leftWidth + 20 + 300 + 70 + 100, Editor.lowerY + 40, 70, 30, 2f, "levelGForceX", this);
         levelGForceX.setText("GForce X");
 
+        Label gxLabel = new Label(0, -5, "GForce X", "gxLabel", this, levelGForceX);
+
         Input levelGForceY = new Input(Editor.leftWidth + 20 + 300 + 140 + 120, Editor.lowerY + 40, 70, 30, 2f, "levelGForceY", this);
         levelGForceY.setText("GForce Y");
+
+        Label gyLabel = new Label(0, -5, "GForce Y", "gyLabel", this, levelGForceY);
 
         Input levelWidth = new Input(Editor.leftWidth + 20 + 300 + 210 + 180, Editor.lowerY + 40, 70, 30, 2f, "levelWidth", this);
         levelWidth.setText("Width");
 
+        Label widthLabel = new Label(0, -5, "Width", "widthLabel", this, levelWidth);
+
         Input levelHeight = new Input(Editor.leftWidth + 20 + 300 + 280 + 180, Editor.lowerY + 40, 70, 30, 2f, "levelHeight", this);
-        levelHeight.setText("Width");
+        levelHeight.setText("Height");
+
+        Label heightLabel = new Label(0, -5, "Height", "heightLabel", this, levelHeight);
 
         Button saveButton = new Button(Editor.leftWidth + 20, Editor.lowerY + 80, this, "Save", "saveButton");
         saveButton.baseColor = Profile.UiThemes.Dark.accent2;
@@ -78,11 +91,17 @@ public class LevelEditor extends Screen {
 
 
         addComponent(levelName);
+        addComponent(nameLabel);
         addComponent(levelId);
+        addComponent(idLabel);
         addComponent(levelGForceX);
+        addComponent(gxLabel);
         addComponent(levelGForceY);
+        addComponent(gyLabel);
         addComponent(levelWidth);
+        addComponent(widthLabel);
         addComponent(levelHeight);
+        addComponent(heightLabel);
         addComponent(saveButton);
     }
 
