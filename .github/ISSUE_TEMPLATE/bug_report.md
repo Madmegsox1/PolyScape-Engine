@@ -7,6 +7,10 @@ assignees: ''
 
 ---
 
+**Is the bug within Polyscape Engine or Polyscape Editor**
+- [ ] Editor
+- [ ] Engine 
+
 **Describe the bug**
 A clear and concise description of what the bug is.
 
