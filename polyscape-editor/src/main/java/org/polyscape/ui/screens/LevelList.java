@@ -1,6 +1,5 @@
 package org.polyscape.ui.screens;
 
-import org.polyscape.Loader;
 import org.polyscape.Profile;
 import org.polyscape.font.FontMac;
 import org.polyscape.object.Level;
@@ -25,12 +24,15 @@ public class LevelList extends Screen {
 
         components.clear();
         for (var lvl : ObjectManager.getLevels()) {
-            Button button = getButton(lvl);
+            Button button = getLvlButton(lvl);
             buttonY += 10;
             buttonY += font.getHeight(button.getText());
             button.baseColor = Profile.UiThemes.Dark.foregroundDark;
             addComponent(button);
         }
+
+        Button newLevel = getLvlButton();
+        addComponent(newLevel);
 
         UiEngine.getScreenManager().setCurrentUi(1, "LevelEditor");
         UiEngine.getScreenManager().setScreenModel(1, ObjectManager.getCurrentLevel());
@@ -40,7 +42,21 @@ public class LevelList extends Screen {
 
     }
 
-    private Button getButton(Level lvl) {
+    private Button getLvlButton() {
+        Button newLevel = new Button(5, (Editor.lowerY + Editor.lowerHeight) - 100, this, "Add Level", "addLevelButton");
+        newLevel.setClickAction(n -> {
+            Level newLvl = new Level(ObjectManager.getLevels().size() + 1, "New Level");
+            newLvl.levelWidth = 100;
+            newLvl.levelHeight = 100;
+            ObjectManager.addLevel(newLvl);
+            ObjectManager.loadLevel(newLvl.getLevelNumber());
+
+            // TODO refresh UI to add level button
+        });
+        return newLevel;
+    }
+
+    private Button getLvlButton(Level lvl) {
         Button button = new Button(5, buttonY, this, lvl.getLevelName(), "LvlButton:" + lvl.getLevelNumber());
         button.setClickAction(n -> {
             int previousLvl = ObjectManager.getCurrentLevel().getLevelNumber();
