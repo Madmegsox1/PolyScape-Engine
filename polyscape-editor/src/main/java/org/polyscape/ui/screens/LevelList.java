@@ -5,6 +5,7 @@ import org.polyscape.font.FontMac;
 import org.polyscape.object.Level;
 import org.polyscape.object.ObjectManager;
 import org.polyscape.project.model.ProjectInfo;
+import org.polyscape.rendering.Display;
 import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;
@@ -43,7 +44,7 @@ public class LevelList extends Screen {
     }
 
     private Button getLvlButton() {
-        Button newLevel = new Button(5, (Editor.lowerY + Editor.lowerHeight) - 100, this, "Add Level", "addLevelButton");
+        Button newLevel = new Button(5, Profile.Display.HEIGHT - 140, this, "Add Level", "addLevelButton");
         newLevel.setClickAction(n -> {
             Level newLvl = new Level(ObjectManager.getLevels().size() + 1, "New Level");
             newLvl.levelWidth = 100;

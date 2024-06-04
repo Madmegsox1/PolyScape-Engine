@@ -5,6 +5,8 @@ import org.lwjgl.glfw.GLFW;
 import org.polyscape.Profile;
 import org.polyscape.font.FontMac;
 import org.polyscape.object.BaseObject;
+import org.polyscape.rendering.RenderEngine;
+import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.elements.Texture;
 import org.polyscape.rendering.elements.Vector2;
 import org.polyscape.rendering.events.KeyEvent;
@@ -84,58 +86,58 @@ public final class ObjectEditor extends Screen {
         FontMac font = new FontMac("Segoe UI", 22);
         setFont(font);
 
-        Input posX = new Input(Editor.leftWidth + 20, Editor.lowerY + 40, 70, 30, 2f, "posX", this);
+        Input posX = new Input(Editor.leftWidth + 20, Editor.lowerY + 50, 70, 30, 2f, "posX", this);
         posX.setText("X");
 
         Label posXLabel = new Label(0, -5, "Pos X", "posXLabel", this, posX);
 
-        Input posY = new Input(Editor.leftWidth + 20 + 70 + 20, Editor.lowerY + 40, 70, 30, 2f, "posY", this);
+        Input posY = new Input(Editor.leftWidth + 20 + 70 + 20, Editor.lowerY + 50, 70, 30, 2f, "posY", this);
         posY.setText("Y");
 
         Label posYLabel = new Label(0, -5, "Pos Y", "posYLabel", this, posY);
 
-        Input angle = new Input(Editor.leftWidth + 20 + (70*2) + 40, Editor.lowerY + 40, 70, 30, 2f, "angle", this);
+        Input angle = new Input(Editor.leftWidth + 20 + (70*2) + 40, Editor.lowerY + 50, 70, 30, 2f, "angle", this);
         posY.setText("Angle");
 
         Label angleLabel = new Label(0, -5, "Angle", "angleLabel", this, angle);
 
-        Input width = new Input(Editor.leftWidth + 20 + (70*3) + 100, Editor.lowerY + 40, 70, 30, 2f, "width", this);
+        Input width = new Input(Editor.leftWidth + 20 + (70*3) + 100, Editor.lowerY + 50, 70, 30, 2f, "width", this);
         posY.setText("Width");
 
         Label widthLabel = new Label(0, -5, "Width", "widthLabel", this, width);
 
-        Input height = new Input(Editor.leftWidth + 20 + (70*4) + 120, Editor.lowerY + 40, 70, 30, 2f, "height", this);
+        Input height = new Input(Editor.leftWidth + 20 + (70*4) + 120, Editor.lowerY + 50, 70, 30, 2f, "height", this);
         posY.setText("height");
 
         Label heightLabel = new Label(0, -5, "Height", "heightLabel", this, height);
 
         Button bodyButton = getButton();
 
-        Input texture = new Input(Editor.leftWidth + 20, Editor.lowerY + 95, 150, 30, 2f, "texture", this);
+        Input texture = new Input(Editor.leftWidth + 20, Editor.lowerY + 105, 150, 30, 2f, "texture", this);
         texture.setText("Texture");
 
         Label textureLabel = new Label(0, -5, "Texture", "textureLabel", this, texture);
 
-        CheckBox dynamic = new CheckBox(Editor.leftWidth + 20 + 150 + 20, Editor.lowerY + 95, "dynamic", CheckBoxType.Untextured, this);
+        CheckBox dynamic = new CheckBox(Editor.leftWidth + 20 + 150 + 20, Editor.lowerY + 105, "dynamic", CheckBoxType.Untextured, this);
         dynamic.setText("Dynamic Object");
         dynamic.baseColor = (Profile.UiThemes.Dark.foregroundDark);
 
-        Input friction = new Input(Editor.leftWidth + 20 + 150 + 200, Editor.lowerY + 95, 70,30,2f,"friction", this);
+        Input friction = new Input(Editor.leftWidth + 20 + 150 + 200, Editor.lowerY + 105, 70,30,2f,"friction", this);
         friction.setText("Friction");
 
         Label frictionLabel = new Label(0, -5, "Friction", "frictionLabel", this, friction);
 
-        Input density = new Input(Editor.leftWidth + 20 + 150 + 300, Editor.lowerY + 95, 70,30,2f,"density", this);
+        Input density = new Input(Editor.leftWidth + 20 + 150 + 300, Editor.lowerY + 105, 70,30,2f,"density", this);
         density.setText("Density");
 
         Label densityLabel = new Label(0, -5, "Density", "densityLabel", this, density);
 
-        Input linearDamping = new Input(Editor.leftWidth + 20 + 150 + 400, Editor.lowerY + 95, 70,30,2f,"linearDamping", this);
+        Input linearDamping = new Input(Editor.leftWidth + 20 + 150 + 400, Editor.lowerY + 105, 70,30,2f,"linearDamping", this);
         linearDamping.setText("Damping");
 
         Label linearLabel = new Label(0, -5, "Damping", "linearLabel", this, linearDamping);
 
-        CheckBox angleCals = new CheckBox(Editor.leftWidth + 20 + 150 + 500, Editor.lowerY + 95, "angleCals", CheckBoxType.Untextured, this);
+        CheckBox angleCals = new CheckBox(Editor.leftWidth + 20 + 150 + 500, Editor.lowerY + 105, "angleCals", CheckBoxType.Untextured, this);
         angleCals.setText("Fixed Angles");
         angleCals.baseColor = (Profile.UiThemes.Dark.foregroundDark);
 
@@ -280,6 +282,7 @@ public final class ObjectEditor extends Screen {
     public void render(RenderEvent event) {
         if(object != null) {
             font.renderText(object.getClass().getSimpleName() + object.getObjectId(), new Vector2(Editor.leftWidth + 20, Editor.lowerY+20), Profile.UiThemes.Dark.foregroundDark);
+
         }
     }
 

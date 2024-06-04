@@ -46,7 +46,7 @@ public final class Editor extends Screen {
     public static ProjectInfo info;
     Texture t;
 
-    public static int lowerY = 940;
+    public static int lowerY = 900;
     public static int lowerHeight = 140;
     boolean draggingLower;
 
@@ -183,9 +183,14 @@ public final class Editor extends Screen {
         RenderEngine.drawQuadTexture(new Vector2(0, 0), ObjectManager.getCurrentLevel().levelWidth,  ObjectManager.getCurrentLevel().levelHeight, 0, 0, ObjectManager.getCurrentLevel().levelWidth/20f, ObjectManager.getCurrentLevel().levelHeight/20f, t);
 
         ObjectManager.renderObjects(event.alpha);
+
+        if(selectedObject != null) {
+            RenderEngine.drawLine(selectedObject.getCenter(), new Vector2(selectedObject.getCenter().x + selectedObject.getWidth() + 30, selectedObject.getCenter().y), 2f, Color.RED);
+            RenderEngine.drawLine(selectedObject.getCenter(), new Vector2(selectedObject.getCenter().x,selectedObject.getCenter().y - selectedObject.getHeight() - 30), 2f, Color.GREEN);
+        }
         glPopMatrix();
 
-        RenderEngine.drawQuadA(new Vector2(leftWidth, lowerY), Profile.Display.WIDTH, lowerHeight, Profile.UiThemes.Dark.background);
+        RenderEngine.drawQuadA(new Vector2(leftWidth, lowerY), Profile.Display.WIDTH, Profile.Display.HEIGHT, Profile.UiThemes.Dark.background);
         RenderEngine.drawLine(new Vector2(leftWidth, lowerY), new Vector2(Profile.Display.WIDTH, lowerY), 8f, Profile.UiThemes.Dark.foregroundDark);
 
         RenderEngine.drawQuadA(new Vector2(0, 0), leftWidth, Profile.Display.HEIGHT, Profile.UiThemes.Dark.background);
