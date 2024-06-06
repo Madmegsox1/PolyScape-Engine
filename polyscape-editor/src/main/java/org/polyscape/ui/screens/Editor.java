@@ -61,6 +61,12 @@ public final class Editor extends Screen {
 
     boolean draggingLeft;
 
+    boolean draggingObjectX;
+
+    boolean draggingObjectY;
+
+    Vector2 draggingVectorObject ;
+
     int selectedId = -1;
 
     BaseObject selectedObject;
@@ -143,7 +149,25 @@ public final class Editor extends Screen {
         cameraVector = new Vector2(0, 0);
         cameraZoom = 1f;
         startCameraDrag = new Vector2(0, 0);
+        draggingVectorObject = new Vector2(0, 0);
+
         GLFW.glfwSetCursorPosCallback(Engine.getDisplay().getWindow(), (w, mx, my) -> {
+            if(draggingObjectX){
+                Vector2 worldMx = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                float dx = (worldMx.x - draggingVectorObject.x);
+                selectedObject.addToPos(dx, 0);
+
+                draggingVectorObject.x = worldMx.x;
+            }
+
+            if(draggingObjectY){
+                Vector2 worldMy = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                float dy = (worldMy.y - draggingVectorObject.y);
+                selectedObject.addToPos(0, dy);
+
+                draggingVectorObject.y = worldMy.y;
+            }
+
             if (draggingCamera) {
                 float dx = (float) (mx - startCameraDrag.x);
                 float dy = (float) (my - startCameraDrag.y);
@@ -228,6 +252,29 @@ public final class Editor extends Screen {
 
     @Override
     public void click(MouseClickEvent event) {
+
+        if(event.action == 1 && isWithinBoundsOfDragY()){
+            draggingVectorObject = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+            draggingObjectY = true;
+            return;
+        }
+
+        if(event.action == 0 && draggingObjectY){
+            saveObjects();
+            draggingObjectY = false;
+        }
+
+        if(event.action == 1 && isWithinBoundsOfDragX()){
+            draggingVectorObject = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+            draggingObjectX = true;
+            return;
+        }
+
+        if(event.action == 0 && draggingObjectX){
+            saveObjects();
+            draggingObjectX = false;
+        }
+
         if (event.action == 1 && inBoundsOfBLine(event)) {
             draggingLower = true;
         }
@@ -345,6 +392,25 @@ public final class Editor extends Screen {
                 }
             }
         }
+    }
+
+    private boolean isWithinBoundsOfDragY() {
+        Vector2 v2 = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+        if(selectedObject == null) return false;
+
+        if(v2.y <= selectedObject.getCenter().y && v2.y >= selectedObject.getCenter().y - selectedObject.getHeight() - 30) {
+            return v2.x >= selectedObject.getCenter().x - 2 && v2.x <= selectedObject.getCenter().x + 2;
+        }
+        return false;
+    }
+
+    private boolean isWithinBoundsOfDragX() {
+        Vector2 v2 = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+        if(selectedObject == null) return false;
+        if(v2.x >= selectedObject.getCenter().x && v2.x <= selectedObject.getCenter().x + selectedObject.getWidth() + 30) {
+            return v2.y >= selectedObject.getCenter().y - 2 && v2.y <= selectedObject.getCenter().y + 2;
+        }
+        return false;
     }
 
     private void duplicateObject(Vector2 pos) {

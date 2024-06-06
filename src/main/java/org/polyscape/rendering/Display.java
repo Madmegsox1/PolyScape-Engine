@@ -54,8 +54,6 @@ public final class Display {
         double worldX = mouseX / scale;
         double worldY = mouseY / scale;
 
-        // Then, adjust for camera translation
-        // Here, we subtract the camera position to reverse the translation applied for rendering
         worldX -= cameraPosition.x / scale;
         worldY -= cameraPosition.y / scale;
 

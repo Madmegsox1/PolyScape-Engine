@@ -215,7 +215,7 @@ public class BaseObject extends RenderProperty {
         return new Vector2(interpX, interpY);
     }
 
-    public void addToPos(int x, int y) {
+    public void addToPos(float x, float y) {
         position.addToVect(x, y);
         //ObjectManager.world.destroyBody(this.body);
         //setUpPhysicsBody(this.bodyDef.type);
