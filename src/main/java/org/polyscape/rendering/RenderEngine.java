@@ -1,6 +1,7 @@
 package org.polyscape.rendering;
 
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
 import org.polyscape.Engine;
 import org.polyscape.object.ObjectManager;
 import org.polyscape.rendering.elements.Color;
@@ -69,6 +70,25 @@ public final class RenderEngine {
 
         glEnd();
         glPopMatrix();
+    }
+
+    public static void drawHollowCircle(final Vector2 center, final float radius, final int segments, final float width, final Color color) {
+        final float[] c = Color.convertColorToFloatAlpha(color);
+        glPushMatrix();
+        glColor4f(c[0], c[1], c[2], c[3]);
+        glLineWidth(width);
+        glBegin(GL11.GL_LINE_LOOP);
+
+        for (int i = 0; i < segments; i++) {
+            double theta = 2.0f * Math.PI * i / segments;
+            float x = (float) (radius * Math.cos(theta));
+            float y = (float) (radius * Math.sin(theta));
+
+            GL11.glVertex2f(center.x + x, center.y + y);
+        }
+
+        GL11.glEnd();
+        GL11.glPopMatrix();
     }
 
 

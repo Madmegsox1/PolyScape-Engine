@@ -5,8 +5,6 @@ import org.lwjgl.glfw.GLFW;
 import org.polyscape.Profile;
 import org.polyscape.font.FontMac;
 import org.polyscape.object.BaseObject;
-import org.polyscape.rendering.RenderEngine;
-import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.elements.Texture;
 import org.polyscape.rendering.elements.Vector2;
 import org.polyscape.rendering.events.KeyEvent;

@@ -20,6 +20,7 @@ import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;
 import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.rendering.events.ResizeWindowEvent;
+import org.polyscape.ui.MovementMode;
 import org.polyscape.ui.Screen;
 import org.polyscape.ui.UiEngine;
 import org.polyscape.ui.component.button.Button;
@@ -65,13 +66,25 @@ public final class Editor extends Screen {
 
     boolean draggingObjectY;
 
-    Vector2 draggingVectorObject ;
+    boolean draggingObjectRot;
+
+    Vector2 draggingVectorObject;
+
+    Vector2 draggingRotVector;
+
+    float previousAngle;
 
     int selectedId = -1;
 
     BaseObject selectedObject;
 
     int objectButtonY = 30;
+
+    MovementMode movementMode;
+
+    Button moveButton;
+
+    Button rotateButton;
 
     @Override
     public void model() {
@@ -108,6 +121,7 @@ public final class Editor extends Screen {
 
     @Override
     public void onLoad() {
+        movementMode = MovementMode.MOVE;
         t = new Texture("transparent");
         draggingLower = false;
         FontMac font = new FontMac("Segoe UI", 25);
@@ -152,20 +166,33 @@ public final class Editor extends Screen {
         draggingVectorObject = new Vector2(0, 0);
 
         GLFW.glfwSetCursorPosCallback(Engine.getDisplay().getWindow(), (w, mx, my) -> {
-            if(draggingObjectX){
-                Vector2 worldMx = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
-                float dx = (worldMx.x - draggingVectorObject.x);
-                selectedObject.addToPos(dx, 0);
+            if(movementMode == MovementMode.MOVE) {
+                if (draggingObjectX) {
+                    Vector2 worldMx = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                    float dx = (worldMx.x - draggingVectorObject.x);
+                    selectedObject.addToPos(dx, 0);
 
-                draggingVectorObject.x = worldMx.x;
+                    draggingVectorObject.x = worldMx.x;
+                }
+
+                if (draggingObjectY) {
+                    Vector2 worldMy = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                    float dy = (worldMy.y - draggingVectorObject.y);
+                    selectedObject.addToPos(0, dy);
+
+                    draggingVectorObject.y = worldMy.y;
+                }
             }
+            else if(movementMode == MovementMode.ROTATE) {
+                if(draggingObjectRot) {
+                    Vector2 worldMy = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
 
-            if(draggingObjectY){
-                Vector2 worldMy = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
-                float dy = (worldMy.y - draggingVectorObject.y);
-                selectedObject.addToPos(0, dy);
+                    float endAngle = calculateAngle(worldMy, selectedObject.getCenter());
+                    float diff = endAngle - previousAngle;
 
-                draggingVectorObject.y = worldMy.y;
+                    selectedObject.setAngle(selectedObject.getAngle() + -Math.toDegrees(diff));
+                    previousAngle = endAngle;
+                }
             }
 
             if (draggingCamera) {
@@ -187,6 +214,21 @@ public final class Editor extends Screen {
         });
 
 
+        Button moveButton = new Button(leftWidth + 10, 50, this, "Move Mode", "moveButton");
+        moveButton.setClickAction(n -> {
+            this.movementMode = MovementMode.MOVE;
+        });
+
+        this.moveButton = moveButton;
+        addComponent(moveButton);
+
+        Button rotateButton = new Button(leftWidth + 140, 50, this, "Rotate Mode", "rotateButton");
+        rotateButton.setClickAction(n -> {
+            this.movementMode = MovementMode.ROTATE;
+        });
+
+        this.rotateButton = rotateButton;
+        addComponent(rotateButton);
     }
 
     @Override
@@ -208,9 +250,12 @@ public final class Editor extends Screen {
 
         ObjectManager.renderObjects(event.alpha);
 
-        if(selectedObject != null) {
+        if(selectedObject != null && movementMode == MovementMode.MOVE) {
             RenderEngine.drawLine(selectedObject.getCenter(), new Vector2(selectedObject.getCenter().x + selectedObject.getWidth() + 30, selectedObject.getCenter().y), 2f, Color.RED);
             RenderEngine.drawLine(selectedObject.getCenter(), new Vector2(selectedObject.getCenter().x,selectedObject.getCenter().y - selectedObject.getHeight() - 30), 2f, Color.GREEN);
+        }
+        if(selectedObject != null && movementMode == MovementMode.ROTATE) {
+            RenderEngine.drawHollowCircle(selectedObject.getCenter(), selectedObject.getWidth(), 100, 2f, Color.BLUE);
         }
         glPopMatrix();
 
@@ -223,6 +268,10 @@ public final class Editor extends Screen {
         if (selectedId != -1) {
             font.renderText(selectedObject.getPosition().toString(), new Vector2(leftWidth + 10, 30), Profile.UiThemes.Dark.foregroundDark);
         }
+
+        moveButton.setPosition(leftWidth + 10, 50);
+        rotateButton.setPosition(leftWidth + 140, 50);
+
 
     }
 
@@ -253,27 +302,42 @@ public final class Editor extends Screen {
     @Override
     public void click(MouseClickEvent event) {
 
-        if(event.action == 1 && isWithinBoundsOfDragY()){
-            draggingVectorObject = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
-            draggingObjectY = true;
-            return;
+        if(movementMode == MovementMode.MOVE) {
+            if (event.action == 1 && isWithinBoundsOfDragY()) {
+                draggingVectorObject = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                draggingObjectY = true;
+                return;
+            }
+
+            if (event.action == 0 && draggingObjectY) {
+                saveObjects();
+                draggingObjectY = false;
+            }
+
+            if (event.action == 1 && isWithinBoundsOfDragX()) {
+                draggingVectorObject = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                draggingObjectX = true;
+                return;
+            }
+
+            if(event.action == 0 && draggingObjectX){
+                saveObjects();
+                draggingObjectX = false;
+            }
+        }
+        else if(movementMode == MovementMode.ROTATE) {
+            if(event.action == 1 && isWithingBoundsOfRot()) {
+                draggingVectorObject = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                previousAngle = 0f;
+                draggingObjectRot = true;
+                return;
+            }
+            if(event.action == 0 && draggingObjectRot) {
+                saveObjects();
+                draggingObjectRot = false;
+            }
         }
 
-        if(event.action == 0 && draggingObjectY){
-            saveObjects();
-            draggingObjectY = false;
-        }
-
-        if(event.action == 1 && isWithinBoundsOfDragX()){
-            draggingVectorObject = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
-            draggingObjectX = true;
-            return;
-        }
-
-        if(event.action == 0 && draggingObjectX){
-            saveObjects();
-            draggingObjectX = false;
-        }
 
         if (event.action == 1 && inBoundsOfBLine(event)) {
             draggingLower = true;
@@ -411,6 +475,31 @@ public final class Editor extends Screen {
             return v2.y >= selectedObject.getCenter().y - 2 && v2.y <= selectedObject.getCenter().y + 2;
         }
         return false;
+    }
+
+    private boolean isWithingBoundsOfRot(){
+        Vector2 point = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+        if(selectedObject == null) return false;
+        Vector2 center = selectedObject.getCenter();
+        float radius = selectedObject.getWidth();
+        float dx = point.x - center.x;
+        float dy = point.y - center.y;
+        float distance = (float) Math.sqrt(dx * dx + dy * dy);
+
+        // Calculate the acceptable range considering the line width
+        float halfLineWidth = 1.0f;
+        float minRadius = radius - halfLineWidth;
+        float maxRadius = radius + halfLineWidth;
+
+        // Check if the distance is within the range
+        return distance >= minRadius && distance <= maxRadius;
+
+    }
+
+    private float calculateAngle(Vector2 point, Vector2 center) {
+        float dx = point.x - center.x;
+        float dy = point.y - center.y;
+        return (float) Math.atan2(dy, dx);
     }
 
     private void duplicateObject(Vector2 pos) {
