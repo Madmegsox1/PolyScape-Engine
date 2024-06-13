@@ -140,38 +140,28 @@ public final class ObjectEditor extends Screen {
         angleCals.baseColor = (Profile.UiThemes.Dark.foregroundDark);
 
         posX.setUpdateAction((i, text) -> {
-            if(!text.isEmpty()) {
-                object.setPosition(new Vector2(Integer.parseInt(text), object.getPosition().y));
-                saveObjects();
-            }
+            object.setPosition(new Vector2(posX.parseInputFloat(), object.getPosition().y));
+            saveObjects();
         });
 
         posY.setUpdateAction((i, text) -> {
-            if(!text.isEmpty()) {
-                object.setPosition(new Vector2(object.getPosition().x, Integer.parseInt(text)));
-                saveObjects();
-            }
+            object.setPosition(new Vector2(object.getPosition().x, posY.parseInputFloat()));
+            saveObjects();
         });
 
         angle.setUpdateAction((i, text) -> {
-            if(!text.isEmpty()) {
-                object.setAngle(Double.parseDouble(text));
-                saveObjects();
-            }
+            object.setAngle(angle.parseInputFloat());
+            saveObjects();
         });
 
         width.setUpdateAction((i, text) -> {
-            if(!text.isEmpty()) {
-                object.setWidth(Integer.parseInt(text));
-                saveObjects();
-            }
+            object.setWidth(width.parseInputInt());
+            saveObjects();
         });
 
         height.setUpdateAction((i, text) -> {
-            if(!text.isEmpty()) {
-                object.setHeight(Integer.parseInt(text));
-                saveObjects();
-            }
+            object.setHeight(height.parseInputInt());
+            saveObjects();
         });
 
         texture.setUpdateAction((Input i, String text) -> {
@@ -196,24 +186,18 @@ public final class ObjectEditor extends Screen {
         });
 
         friction.setUpdateAction((Input i, String text) -> {
-            if (!text.isEmpty()) {
-                object.setFriction(Float.parseFloat(text), true);
-                saveObjects();
-            }
+            object.setFriction(friction.parseInputFloat(), false);
+            saveObjects();
         });
 
         density.setUpdateAction((Input i, String text) -> {
-            if (!text.isEmpty()) {
-                object.setDensity(Float.parseFloat(text), true);
-                saveObjects();
-            }
+            object.setDensity(density.parseInputFloat(), true);
+            saveObjects();
         });
 
         linearDamping.setUpdateAction((Input i, String text) -> {
-            if (!text.isEmpty()) {
-                object.setLinearDamping(Float.parseFloat(text), true);
-                saveObjects();
-            }
+            object.setLinearDamping(linearDamping.parseInputFloat(), true);
+            saveObjects();
         });
 
         angleCals.setClickAction((c, b) -> {
@@ -292,9 +276,9 @@ public final class ObjectEditor extends Screen {
     @Override
     public void key(KeyEvent event) {
         if(KeyEvent.isKeyDown(GLFW.GLFW_KEY_ENTER)){
-            var x = getComponentById("posX");
-            var y = getComponentById("posY");
-            object.setPosition(new Vector2(Integer.parseInt(x.getText()), Integer.parseInt(y.getText())));
+            var x = (Input) getComponentById("posX");
+            var y = (Input) getComponentById("posY");
+            object.setPosition(new Vector2(x.parseInputFloat(), y.parseInputFloat()));
         }
     }
 }
