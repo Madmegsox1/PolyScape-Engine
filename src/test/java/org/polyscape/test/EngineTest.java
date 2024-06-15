@@ -5,6 +5,7 @@ import org.lwjgl.glfw.GLFW;
 import org.polyscape.Engine;
 import org.polyscape.Profile;
 import org.polyscape.event.EventBus;
+import org.polyscape.event.EventMetadata;
 import org.polyscape.event.IEvent;
 import org.polyscape.font.Font;
 import org.polyscape.font.FontRenderer;
@@ -214,9 +215,9 @@ public class EngineTest extends Engine {
 
         };
 
-        RenderEvent.addEvent(renderEvent, RenderEvent.class);
-        KeyEvent.addEvent(keyEvent, KeyEvent.class);
-        MouseClickEvent.addEvent(mouseEvent, MouseClickEvent.class);
+        RenderEvent.addEvent(renderEvent, new EventMetadata(RenderEvent.class, 0));
+        KeyEvent.addEvent(keyEvent, new EventMetadata(KeyEvent.class, 0));
+        MouseClickEvent.addEvent(mouseEvent, new EventMetadata(MouseClickEvent.class, 0));
 
 
 

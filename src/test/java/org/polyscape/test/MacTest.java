@@ -6,6 +6,7 @@ import org.lwjgl.glfw.GLFW;
 import org.polyscape.Engine;
 import org.polyscape.Profile;
 import org.polyscape.event.EventBus;
+import org.polyscape.event.EventMetadata;
 import org.polyscape.event.IEvent;
 import org.polyscape.object.BaseObject;
 import org.polyscape.object.FluidObject;
@@ -217,9 +218,9 @@ public class MacTest extends Engine {
             }
         };
 
-        RenderEvent.addEvent(renderEvent, RenderEvent.class);
-        KeyEvent.addEvent(keyEvent, KeyEvent.class);
-        MouseClickEvent.addEvent(clickEvent, MouseClickEvent.class);
+        RenderEvent.addEvent(renderEvent, new EventMetadata(RenderEvent.class, 0));
+        KeyEvent.addEvent(keyEvent, new EventMetadata(KeyEvent.class, 0));
+        MouseClickEvent.addEvent(clickEvent, new EventMetadata(MouseClickEvent.class, 0));
 
         ScreenManager screenManager = new ScreenManager();
 

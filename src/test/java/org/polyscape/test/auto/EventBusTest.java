@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.polyscape.event.Event;
 import org.polyscape.event.EventBus;
+import org.polyscape.event.EventMetadata;
 import org.polyscape.event.IEvent;
 
 /**
@@ -28,7 +29,7 @@ public class EventBusTest {
         };
 
 
-        TestEvent.addEvent(event, TestEvent.class);
+        TestEvent.addEvent(event, new EventMetadata(TestEvent.class, 0));
 
         bus.postEvent(new TestEvent(1));
     }

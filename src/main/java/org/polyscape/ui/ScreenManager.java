@@ -1,6 +1,8 @@
 package org.polyscape.ui;
 
+import org.polyscape.event.EventMetadata;
 import org.polyscape.event.IEvent;
+import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.Renderer;
 import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;
@@ -41,9 +43,9 @@ public class ScreenManager {
         IEvent<MouseClickEvent> mouseEvent = n -> currentViewMap.values().forEach(view -> view.onClick(n));
         IEvent<KeyEvent> keyEvent = n -> currentViewMap.values().forEach(view -> view.onKey(n));
 
-        RenderEvent.addEvent(renderEvent, RenderEvent.class);
-        MouseClickEvent.addEvent(mouseEvent, MouseClickEvent.class);
-        KeyEvent.addEvent(keyEvent, KeyEvent.class);
+        RenderEvent.addEvent(renderEvent, new EventMetadata(RenderEvent.class, 0));
+        MouseClickEvent.addEvent(mouseEvent, new EventMetadata(MouseClickEvent.class, 0));
+        KeyEvent.addEvent(keyEvent, new EventMetadata(KeyEvent.class, 0));
     }
 
     public void addScreen(String key, Screen screen) {

@@ -5,6 +5,7 @@ import org.lwjgl.glfw.GLFW;
 import org.polyscape.Engine;
 import org.polyscape.Loader;
 import org.polyscape.Profile;
+import org.polyscape.event.EventMetadata;
 import org.polyscape.event.IEvent;
 import org.polyscape.font.FontMac;
 import org.polyscape.object.BaseObject;
@@ -41,7 +42,7 @@ public final class Editor extends Screen {
             }
         };
 
-        ResizeWindowEvent.addEvent(resizeWindowEventIEvent, ResizeWindowEvent.class);
+        ResizeWindowEvent.addEvent(resizeWindowEventIEvent, new EventMetadata(ResizeWindowEvent.class, 0));
     }
 
     public static ProjectInfo info;
@@ -69,8 +70,6 @@ public final class Editor extends Screen {
     boolean draggingObjectRot;
 
     Vector2 draggingVectorObject;
-
-    Vector2 draggingRotVector;
 
     float previousAngle;
 
@@ -242,7 +241,7 @@ public final class Editor extends Screen {
         if (draggingLeft) {
             leftWidth = (int) Display.getMousePosition(Engine.getDisplay().getWindow()).x;
         }
-        glLoadIdentity(); // Load the identity matrix to reset transformations
+        glLoadIdentity();
         glPushMatrix();
         glTranslatef(cameraVector.x, cameraVector.y, 1.0f);
         glScalef(cameraZoom, cameraZoom, 0f);
