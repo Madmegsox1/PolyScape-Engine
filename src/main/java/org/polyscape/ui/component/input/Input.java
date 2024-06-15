@@ -58,6 +58,34 @@ public class Input extends Component {
 
     }
 
+    public int parseInputInt(){
+        if(text.isEmpty()) return 0;
+        if(text.equals("-"))return 0;
+        try {
+            return Integer.parseInt(text);
+        }catch (NumberFormatException e){
+            return 0;
+        }
+    }
+
+    public float parseInputFloat(){
+        if(text.isEmpty()) return 0;
+        if(text.equals("-"))return 0;
+
+        if(text.endsWith(".")){
+            try {
+                return Float.parseFloat(text.substring(0, text.length() - 1));
+            }catch (NumberFormatException e){
+                return 0;
+            }
+        }
+        try {
+            return Float.parseFloat(text);
+        }catch (NumberFormatException e){
+            return 0;
+        }
+    }
+
     @Override
     public void onComponentClick(ComponentClickEvent event) {
         if (event.action == 0) {

@@ -72,17 +72,17 @@ public class LevelEditor extends Screen {
             if (level != null) {
                 ObjectManager.removeLevel(level.getLevelNumber());
                 level.setLevelName(getComponentById("levelName").getText());
-                level.setLevelNumber(Integer.parseInt(getComponentById("levelId").getText()));
+                level.setLevelNumber(levelId.parseInputInt());
 
-                level.setWorldSettings(new Vec2(Float.parseFloat(getComponentById("levelGForceX").getText()), Float.parseFloat(getComponentById("levelGForceY").getText())));
-                level.levelWidth = Integer.parseInt(getComponentById("levelWidth").getText());
-                level.levelHeight = Integer.parseInt(getComponentById("levelHeight").getText());
+                level.setWorldSettings(new Vec2(levelGForceX.parseInputFloat(), levelGForceY.parseInputFloat()));
+                level.levelWidth = levelWidth.parseInputInt();
+                level.levelHeight = levelHeight.parseInputInt();
                 ObjectManager.addLevel(level);
             } else {
                 Level level = new Level(Integer.parseInt(getComponentById("levelId").getText()), getComponentById("levelName").getText());
-                level.setWorldSettings(new Vec2(Float.parseFloat(getComponentById("levelGForceX").getText()), Float.parseFloat(getComponentById("levelGForceY").getText())));
-                level.levelWidth = Integer.parseInt(getComponentById("levelWidth").getText());
-                level.levelHeight = Integer.parseInt(getComponentById("levelHeight").getText());
+                level.setWorldSettings(new Vec2(levelGForceX.parseInputFloat(), levelGForceY.parseInputFloat()));
+                level.levelWidth = levelWidth.parseInputInt();
+                level.levelHeight = levelHeight.parseInputInt();
                 ObjectManager.addLevel(level);
             }
 
