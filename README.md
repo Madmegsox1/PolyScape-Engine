@@ -4,6 +4,8 @@ Welcome to Polyscape, a 2D game engine built in Java, designed to make game deve
 beginners, while still offering powerful features for more experienced developers. Leveraging libraries such as LWJGL,
 Box2D, and Pkl, Polyscape aims to provide a comprehensive toolset for creating engaging 2D games.
 
+
+
 ## Table of Contents
 
 - [Introduction](#introduction)
@@ -81,6 +83,13 @@ refer to the configuration files in the config directory. Or Download Polyscape-
 ## Examples
 
 Check out the [examples directory](https://github.com/Madmegsox1/PolyScape-Engine/tree/master/src/test/java/org/polyscape/test) for sample projects demonstrating how to use Polyscape for various types of games.
+
+Here is a video preview of the polyscape editor
+
+
+https://github.com/Madmegsox1/PolyScape-Engine/assets/68086870/1ca76a3e-e7a9-44b1-8ece-883cb789de0b
+
+
 
 ## Contributing
 
