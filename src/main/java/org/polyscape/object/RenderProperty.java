@@ -22,7 +22,7 @@ public abstract class RenderProperty {
 
     protected Texture texture;
 
-    protected SpriteSheet spriteSheet;
+    protected SpriteSheet spriteSheet = null;
 
     protected Color baseColor = Color.BLACK;
 
@@ -75,6 +75,10 @@ public abstract class RenderProperty {
 
     public void setSpriteSheet(SpriteSheet sheet){
         this.spriteSheet = sheet;
+    }
+
+    public SpriteSheet getSpriteSheet(){
+        return spriteSheet;
     }
     public void setTexture(Texture texture) {
         this.texture = texture;

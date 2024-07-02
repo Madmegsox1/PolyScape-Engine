@@ -144,12 +144,19 @@ public final class Editor extends Screen {
         });
         objButton.baseColor = Profile.UiThemes.Dark.accent2;
 
+        Button spriteButton = new Button((int) objButton.getX() + objButton.getWidth() + 20, (lowerY + lowerHeight) - 60, this, "Sprite Sheets", "spriteButton");
+        spriteButton.setClickAction(n -> {
+            UiEngine.getScreenManager().setCurrentUi(2, "SpriteSheets");
+            UiEngine.getScreenManager().setScreenModel(2, info);
+        });
+
+        spriteButton.baseColor = Profile.UiThemes.Dark.accent2;
+
 
 
         addComponent(lvlButton);
         addComponent(objButton);
-
-
+        addComponent(spriteButton);
 
         ObjectManager.clearObjects();
         Level level = new Level(1, "Untitled Level");

@@ -55,6 +55,10 @@ public class SpriteSheet {
         }
     }
 
+    public String getFileName() {
+        return fileName;
+    }
+
     public Texture getTexture(int index) {
         return textures.get(index);
     }
