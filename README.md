@@ -20,6 +20,7 @@ Box2D, and Pkl, Polyscape aims to provide a comprehensive toolset for creating e
 
 ## Introduction
 
+
 Polyscape is currently under development, with a focus on simplifying the game development process. It features an
 easy-to-use GUI, known as the Polyscape-Editor, which allows developers to design custom UIs and levels directly within
 the engine. Our mission is to lower the barrier to entry for game development and provide a flexible platform for
