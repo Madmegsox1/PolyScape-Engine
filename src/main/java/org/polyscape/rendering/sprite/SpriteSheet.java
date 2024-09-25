@@ -31,12 +31,16 @@ public class SpriteSheet {
 
     private ArrayList<Texture> textures;
 
+    private final Texture masterTexture;
 
     public SpriteSheet(String fileName, int width, int height) {
+        this.masterTexture = new Texture(Profile.Textures.TEXTURE_LOCATION + fileName + "." + Profile.Textures.TEXTURE_FILEFORMAT);
+
         try {
             this.fileName = fileName;
             this.chunkWidth = width;
             this.chunkHeight = height;
+
 
             final InputStream in = new FileInputStream(Profile.Textures.TEXTURE_LOCATION + fileName + "." + Profile.Textures.TEXTURE_FILEFORMAT);
             this.imageBuffer = ImageIO.read(in);
@@ -51,7 +55,8 @@ public class SpriteSheet {
 
             textures = new ArrayList<>(chunks);
             loadSprites();
-        } catch (Exception ignored) {
+        } catch (Exception e) {
+            System.err.println("Failed to load spritesheet: " + fileName);
         }
     }
 
@@ -132,4 +137,7 @@ public class SpriteSheet {
     }
 
 
+    public Texture getMasterTexture() {
+        return masterTexture;
+    }
 }

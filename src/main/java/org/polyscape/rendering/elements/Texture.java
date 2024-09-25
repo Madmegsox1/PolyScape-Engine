@@ -46,6 +46,7 @@ public final class Texture {
         loadedTextures.put(this.texture, textureName);
     }
 
+    // TODO add texture ID to this so we can keep track of loaded sprite sheet textures to prevent mem leak
     private void loadTexture(int w, int h, ByteBuffer buffer){
         this.texture = TextureLoader.readTexture(w, h, buffer);
     }

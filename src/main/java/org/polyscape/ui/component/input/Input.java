@@ -14,12 +14,13 @@ import org.polyscape.ui.events.ComponentClickEvent;
 
 public class Input extends Component {
 
-    public Timer timer = new Timer();
-    public boolean editing;
+    private final Timer timer = new Timer();
+    private boolean editing;
 
-    public float boarder;
+    private final float boarder;
 
-    public IUpdateText updateText;
+    private IUpdateText updateText;
+    private IUpdateText finalText;
 
     public Input(int x, int y, int width, int height, float boarder, String id, Screen screen) {
         super(x, y, width, height, screen, id);
@@ -36,7 +37,10 @@ public class Input extends Component {
 
     @Override
     public void onClick(MouseClickEvent event) {
-        if (!inBounds(event.mX, event.mY) && editing && event.action == 1) editing = false;
+        if (!inBounds(event.mX, event.mY) && editing && event.action == 1) {
+            editing = false;
+            updateFinalText();
+        }
     }
 
     @Override
@@ -49,11 +53,11 @@ public class Input extends Component {
             } else if(event.key == GLFW.GLFW_KEY_SPACE && (screen.font.getWidth(this.text + KeyEvent.convertKey(event.key)) < this.width - 10)){
                 this.text += " ";
             }else if(event.key == GLFW.GLFW_KEY_ENTER){
+                updateFinalText();
                 this.editing = false;
             }
-            if(updateText != null){
-            updateText.update(this, this.text);
-            }
+
+            updateText();
         }
 
     }
@@ -90,9 +94,8 @@ public class Input extends Component {
     public void onComponentClick(ComponentClickEvent event) {
         if (event.action == 0) {
             if(editing){
-                if(updateText != null) {
-                    updateText.update(this, this.text);
-                }
+                updateText();
+                updateFinalText();
             }
             editing = !editing;
         }
@@ -107,6 +110,26 @@ public class Input extends Component {
         this.updateText = action;
     }
 
+    public void setFinalAction(IUpdateText action){
+        this.finalText = action;
+    }
+
+    public boolean isEditing(){
+        return this.editing;
+    }
+
+
+    private void updateText(){
+        if(updateText != null){
+            updateText.update(this, this.text);
+        }
+    }
+
+    private void updateFinalText(){
+        if(finalText != null){
+            finalText.update(this, this.text);
+        }
+    }
 
     private String getCaret() {
         if (this.timer.passedMs(1000L)) {
