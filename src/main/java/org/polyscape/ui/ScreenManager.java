@@ -50,11 +50,18 @@ public class ScreenManager {
 
     public void addScreen(String key, Screen screen) {
         screen.manager = this;
+        screen.setName(key);
         screenMap.put(key, screen);
     }
+
+    public Screen getCurrentScreenAtIndex(int index){
+        return currentViewMap.get(index);
+    }
+
     public void removeScreen(String key) {
         screenMap.remove(key);
     }
+
     public Screen getUi(String key) {
         return screenMap.get(key);
     }
@@ -90,6 +97,11 @@ public class ScreenManager {
         if(model != null) {
             screen.model();
         }
+    }
+
+    public Object getScreenModel(int index){
+        var screen = currentViewMap.get(index);
+        return screen.model;
     }
 
     public void sortCurrentUiMap() {

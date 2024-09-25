@@ -21,6 +21,7 @@ import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;
 import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.rendering.events.ResizeWindowEvent;
+import org.polyscape.rendering.sprite.SpriteSheet;
 import org.polyscape.ui.MovementMode;
 import org.polyscape.ui.Screen;
 import org.polyscape.ui.UiEngine;
@@ -50,6 +51,9 @@ public final class Editor extends Screen {
 
     public static int lowerY = 900;
     public static int lowerHeight = 140;
+
+    private static boolean renderLevel = true;
+
     boolean draggingLower;
 
     public static int leftWidth = 250;
@@ -146,7 +150,7 @@ public final class Editor extends Screen {
 
         Button spriteButton = new Button((int) objButton.getX() + objButton.getWidth() + 20, (lowerY + lowerHeight) - 60, this, "Sprite Sheets", "spriteButton");
         spriteButton.setClickAction(n -> {
-            UiEngine.getScreenManager().setCurrentUi(2, "SpriteSheets");
+            UiEngine.getScreenManager().setCurrentUi(2, "SpriteSheetList");
             UiEngine.getScreenManager().setScreenModel(2, info);
         });
 
@@ -159,12 +163,14 @@ public final class Editor extends Screen {
         addComponent(spriteButton);
 
         ObjectManager.clearObjects();
-        Level level = new Level(1, "Untitled Level");
-        level.levelHeight = 1000;
-        level.levelWidth = 1000;
+        if(ObjectManager.getLevels().isEmpty()) {
+            Level level = new Level(1, "Untitled Level");
+            level.levelHeight = 1000;
+            level.levelWidth = 1000;
 
-        ObjectManager.addLevel(level);
-        ObjectManager.loadLevel(1);
+            ObjectManager.addLevel(level);
+            ObjectManager.loadLevel(1);
+        }
 
         cameraVector = new Vector2(0, 0);
         cameraZoom = 1f;
@@ -252,16 +258,30 @@ public final class Editor extends Screen {
         glPushMatrix();
         glTranslatef(cameraVector.x, cameraVector.y, 1.0f);
         glScalef(cameraZoom, cameraZoom, 0f);
-        RenderEngine.drawQuadTexture(new Vector2(0, 0), ObjectManager.getCurrentLevel().levelWidth,  ObjectManager.getCurrentLevel().levelHeight, 0, 0, ObjectManager.getCurrentLevel().levelWidth/20f, ObjectManager.getCurrentLevel().levelHeight/20f, t);
+        if(renderLevel) {
+            RenderEngine.drawQuadTexture(new Vector2(0, 0), ObjectManager.getCurrentLevel().levelWidth, ObjectManager.getCurrentLevel().levelHeight, 0, 0, ObjectManager.getCurrentLevel().levelWidth / 20f, ObjectManager.getCurrentLevel().levelHeight / 20f, t);
 
-        ObjectManager.renderObjects(event.alpha);
+            ObjectManager.renderObjects(event.alpha);
 
-        if(selectedObject != null && movementMode == MovementMode.MOVE) {
-            RenderEngine.drawLine(selectedObject.getCenter(), new Vector2(selectedObject.getCenter().x + selectedObject.getWidth() + 30, selectedObject.getCenter().y), 2f, Color.RED);
-            RenderEngine.drawLine(selectedObject.getCenter(), new Vector2(selectedObject.getCenter().x,selectedObject.getCenter().y - selectedObject.getHeight() - 30), 2f, Color.GREEN);
+            if (selectedObject != null && movementMode == MovementMode.MOVE) {
+                RenderEngine.drawLine(selectedObject.getCenter(), new Vector2(selectedObject.getCenter().x + selectedObject.getWidth() + 30, selectedObject.getCenter().y), 2f, Color.RED);
+                RenderEngine.drawLine(selectedObject.getCenter(), new Vector2(selectedObject.getCenter().x, selectedObject.getCenter().y - selectedObject.getHeight() - 30), 2f, Color.GREEN);
+            }
+            if (selectedObject != null && movementMode == MovementMode.ROTATE) {
+                RenderEngine.drawHollowCircle(selectedObject.getCenter(), selectedObject.getWidth(), 100, 2f, Color.BLUE);
+            }
         }
-        if(selectedObject != null && movementMode == MovementMode.ROTATE) {
-            RenderEngine.drawHollowCircle(selectedObject.getCenter(), selectedObject.getWidth(), 100, 2f, Color.BLUE);
+        else if(renderSpriteSheet()){
+            var currentSheet = getCurrentSpriteSheet();
+            if (currentSheet != null) {
+                RenderEngine.drawQuadTexture(new Vector2(0, 0), currentSheet.width, currentSheet.height, currentSheet.getMasterTexture());
+                for (int y = 0; y < currentSheet.getRows(); y++) {
+                    RenderEngine.drawLine(new Vector2(0, y*currentSheet.getChunkHeight()), new Vector2(currentSheet.width, y*currentSheet.getChunkHeight()), 2f, Color.BLUE);
+                }
+                for (int x = 0; x < currentSheet.getCols(); x++) {
+                    RenderEngine.drawLine(new Vector2(x*currentSheet.getChunkWidth(), 0), new Vector2(x*currentSheet.getChunkWidth(), currentSheet.height), 2f, Color.BLUE);
+                }
+            }
         }
         glPopMatrix();
 
@@ -567,5 +587,24 @@ public final class Editor extends Screen {
         cameraZoom += scaleFactor;
         // Clamp the scale to prevent it from becoming too small or too large
         cameraZoom = Math.max(0.1f, Math.min(cameraZoom, 10.0f));
+    }
+
+    public static boolean shouldRenderLevel() {
+        return renderLevel;
+    }
+
+    public static void setRenderLevel(boolean render) {
+        renderLevel = render;
+    }
+
+    private boolean renderSpriteSheet(){
+        return UiEngine.getScreenManager().getCurrentScreenAtIndex(1).getName().equals("SpriteSheets");
+    }
+
+    private SpriteSheet getCurrentSpriteSheet() {
+        if(renderSpriteSheet()) {
+            return (SpriteSheet) UiEngine.getScreenManager().getScreenModel(1);
+        }
+        return null;
     }
 }

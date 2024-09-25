@@ -22,6 +22,8 @@ public abstract class Screen implements IScreen {
     protected ArrayList<Component> components;
     public FontMac font;
 
+    private String name;
+
     public Object model;
 
     protected ScreenManager manager;
@@ -117,6 +119,14 @@ public abstract class Screen implements IScreen {
 
     public void clearComponents(){
         this.components.clear();
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 
 

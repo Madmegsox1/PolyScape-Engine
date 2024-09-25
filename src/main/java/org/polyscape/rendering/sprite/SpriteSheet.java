@@ -19,6 +19,7 @@ public class SpriteSheet {
 
     private String fileName;
 
+
     private int chunkWidth, chunkHeight;
 
     public int width, height;
@@ -34,7 +35,7 @@ public class SpriteSheet {
     private final Texture masterTexture;
 
     public SpriteSheet(String fileName, int width, int height) {
-        this.masterTexture = new Texture(Profile.Textures.TEXTURE_LOCATION + fileName + "." + Profile.Textures.TEXTURE_FILEFORMAT);
+        this.masterTexture = new Texture(fileName);
 
         try {
             this.fileName = fileName;
@@ -67,6 +68,7 @@ public class SpriteSheet {
     public Texture getTexture(int index) {
         return textures.get(index);
     }
+
 
     public void loadSprites() {
 
@@ -139,5 +141,21 @@ public class SpriteSheet {
 
     public Texture getMasterTexture() {
         return masterTexture;
+    }
+
+    public int getChunkWidth() {
+        return chunkWidth;
+    }
+
+    public int getChunkHeight() {
+        return chunkHeight;
+    }
+
+    public int getRows() {
+        return rows;
+    }
+
+    public int getCols() {
+        return cols;
     }
 }

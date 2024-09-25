@@ -6,6 +6,7 @@ import org.polyscape.event.EventBus;
 import org.polyscape.rendering.Display;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.Renderer;
+import org.polyscape.rendering.sprite.SpriteSheet;
 import org.polyscape.ui.screens.*;
 
 public final class UiEngine extends Engine {
@@ -50,5 +51,6 @@ public final class UiEngine extends Engine {
         screenManager.addScreen("ObjectList", new ObjectList());
         screenManager.addScreen("LevelEditor", new LevelEditor());
         screenManager.addScreen("SpriteSheets", new SpriteSheetEditor());
+        screenManager.addScreen("SpriteSheetList", new SpriteSheetList());
     }
 }
