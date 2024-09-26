@@ -14,6 +14,9 @@ public final class SpriteSheetManager {
         if(spriteSheet.getSpriteSheetId() == -1) {
             spriteSheet.setSpriteSheetId(currentSpriteSheetId++);
         }
+        else{
+            currentSpriteSheetId = spriteSheet.getSpriteSheetId();
+        }
 
         spriteSheets.put(spriteSheet.getSpriteSheetId(), spriteSheet);
     }
