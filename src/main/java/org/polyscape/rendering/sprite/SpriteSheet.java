@@ -19,6 +19,7 @@ public class SpriteSheet {
 
     private String fileName;
 
+    private int spriteSheetId = 0;
 
     private int chunkWidth, chunkHeight;
 
@@ -157,5 +158,13 @@ public class SpriteSheet {
 
     public int getCols() {
         return cols;
+    }
+
+    public int getSpriteSheetId() {
+        return spriteSheetId;
+    }
+
+    public void setSpriteSheetId(int spriteSheetId) {
+        this.spriteSheetId = spriteSheetId;
     }
 }

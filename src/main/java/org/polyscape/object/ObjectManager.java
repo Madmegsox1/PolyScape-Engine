@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
+
 public final class ObjectManager {
     private static final HashMap<Integer, BaseObject> objects = new HashMap<>();
 

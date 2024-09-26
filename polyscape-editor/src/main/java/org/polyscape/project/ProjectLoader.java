@@ -12,6 +12,7 @@ import org.polyscape.project.model.*;
 import org.polyscape.project.model.Object;
 import org.polyscape.rendering.elements.Texture;
 import org.polyscape.rendering.elements.Vector2;
+import org.polyscape.rendering.sprite.SpriteSheetManager;
 import org.polyscape.ui.UiEngine;
 
 import java.io.*;
@@ -119,6 +120,71 @@ public class ProjectLoader {
 
         FileWriter fw = new FileWriter(levelFile);
         gson.toJson(lvlList, fw);
+
+        fw.close();
+    }
+
+    public List<org.polyscape.rendering.sprite.SpriteSheet> loadSpriteSheets(String projectPath) throws IOException {
+        List<org.polyscape.rendering.sprite.SpriteSheet> spriteSheets = new ArrayList<>();
+
+        String path = this.projectPath + projectPath;
+
+        File projectFolder = new File(path);
+        if (!projectFolder.exists()) return spriteSheets;
+
+        String sp = path + "/spriteSheets.json";
+
+        File spriteSheetFile = new File(sp);
+
+        if (!spriteSheetFile.exists()) return spriteSheets;
+
+        Gson gson = new Gson();
+        FileReader fr = new FileReader(spriteSheetFile);
+        SpriteSheetList spriteSheetList = gson.fromJson(fr, SpriteSheetList.class);
+        fr.close();
+
+        if(spriteSheetList != null && spriteSheetList.spriteSheets != null){
+            for (var spriteSheet : spriteSheetList.spriteSheets){
+                org.polyscape.rendering.sprite.SpriteSheet sprite =
+                        new org.polyscape.rendering.sprite.SpriteSheet(spriteSheet.fileLocation, spriteSheet.chunkWidth, spriteSheet.chuckHeight);
+                sprite.setSpriteSheetId(spriteSheet.sheetId);
+                spriteSheets.add(sprite);
+            }
+        }
+
+        return spriteSheets;
+    }
+
+    public void saveSpriteSheets(String projectPath) throws IOException {
+        String path = this.projectPath + projectPath;
+
+        File projectFolder = new File(path);
+        if (!projectFolder.exists()) {
+            projectFolder.mkdirs();
+        }
+
+        String sp = path + "/spriteSheets.json";
+        File spriteSheetFile = new File(sp);
+        if (!spriteSheetFile.exists()) {
+            spriteSheetFile.createNewFile();
+        }
+
+        SpriteSheetList spList = new SpriteSheetList();
+        spList.spriteSheets = new ArrayList<>();
+
+        SpriteSheetManager.getSpriteSheets().forEach(n -> {
+            SpriteSheet spr = new SpriteSheet();
+            spr.sheetId = n.getSpriteSheetId();
+            spr.fileLocation = n.getFileName();
+            spr.chuckHeight = n.getChunkHeight();
+            spr.chunkWidth = n.getChunkWidth();
+            spList.spriteSheets.add(spr);
+        });
+
+        Gson gson = new Gson();
+
+        FileWriter fw = new FileWriter(sp);
+        gson.toJson(spList, fw);
 
         fw.close();
     }
