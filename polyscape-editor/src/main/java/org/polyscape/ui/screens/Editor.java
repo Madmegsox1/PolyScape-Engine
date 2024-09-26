@@ -23,6 +23,7 @@ import org.polyscape.rendering.events.MouseClickEvent;
 import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.rendering.events.ResizeWindowEvent;
 import org.polyscape.rendering.sprite.SpriteSheet;
+import org.polyscape.rendering.sprite.SpriteSheetManager;
 import org.polyscape.ui.MovementMode;
 import org.polyscape.ui.Screen;
 import org.polyscape.ui.UiEngine;
@@ -95,6 +96,14 @@ public final class Editor extends Screen {
         info = getModel();
         UiEngine.getDisplay().setTitle("Polyscape - Editing " + info.projectName);
         try {
+            var spriteSheet = Loader.projectLoader.loadSpriteSheets(info.projectPath);
+            if(!spriteSheet.isEmpty() && !SpriteSheetManager.getSpriteSheets().isEmpty()) {
+                SpriteSheetManager.clearSpriteSheets();
+            }
+
+            for(var sprite : spriteSheet) {
+                SpriteSheetManager.addSpriteSheet(sprite);
+            }
 
             var levels = Loader.projectLoader.loadLevels(info.projectPath);
             if(!levels.isEmpty() && !ObjectManager.getLevels().isEmpty()){
@@ -411,6 +420,7 @@ public final class Editor extends Screen {
         try {
             Loader.projectLoader.saveObjects(info.projectPath);
             Loader.projectLoader.saveLevels(info.projectPath);
+            Loader.projectLoader.saveSpriteSheets(info.projectPath);
         } catch (IOException e) {
             System.err.println(e);
         }

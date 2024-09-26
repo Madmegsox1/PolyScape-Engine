@@ -2,15 +2,13 @@ package org.polyscape.ui.screens;
 
 import org.polyscape.Profile;
 import org.polyscape.font.FontMac;
-import org.polyscape.object.Level;
-import org.polyscape.object.ObjectManager;
-import org.polyscape.object.RenderProperty;
 import org.polyscape.project.model.ProjectInfo;
 import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;
 import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.rendering.sprite.SpriteSheet;
+import org.polyscape.rendering.sprite.SpriteSheetManager;
 import org.polyscape.ui.Screen;
 import org.polyscape.ui.UiEngine;
 import org.polyscape.ui.component.button.Button;
@@ -30,7 +28,7 @@ public class SpriteSheetList extends Screen  {
 
         components.clear();
         // todo change this as sprite sheets shouldnt just be binded to objects they should be stored in there own collection
-        ObjectManager.getAllObject().stream().map(RenderProperty::getSpriteSheet).filter(Objects::nonNull).forEach(spriteSheet -> {
+        SpriteSheetManager.getSpriteSheets().forEach(spriteSheet -> {
             Button bt = new Button(5, buttonY, this,spriteSheet.getFileName(), "SHButton:" + spriteSheet.getFileName());
             buttonY += 10;
             buttonY += font.getHeight(spriteSheet.getFileName());
@@ -43,6 +41,8 @@ public class SpriteSheetList extends Screen  {
 
                 n.foregroundColor = Color.BLUE;
                 currentSpriteSheet = spriteSheet;
+                UiEngine.getScreenManager().setCurrentUi(1, "SpriteSheets");
+                UiEngine.getScreenManager().setScreenModel(1, currentSpriteSheet);
 
             });
             addComponent(bt);

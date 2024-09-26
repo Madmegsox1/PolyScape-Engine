@@ -19,7 +19,7 @@ public class SpriteSheet {
 
     private String fileName;
 
-    private int spriteSheetId = 0;
+    private int spriteSheetId = -1;
 
     private int chunkWidth, chunkHeight;
 

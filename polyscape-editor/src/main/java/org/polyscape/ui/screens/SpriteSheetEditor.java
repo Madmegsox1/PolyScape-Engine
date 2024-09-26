@@ -8,6 +8,7 @@ import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;
 import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.rendering.sprite.SpriteSheet;
+import org.polyscape.rendering.sprite.SpriteSheetManager;
 import org.polyscape.ui.Screen;
 import org.polyscape.ui.component.button.Button;
 import org.polyscape.ui.component.input.Input;
@@ -29,6 +30,12 @@ public final class SpriteSheetEditor extends Screen {
     @Override
     public void model() {
         this.spriteSheet = getModel();
+        getComponentById("fileName").setText(this.spriteSheet.getFileName());
+        getComponentById("chunkWidth").setText(String.valueOf(this.spriteSheet.getChunkWidth()));
+        getComponentById("chunkHeight").setText(String.valueOf(this.spriteSheet.getChunkHeight()));
+        Editor.setRenderLevel(false);
+        Editor.cameraVector = new Vector2(-100,0);
+        Editor.cameraZoom = spriteSheet.width / 20f;
     }
 
     @Override
@@ -46,6 +53,9 @@ public final class SpriteSheetEditor extends Screen {
 
         saveSpriteSheet.setClickAction(n -> {
             spriteSheet = new SpriteSheet(fileName.getText(), chunkWidth.parseInputInt(), chunkHeight.parseInputInt());
+            SpriteSheetManager.addSpriteSheet(spriteSheet);
+            Editor.saveObjects();
+
             model = spriteSheet;
             Editor.setRenderLevel(false);
             Editor.cameraVector = new Vector2(-50,0);

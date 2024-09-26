@@ -11,7 +11,10 @@ public final class SpriteSheetManager {
     private static final ConcurrentHashMap<Integer, SpriteSheet> spriteSheets = new ConcurrentHashMap<>();
 
     public static void addSpriteSheet(SpriteSheet spriteSheet) {
-        spriteSheet.setSpriteSheetId(currentSpriteSheetId++);
+        if(spriteSheet.getSpriteSheetId() == -1) {
+            spriteSheet.setSpriteSheetId(currentSpriteSheetId++);
+        }
+
         spriteSheets.put(spriteSheet.getSpriteSheetId(), spriteSheet);
     }
 
