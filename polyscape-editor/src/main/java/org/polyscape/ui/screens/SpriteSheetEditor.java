@@ -1,5 +1,7 @@
 package org.polyscape.ui.screens;
 
+import org.polyscape.event.EventMetadata;
+import org.polyscape.event.IEvent;
 import org.polyscape.font.FontMac;
 import org.polyscape.rendering.elements.Vector2;
 import org.polyscape.rendering.events.KeyEvent;
@@ -9,9 +11,19 @@ import org.polyscape.rendering.sprite.SpriteSheet;
 import org.polyscape.ui.Screen;
 import org.polyscape.ui.component.button.Button;
 import org.polyscape.ui.component.input.Input;
+import org.polyscape.ui.events.ScreenChangeEvent;
 
 
 public final class SpriteSheetEditor extends Screen {
+    public SpriteSheetEditor() {
+        IEvent<ScreenChangeEvent> screenChangeEvent = n -> {
+            if(n.oldScreen != null && n.oldScreen.getName().equals("SpriteSheets")){
+                Editor.setRenderLevel(true);
+            }
+        };
+
+        ScreenChangeEvent.addEvent(screenChangeEvent, new EventMetadata(ScreenChangeEvent.class, 0));
+    }
 
     SpriteSheet spriteSheet;
     @Override
@@ -36,13 +48,15 @@ public final class SpriteSheetEditor extends Screen {
             spriteSheet = new SpriteSheet(fileName.getText(), chunkWidth.parseInputInt(), chunkHeight.parseInputInt());
             model = spriteSheet;
             Editor.setRenderLevel(false);
-            Editor.cameraVector = new Vector2(0,0);
+            Editor.cameraVector = new Vector2(-50,0);
+            Editor.cameraZoom = spriteSheet.width / 20f;
         });
 
         components.add(saveSpriteSheet);
         components.add(chunkWidth);
         components.add(chunkHeight);
         components.add(fileName);
+
     }
 
     @Override

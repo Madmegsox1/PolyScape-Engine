@@ -49,8 +49,8 @@ public class SpriteSheet {
             this.width = imageBuffer.getWidth();
             this.height = imageBuffer.getHeight();
 
-            this.rows = (this.width / this.chunkWidth);
-            this.cols = (this.height / this.chunkHeight);
+            this.rows = (this.height / this.chunkHeight);
+            this.cols = (this.width / this.chunkWidth);
 
             this.chunks = rows * cols;
 
@@ -75,8 +75,8 @@ public class SpriteSheet {
         BufferedImage[] imgs = new BufferedImage[chunks];
         int count = 0;
 
-        for (int y = 0; y < cols; y++) {
-            for (int x = 0; x < rows; x++) {
+        for (int y = 0; y < rows; y++) {
+            for (int x = 0; x < cols; x++) {
                 int type = imageBuffer.getType();
                 if (type == 0) {
                     type = 5;

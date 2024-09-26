@@ -7,6 +7,7 @@ import org.polyscape.Loader;
 import org.polyscape.Profile;
 import org.polyscape.event.EventMetadata;
 import org.polyscape.event.IEvent;
+import org.polyscape.font.Font;
 import org.polyscape.font.FontMac;
 import org.polyscape.object.BaseObject;
 import org.polyscape.object.Level;

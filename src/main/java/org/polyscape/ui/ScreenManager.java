@@ -1,5 +1,6 @@
 package org.polyscape.ui;
 
+import org.polyscape.Engine;
 import org.polyscape.event.EventMetadata;
 import org.polyscape.event.IEvent;
 import org.polyscape.rendering.RenderEngine;
@@ -7,6 +8,7 @@ import org.polyscape.rendering.Renderer;
 import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;
 import org.polyscape.rendering.events.RenderEvent;
+import org.polyscape.ui.events.ScreenChangeEvent;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -81,12 +83,14 @@ public class ScreenManager {
 
 
     public void setCurrentUi(int z, String screen) {
-        var ui = getUi(screen);
+        final Screen ui = getUi(screen);
 
         ui.components.clear();
         ui.onLoad();
 
-        currentViewMap.put(z, ui);
+
+        final Screen oldScreen = currentViewMap.put(z, ui);
+        Engine.getEventBus().postEvent(new ScreenChangeEvent(z, ui, oldScreen));
         sortCurrentUiMap();
     }
 
