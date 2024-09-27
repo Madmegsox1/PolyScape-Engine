@@ -78,6 +78,7 @@ public class SpriteSheetList extends Screen  {
     public void onLoad() {
         FontMac font = new FontMac("Segoe UI", 25);
         setFont(font);
+        buttonY = 30;
 
     }
 }

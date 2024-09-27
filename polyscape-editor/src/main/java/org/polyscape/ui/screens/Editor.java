@@ -338,39 +338,40 @@ public final class Editor extends Screen {
     @Override
     public void click(MouseClickEvent event) {
 
-        if(movementMode == MovementMode.MOVE) {
-            if (event.action == 1 && isWithinBoundsOfDragY()) {
-                draggingVectorObject = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
-                draggingObjectY = true;
-                return;
-            }
+        if(renderLevel) {
+            if (movementMode == MovementMode.MOVE) {
+                if (event.action == 1 && isWithinBoundsOfDragY()) {
+                    draggingVectorObject = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                    draggingObjectY = true;
+                    return;
+                }
 
-            if (event.action == 0 && draggingObjectY) {
-                saveObjects();
-                draggingObjectY = false;
-            }
+                if (event.action == 0 && draggingObjectY) {
+                    saveObjects();
+                    draggingObjectY = false;
+                }
 
-            if (event.action == 1 && isWithinBoundsOfDragX()) {
-                draggingVectorObject = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
-                draggingObjectX = true;
-                return;
-            }
+                if (event.action == 1 && isWithinBoundsOfDragX()) {
+                    draggingVectorObject = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                    draggingObjectX = true;
+                    return;
+                }
 
-            if(event.action == 0 && draggingObjectX){
-                saveObjects();
-                draggingObjectX = false;
-            }
-        }
-        else if(movementMode == MovementMode.ROTATE) {
-            if(event.action == 1 && isWithingBoundsOfRot()) {
-                draggingVectorObject = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
-                previousAngle = 0f;
-                draggingObjectRot = true;
-                return;
-            }
-            if(event.action == 0 && draggingObjectRot) {
-                saveObjects();
-                draggingObjectRot = false;
+                if (event.action == 0 && draggingObjectX) {
+                    saveObjects();
+                    draggingObjectX = false;
+                }
+            } else if (movementMode == MovementMode.ROTATE) {
+                if (event.action == 1 && isWithingBoundsOfRot()) {
+                    draggingVectorObject = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                    previousAngle = 0f;
+                    draggingObjectRot = true;
+                    return;
+                }
+                if (event.action == 0 && draggingObjectRot) {
+                    saveObjects();
+                    draggingObjectRot = false;
+                }
             }
         }
 
@@ -400,15 +401,17 @@ public final class Editor extends Screen {
             draggingCamera = false;
         }
 
-        if (event.action == 0) {
-            Vector2 v2 = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
-            ObjectManager.iterateObjects(n -> {
+        if(renderLevel) {
+            if (event.action == 0) {
+                Vector2 v2 = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                ObjectManager.iterateObjects(n -> {
 
-                if (n.isPointInObject(v2)) {
-                    setSelectedId(n.getObjectId());
-                }
+                    if (n.isPointInObject(v2)) {
+                        setSelectedId(n.getObjectId());
+                    }
 
-            });
+                });
+            }
         }
     }
 
@@ -428,6 +431,8 @@ public final class Editor extends Screen {
 
     @Override
     public void key(KeyEvent event) {
+
+        if(!renderLevel) return;
         if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL)) {
             if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_N)) {
                 Vector2 v2M = Display.getMousePosition(Engine.getDisplay().getWindow());
