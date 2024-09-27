@@ -52,11 +52,20 @@ public final class SpriteSheetEditor extends Screen {
         Button saveSpriteSheet = new Button(Editor.leftWidth + 20, Editor.lowerY + 80, this, "Save", "SaveSpriteSheet");
 
         saveSpriteSheet.setClickAction(n -> {
-            spriteSheet = new SpriteSheet(fileName.getText(), chunkWidth.parseInputInt(), chunkHeight.parseInputInt());
-            SpriteSheetManager.addSpriteSheet(spriteSheet);
-            Editor.saveObjects();
+            if(model == null) {
+                spriteSheet = new SpriteSheet(fileName.getText(), chunkWidth.parseInputInt(), chunkHeight.parseInputInt());
+                SpriteSheetManager.addSpriteSheet(spriteSheet);
+            }
+            else{
+                int id = spriteSheet.getSpriteSheetId();
+                spriteSheet = new SpriteSheet(fileName.getText(), chunkWidth.parseInputInt(), chunkHeight.parseInputInt());
+                spriteSheet.setSpriteSheetId(id);
+                SpriteSheetManager.addSpriteSheet(spriteSheet);
+            }
 
             model = spriteSheet;
+            Editor.saveObjects();
+
             Editor.setRenderLevel(false);
             Editor.cameraVector = new Vector2(-50,0);
             Editor.cameraZoom = spriteSheet.width / 20f;

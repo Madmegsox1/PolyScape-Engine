@@ -36,7 +36,7 @@ public class SpriteSheetList extends Screen  {
 
             bt.setClickAction(n -> {
                 if(currentSpriteSheet != null) {
-                    getComponentById("SHButton:" + currentSpriteSheet.getFileName()).foregroundColor = Profile.UiThemes.Dark.foregroundDark;
+                    getComponentById("SHButton:" + currentSpriteSheet.getFileName()).foregroundColor = Profile.UiThemes.Dark.foreground;
                 }
 
                 n.foregroundColor = Color.BLUE;
