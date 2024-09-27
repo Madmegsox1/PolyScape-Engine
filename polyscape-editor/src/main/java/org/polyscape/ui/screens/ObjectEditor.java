@@ -10,6 +10,7 @@ import org.polyscape.rendering.elements.Vector2;
 import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;
 import org.polyscape.rendering.events.RenderEvent;
+import org.polyscape.rendering.sprite.SpriteSheetManager;
 import org.polyscape.ui.Screen;
 import org.polyscape.ui.component.button.Button;
 import org.polyscape.ui.component.checkbox.CheckBox;
@@ -65,6 +66,11 @@ public final class ObjectEditor extends Screen {
             getComponentById("angleCals").hidden = false;
         }
 
+        if (object.getSpriteSheet() == null) {
+            getComponentById("spriteSheetChuck").hidden = true;
+            getComponentById("spriteSheetChuckLabel").hidden = true;
+        }
+
         var dynamic = (CheckBox) getComponentById("dynamic");
         dynamic.state = object.getBodyType() == BodyType.DYNAMIC ? 1 : 0;
 
@@ -116,26 +122,36 @@ public final class ObjectEditor extends Screen {
 
         Label textureLabel = new Label(0, -5, "Texture", "textureLabel", this, texture);
 
-        CheckBox dynamic = new CheckBox(Editor.leftWidth + 20 + 150 + 20, Editor.lowerY + 105, "dynamic", CheckBoxType.Untextured, this);
+        Input spriteSheetId = new Input(Editor.leftWidth + 20 + 150 + 20, Editor.lowerY + 105, 150, 30,2f, "spriteSheetId", this);
+        spriteSheetId.setText("Sprite Sheet ID");
+
+        Label spriteSheetIdLabel = new Label(0, -5, "SpriteSheet ID", "spriteSheetIdLabel",this, spriteSheetId);
+
+        Input spriteSheetChuck = new Input(Editor.leftWidth + 20 + 150 + 150 + 40, Editor.lowerY + 105, 120, 30,2f, "spriteSheetChuck", this);
+
+        Label spriteSheetChuckLabel = new Label(0, -5, "SpriteSheet chunk", "spriteSheetChuckLabel",this, spriteSheetChuck);
+
+
+        CheckBox dynamic = new CheckBox(Editor.leftWidth + 20 + 150 + 300 + 60, Editor.lowerY + 105, "dynamic", CheckBoxType.Untextured, this);
         dynamic.setText("Dynamic Object");
         dynamic.baseColor = (Profile.UiThemes.Dark.foregroundDark);
 
-        Input friction = new Input(Editor.leftWidth + 20 + 150 + 200, Editor.lowerY + 105, 70,30,2f,"friction", this);
+        Input friction = new Input(Editor.leftWidth + 20 + 150 + 550, Editor.lowerY + 105, 70,30,2f,"friction", this);
         friction.setText("Friction");
 
         Label frictionLabel = new Label(0, -5, "Friction", "frictionLabel", this, friction);
 
-        Input density = new Input(Editor.leftWidth + 20 + 150 + 300, Editor.lowerY + 105, 70,30,2f,"density", this);
+        Input density = new Input(Editor.leftWidth + 20 + 150 + 650, Editor.lowerY + 105, 70,30,2f,"density", this);
         density.setText("Density");
 
         Label densityLabel = new Label(0, -5, "Density", "densityLabel", this, density);
 
-        Input linearDamping = new Input(Editor.leftWidth + 20 + 150 + 400, Editor.lowerY + 105, 70,30,2f,"linearDamping", this);
+        Input linearDamping = new Input(Editor.leftWidth + 20 + 150 + 750, Editor.lowerY + 105, 70,30,2f,"linearDamping", this);
         linearDamping.setText("Damping");
 
         Label linearLabel = new Label(0, -5, "Damping", "linearLabel", this, linearDamping);
 
-        CheckBox angleCals = new CheckBox(Editor.leftWidth + 20 + 150 + 500, Editor.lowerY + 105, "angleCals", CheckBoxType.Untextured, this);
+        CheckBox angleCals = new CheckBox(Editor.leftWidth + 20 + 150 + 850, Editor.lowerY + 105, "angleCals", CheckBoxType.Untextured, this);
         angleCals.setText("Fixed Angles");
         angleCals.baseColor = (Profile.UiThemes.Dark.foregroundDark);
 
@@ -174,6 +190,30 @@ public final class ObjectEditor extends Screen {
 
             }
         });
+
+        spriteSheetId.setFinalAction((i, text) -> {
+            if(!text.isEmpty()) {
+                var sheet = SpriteSheetManager.getSpriteSheet(i.parseInputInt());
+                if(sheet != null) {
+                    object.setSpriteSheet(sheet);
+                    getComponentById("spriteSheetChuck").hidden = false;
+                    getComponentById("spriteSheetChuckLabel").hidden = false;
+                }
+            }else {
+                getComponentById("spriteSheetChuck").hidden = true;
+                getComponentById("spriteSheetChuckLabel").hidden = true;
+            }
+        });
+
+        spriteSheetChuck.setFinalAction((i, text) -> {
+            if(!text.isEmpty()) {
+                if(object.getSpriteSheet() != null){
+                    object.setTexture(i.parseInputInt());
+                    getComponentById("texture").setText("Texture");
+                }
+            }
+        });
+
 
         dynamic.setClickAction((c, b) -> {
             if(b){
@@ -223,6 +263,10 @@ public final class ObjectEditor extends Screen {
         addComponent(heightLabel);
         addComponent(texture);
         addComponent(textureLabel);
+        addComponent(spriteSheetId);
+        addComponent(spriteSheetIdLabel);
+        addComponent(spriteSheetChuck);
+        addComponent(spriteSheetChuckLabel);
         addComponent(dynamic);
         addComponent(friction);
         addComponent(frictionLabel);

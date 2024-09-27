@@ -13,7 +13,6 @@ import org.polyscape.ui.Screen;
 import org.polyscape.ui.UiEngine;
 import org.polyscape.ui.component.button.Button;
 
-import java.util.Objects;
 
 public class SpriteSheetList extends Screen  {
     public static ProjectInfo info;
@@ -27,16 +26,15 @@ public class SpriteSheetList extends Screen  {
         info = this.getModel();
 
         components.clear();
-        // todo change this as sprite sheets shouldnt just be binded to objects they should be stored in there own collection
         SpriteSheetManager.getSpriteSheets().forEach(spriteSheet -> {
-            Button bt = new Button(5, buttonY, this,spriteSheet.getFileName(), "SHButton:" + spriteSheet.getFileName());
+            Button bt = new Button(5, buttonY, this, spriteSheet.getSpriteSheetId()+" | "+ spriteSheet.getFileName(), "SHButton:" + spriteSheet.getSpriteSheetId());
             buttonY += 10;
-            buttonY += font.getHeight(spriteSheet.getFileName());
+            buttonY += font.getHeight(spriteSheet.getSpriteSheetId()+" | "+ spriteSheet.getFileName());
             bt.baseColor = Profile.UiThemes.Dark.foregroundDark;
 
             bt.setClickAction(n -> {
                 if(currentSpriteSheet != null) {
-                    getComponentById("SHButton:" + currentSpriteSheet.getFileName()).foregroundColor = Profile.UiThemes.Dark.foreground;
+                    getComponentById("SHButton:" + currentSpriteSheet.getSpriteSheetId()).foregroundColor = Profile.UiThemes.Dark.foreground;
                 }
 
                 n.foregroundColor = Color.BLUE;
