@@ -108,7 +108,9 @@ public class FontMac {
         var ar = text.toCharArray();
         for (char c : ar){
             var g = glyphs.get(c);
-            size += (int) g.advance;
+            if (g != null) {
+                size += (int) g.advance;
+            }
         }
         var last = ar[ar.length - 1];
         return size + (int) glyphs.get(last).advance;

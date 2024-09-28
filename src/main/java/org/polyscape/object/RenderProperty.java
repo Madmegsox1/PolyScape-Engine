@@ -24,6 +24,8 @@ public abstract class RenderProperty {
 
     protected SpriteSheet spriteSheet = null;
 
+    protected int spriteSheetChuck = 0;
+
     protected Color baseColor = Color.BLACK;
 
     protected boolean hasShader = false;
@@ -92,6 +94,18 @@ public abstract class RenderProperty {
         if(this.texture != null){
             this.isTextured = true;
         }
+    }
+
+    public void setSpriteSheetChuck(int chuck){
+        if(this.spriteSheet != null){
+            this.texture = this.spriteSheet.getTexture(chuck);
+            this.isTextured = true;
+            this.spriteSheetChuck = chuck;
+        }
+    }
+
+    public int getSpriteSheetChuck(){
+        return this.spriteSheetChuck;
     }
 
     public Color getBaseColor() {

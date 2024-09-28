@@ -23,6 +23,7 @@ import org.polyscape.rendering.events.MouseClickEvent;
 import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.rendering.events.ResizeWindowEvent;
 import org.polyscape.rendering.sprite.SpriteSheet;
+import org.polyscape.rendering.sprite.SpriteSheetManager;
 import org.polyscape.ui.MovementMode;
 import org.polyscape.ui.Screen;
 import org.polyscape.ui.UiEngine;
@@ -95,6 +96,14 @@ public final class Editor extends Screen {
         info = getModel();
         UiEngine.getDisplay().setTitle("Polyscape - Editing " + info.projectName);
         try {
+            var spriteSheet = Loader.projectLoader.loadSpriteSheets(info.projectPath);
+            if(!spriteSheet.isEmpty() && !SpriteSheetManager.getSpriteSheets().isEmpty()) {
+                SpriteSheetManager.clearSpriteSheets();
+            }
+
+            for(var sprite : spriteSheet) {
+                SpriteSheetManager.addSpriteSheet(sprite);
+            }
 
             var levels = Loader.projectLoader.loadLevels(info.projectPath);
             if(!levels.isEmpty() && !ObjectManager.getLevels().isEmpty()){
@@ -329,39 +338,40 @@ public final class Editor extends Screen {
     @Override
     public void click(MouseClickEvent event) {
 
-        if(movementMode == MovementMode.MOVE) {
-            if (event.action == 1 && isWithinBoundsOfDragY()) {
-                draggingVectorObject = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
-                draggingObjectY = true;
-                return;
-            }
+        if(renderLevel) {
+            if (movementMode == MovementMode.MOVE) {
+                if (event.action == 1 && isWithinBoundsOfDragY()) {
+                    draggingVectorObject = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                    draggingObjectY = true;
+                    return;
+                }
 
-            if (event.action == 0 && draggingObjectY) {
-                saveObjects();
-                draggingObjectY = false;
-            }
+                if (event.action == 0 && draggingObjectY) {
+                    saveObjects();
+                    draggingObjectY = false;
+                }
 
-            if (event.action == 1 && isWithinBoundsOfDragX()) {
-                draggingVectorObject = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
-                draggingObjectX = true;
-                return;
-            }
+                if (event.action == 1 && isWithinBoundsOfDragX()) {
+                    draggingVectorObject = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                    draggingObjectX = true;
+                    return;
+                }
 
-            if(event.action == 0 && draggingObjectX){
-                saveObjects();
-                draggingObjectX = false;
-            }
-        }
-        else if(movementMode == MovementMode.ROTATE) {
-            if(event.action == 1 && isWithingBoundsOfRot()) {
-                draggingVectorObject = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
-                previousAngle = 0f;
-                draggingObjectRot = true;
-                return;
-            }
-            if(event.action == 0 && draggingObjectRot) {
-                saveObjects();
-                draggingObjectRot = false;
+                if (event.action == 0 && draggingObjectX) {
+                    saveObjects();
+                    draggingObjectX = false;
+                }
+            } else if (movementMode == MovementMode.ROTATE) {
+                if (event.action == 1 && isWithingBoundsOfRot()) {
+                    draggingVectorObject = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                    previousAngle = 0f;
+                    draggingObjectRot = true;
+                    return;
+                }
+                if (event.action == 0 && draggingObjectRot) {
+                    saveObjects();
+                    draggingObjectRot = false;
+                }
             }
         }
 
@@ -391,15 +401,17 @@ public final class Editor extends Screen {
             draggingCamera = false;
         }
 
-        if (event.action == 0) {
-            Vector2 v2 = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
-            ObjectManager.iterateObjects(n -> {
+        if(renderLevel) {
+            if (event.action == 0) {
+                Vector2 v2 = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                ObjectManager.iterateObjects(n -> {
 
-                if (n.isPointInObject(v2)) {
-                    setSelectedId(n.getObjectId());
-                }
+                    if (n.isPointInObject(v2)) {
+                        setSelectedId(n.getObjectId());
+                    }
 
-            });
+                });
+            }
         }
     }
 
@@ -411,6 +423,7 @@ public final class Editor extends Screen {
         try {
             Loader.projectLoader.saveObjects(info.projectPath);
             Loader.projectLoader.saveLevels(info.projectPath);
+            Loader.projectLoader.saveSpriteSheets(info.projectPath);
         } catch (IOException e) {
             System.err.println(e);
         }
@@ -418,6 +431,8 @@ public final class Editor extends Screen {
 
     @Override
     public void key(KeyEvent event) {
+
+        if(!renderLevel) return;
         if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL)) {
             if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_N)) {
                 Vector2 v2M = Display.getMousePosition(Engine.getDisplay().getWindow());

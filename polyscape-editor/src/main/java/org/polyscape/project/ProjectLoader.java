@@ -12,6 +12,7 @@ import org.polyscape.project.model.*;
 import org.polyscape.project.model.Object;
 import org.polyscape.rendering.elements.Texture;
 import org.polyscape.rendering.elements.Vector2;
+import org.polyscape.rendering.sprite.SpriteSheetManager;
 import org.polyscape.ui.UiEngine;
 
 import java.io.*;
@@ -123,6 +124,71 @@ public class ProjectLoader {
         fw.close();
     }
 
+    public List<org.polyscape.rendering.sprite.SpriteSheet> loadSpriteSheets(String projectPath) throws IOException {
+        List<org.polyscape.rendering.sprite.SpriteSheet> spriteSheets = new ArrayList<>();
+
+        String path = this.projectPath + projectPath;
+
+        File projectFolder = new File(path);
+        if (!projectFolder.exists()) return spriteSheets;
+
+        String sp = path + "/spriteSheets.json";
+
+        File spriteSheetFile = new File(sp);
+
+        if (!spriteSheetFile.exists()) return spriteSheets;
+
+        Gson gson = new Gson();
+        FileReader fr = new FileReader(spriteSheetFile);
+        SpriteSheetList spriteSheetList = gson.fromJson(fr, SpriteSheetList.class);
+        fr.close();
+
+        if(spriteSheetList != null && spriteSheetList.spriteSheets != null){
+            for (var spriteSheet : spriteSheetList.spriteSheets){
+                org.polyscape.rendering.sprite.SpriteSheet sprite =
+                        new org.polyscape.rendering.sprite.SpriteSheet(spriteSheet.fileLocation, spriteSheet.chunkWidth, spriteSheet.chuckHeight);
+                sprite.setSpriteSheetId(spriteSheet.sheetId);
+                spriteSheets.add(sprite);
+            }
+        }
+
+        return spriteSheets;
+    }
+
+    public void saveSpriteSheets(String projectPath) throws IOException {
+        String path = this.projectPath + projectPath;
+
+        File projectFolder = new File(path);
+        if (!projectFolder.exists()) {
+            projectFolder.mkdirs();
+        }
+
+        String sp = path + "/spriteSheets.json";
+        File spriteSheetFile = new File(sp);
+        if (!spriteSheetFile.exists()) {
+            spriteSheetFile.createNewFile();
+        }
+
+        SpriteSheetList spList = new SpriteSheetList();
+        spList.spriteSheets = new ArrayList<>();
+
+        SpriteSheetManager.getSpriteSheets().forEach(n -> {
+            SpriteSheet spr = new SpriteSheet();
+            spr.sheetId = n.getSpriteSheetId();
+            spr.fileLocation = n.getFileName();
+            spr.chuckHeight = n.getChunkHeight();
+            spr.chunkWidth = n.getChunkWidth();
+            spList.spriteSheets.add(spr);
+        });
+
+        Gson gson = new Gson();
+
+        FileWriter fw = new FileWriter(sp);
+        gson.toJson(spList, fw);
+
+        fw.close();
+    }
+
     public List<BaseObject> loadObject(String projectPath) throws IOException {
         String path = this.projectPath + projectPath;
         List<BaseObject> baseObjects = new ArrayList<>();
@@ -163,8 +229,13 @@ public class ProjectLoader {
                 obj.renderProperty.color.a));
 
         baseObject.setTextured(obj.renderProperty.isTextured);
-        if(baseObject.isTextured()){
+        if(baseObject.isTextured() && !obj.renderProperty.usingSpriteSheet){
             baseObject.setTexture(new Texture(obj.renderProperty.textureName));
+        }
+
+        if(obj.renderProperty.usingSpriteSheet){
+            baseObject.setSpriteSheet(SpriteSheetManager.getSpriteSheet(obj.renderProperty.spriteSheetId));
+            baseObject.setSpriteSheetChuck(obj.renderProperty.spriteSheetChunk);
         }
 
         if(obj.physicsBody != null){
@@ -232,7 +303,12 @@ public class ProjectLoader {
         object.renderProperty.width = baseObject.getWidth();
         object.renderProperty.height = baseObject.getHeight();
         object.renderProperty.isTextured = baseObject.isTextured();
-        if (baseObject.isTextured()) {
+        object.renderProperty.usingSpriteSheet = baseObject.getSpriteSheet() != null;
+        if(object.renderProperty.usingSpriteSheet) {
+            object.renderProperty.spriteSheetId = baseObject.getSpriteSheet().getSpriteSheetId();
+            object.renderProperty.spriteSheetChunk = baseObject.getSpriteSheetChuck();
+        }
+        if (baseObject.isTextured() && !object.renderProperty.usingSpriteSheet) {
             var tex = Texture.loadedTextures.get(baseObject.getTexture().getTexture());
             if (!tex.isEmpty()) {
                 object.renderProperty.textureName = tex;

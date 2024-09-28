@@ -8,10 +8,13 @@ public class RenderProperty {
 
     public boolean isTextured;
 
+    public boolean usingSpriteSheet;
 
     public String textureName;
 
-    // TODO spriteSheets
+    public int spriteSheetId;
+
+    public int spriteSheetChunk;
 
     public Color color;
 
