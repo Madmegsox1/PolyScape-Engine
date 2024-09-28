@@ -36,9 +36,15 @@ public final class ObjectEditor extends Screen {
         var txt = object.getTexture();
         if(txt != null){
             var loaded = Texture.loadedTextures.get(txt.getTexture());
-            if(!loaded.isEmpty()) {
+            if(loaded != null && !loaded.isEmpty()) {
                 getComponentById("texture").setText(loaded);
             }
+        }
+
+        if(object.getSpriteSheet() != null){
+            getComponentById("spriteSheetId").setText(String.valueOf(object.getSpriteSheet().getSpriteSheetId()));
+            getComponentById("spriteSheetChuck").hidden = false;
+            getComponentById("spriteSheetChuck").setText(String.valueOf(object.getSpriteSheetChuck()));
         }
 
         if(!object.getBody().isActive()){
@@ -208,7 +214,7 @@ public final class ObjectEditor extends Screen {
         spriteSheetChuck.setFinalAction((i, text) -> {
             if(!text.isEmpty()) {
                 if(object.getSpriteSheet() != null){
-                    object.setTexture(i.parseInputInt());
+                    object.setSpriteSheetChuck(i.parseInputInt());
                     getComponentById("texture").setText("Texture");
                 }
             }

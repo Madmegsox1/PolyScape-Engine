@@ -229,8 +229,13 @@ public class ProjectLoader {
                 obj.renderProperty.color.a));
 
         baseObject.setTextured(obj.renderProperty.isTextured);
-        if(baseObject.isTextured()){
+        if(baseObject.isTextured() && !obj.renderProperty.usingSpriteSheet){
             baseObject.setTexture(new Texture(obj.renderProperty.textureName));
+        }
+
+        if(obj.renderProperty.usingSpriteSheet){
+            baseObject.setSpriteSheet(SpriteSheetManager.getSpriteSheet(obj.renderProperty.spriteSheetId));
+            baseObject.setSpriteSheetChuck(obj.renderProperty.spriteSheetChunk);
         }
 
         if(obj.physicsBody != null){
@@ -298,7 +303,12 @@ public class ProjectLoader {
         object.renderProperty.width = baseObject.getWidth();
         object.renderProperty.height = baseObject.getHeight();
         object.renderProperty.isTextured = baseObject.isTextured();
-        if (baseObject.isTextured()) {
+        object.renderProperty.usingSpriteSheet = baseObject.getSpriteSheet() != null;
+        if(object.renderProperty.usingSpriteSheet) {
+            object.renderProperty.spriteSheetId = baseObject.getSpriteSheet().getSpriteSheetId();
+            object.renderProperty.spriteSheetChunk = baseObject.getSpriteSheetChuck();
+        }
+        if (baseObject.isTextured() && !object.renderProperty.usingSpriteSheet) {
             var tex = Texture.loadedTextures.get(baseObject.getTexture().getTexture());
             if (!tex.isEmpty()) {
                 object.renderProperty.textureName = tex;

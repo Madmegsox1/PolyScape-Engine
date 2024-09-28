@@ -1,12 +1,9 @@
 package org.polyscape.object;
 
-import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
-import org.polyscape.Profile;
 import org.polyscape.rendering.RenderEngine;
-import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.elements.Vector2;
 
 import java.awt.*;
