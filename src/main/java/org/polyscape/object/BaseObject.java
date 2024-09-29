@@ -3,6 +3,9 @@ package org.polyscape.object;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
+import org.polyscape.logic.LogicContainer;
+import org.polyscape.logic.LogicType;
+import org.polyscape.logic.objectLogic.LogicObject;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.elements.Vector2;
 
@@ -41,6 +44,8 @@ public class BaseObject extends RenderProperty {
 
     private int onLevel;
 
+    private LogicContainer logic;
+
 
     public BaseObject() {
         bodyDef = new BodyDef();
@@ -52,6 +57,18 @@ public class BaseObject extends RenderProperty {
         onLevel = ObjectManager.getCurrentLevel().getLevelNumber();
     }
 
+    public LogicContainer getLogic() {
+        return logic;
+    }
+
+    public void setLogic(LogicContainer logic) {
+        if(logic.logicType() == LogicType.OBJECT) {
+            this.logic = logic;
+        }
+        else {
+            throw new IllegalArgumentException("Logic Type must be OBJECT");
+        }
+    }
 
     public int getLevel(){
         return this.onLevel;
@@ -193,7 +210,6 @@ public class BaseObject extends RenderProperty {
     public void setPreviousPosition() {
         if (position == null) return;
         this.previousPosition = new Vector2(position.x, position.y);
-        ;
     }
 
 
@@ -202,6 +218,7 @@ public class BaseObject extends RenderProperty {
         position = worldToScreen(body.getPosition(), onLevel);
         position.x -= (this.width / 2f);
         position.y -= (this.height / 2f);
+        onUpdatePosLogic();
     }
 
 
@@ -310,7 +327,7 @@ public class BaseObject extends RenderProperty {
         }
     }
 
-    public void renderObject(float alpha) {
+    private void renderObject(float alpha) {
         if(body != null) {
             if (this.isTextured) {
                 RenderEngine.drawQuadTextureAngle(getInterpolatedPosition(alpha), -body.getAngle(), width, height, texture, baseColor);
@@ -328,10 +345,9 @@ public class BaseObject extends RenderProperty {
 
     }
 
-    public void renderObjectWireframe(float alpha) {
+    private void renderObjectWireframe(float alpha) {
         drawWireframe();
         renderObject(alpha);
-
     }
 
     private void drawWireframe() {
@@ -362,6 +378,19 @@ public class BaseObject extends RenderProperty {
             renderObjectWireframe(alpha);
         } else {
             renderObject(alpha);
+        }
+        onRenderLogic();
+    }
+
+    private void onRenderLogic(){
+        if(getLogic() != null){
+            ((LogicObject) getLogic().logic()).onRender();
+        }
+    }
+
+    private void onUpdatePosLogic(){
+        if(getLogic() != null){
+            ((LogicObject) getLogic().logic()).onPosUpdate();
         }
     }
 

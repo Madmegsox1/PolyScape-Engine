@@ -1,19 +1,21 @@
 package org.polyscape.logic;
 
 import org.polyscape.event.EventBus;
+import org.polyscape.logic.objectLogic.LogicObject;
+import org.polyscape.object.BaseObject;
 
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 public final class LogicManager {
-    private final List<Logic> logics = new ArrayList<Logic>();
+    private final List<LogicContainer> logics = new ArrayList<>();
     private final EventBus eventBus = new EventBus();
 
     public void loadLogic(String path, String className) {
         try {
             LogicLoader loader = new LogicLoader(new URL("file", null, path));
-            Logic logic = loader.Load(className);
+            LogicContainer logic = loader.Load(className);
             logics.add(logic);
         } catch (Exception e) {
             System.err.println("Failed to load logic: " + e.getMessage());
@@ -21,25 +23,33 @@ public final class LogicManager {
     }
 
     public void initLogic() {
-        for (Logic l : logics) {
-            l.init(eventBus);
+        for (LogicContainer l : logics) {
+            l.logic().init(eventBus);
+        }
+    }
+
+    public void initLogicObject(BaseObject object){
+        for (LogicContainer l : logics) {
+            if(l.logic() instanceof LogicObject && object.getObjectId() == l.linkId()){
+                ((LogicObject)l.logic()).initObject(object);
+            }
         }
     }
 
     public void loadLogic(){
-        for (Logic l : logics) {
-            l.onLoad();
+        for (LogicContainer l : logics) {
+            l.logic().onLoad();
         }
     }
 
     public void unloadLogic() {
-        for (Logic l : logics) {
-            l.onUnload();
+        for (LogicContainer l : logics) {
+            l.logic().onUnload();
         }
     }
 
     public Logic getLogic(int index){
-        return logics.get(index);
+        return logics.get(index).logic();
     }
 
     public EventBus getEventBus() {
