@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 group = 'org.polyscape'
@@ -72,6 +73,23 @@ dependencies {
     testImplementation platform('org.junit:junit-bom:5.9.1')
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
+
+shadowJar {
+    archiveBaseName.set('polyscape-game-engine')
+    archiveVersion.set('1.0.0-beta')
+    archiveClassifier.set('all')
+
+    mergeServiceFiles {
+        include 'META-INF/services/*'
+    }
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer) {
+        resource = 'META-INF/spring.handlers'
+    }
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer) {
+        resource = 'META-INF/spring.schemas'
+    }
+}
+
 
 test {
     useJUnitPlatform()
