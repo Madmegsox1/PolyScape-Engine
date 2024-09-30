@@ -6,6 +6,8 @@ import org.polyscape.event.IEvent;
 import org.polyscape.logic.LogicLink;
 import org.polyscape.logic.LogicType;
 import org.polyscape.logic.objectLogic.LogicObject;
+import org.polyscape.rendering.RenderEngine;
+import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.events.KeyEvent;
 
 @LogicLink(logicType = LogicType.OBJECT, linkId = 999)
@@ -30,8 +32,6 @@ public class ObjectLogic extends LogicObject {
                 xv += 20f;
             }
 
-            float finalXv = xv;
-            float finalYv = yv;
             object.addForce(xv, yv);
         };
         KeyEvent.addEvent(a, new EventMetadata(KeyEvent.class, 0));
@@ -44,7 +44,7 @@ public class ObjectLogic extends LogicObject {
 
     @Override
     public void onRender() {
-
+        RenderEngine.drawHollowCircle(object.getCenter(), 5f, 30, 2f, Color.BLUE);
     }
 
     @Override

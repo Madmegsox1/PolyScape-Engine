@@ -15,8 +15,18 @@ public final class LogicManager {
     public void loadLogic(String path, String className) {
         try {
             LogicLoader loader = new LogicLoader(new URL("file", null, path));
-            LogicContainer logic = loader.Load(className);
+            LogicContainer logic = loader.load(className);
             logics.add(logic);
+        } catch (Exception e) {
+            System.err.println("Failed to load logic: " + e.getMessage());
+        }
+    }
+
+    public void loadAllLogic(String path){
+        try {
+            LogicLoader loader = new LogicLoader(new URL("file", null, path));
+            List<LogicContainer> logicList = loader.loadAll();
+            logics.addAll(logicList);
         } catch (Exception e) {
             System.err.println("Failed to load logic: " + e.getMessage());
         }
@@ -31,6 +41,7 @@ public final class LogicManager {
     public void initLogicObject(BaseObject object){
         for (LogicContainer l : logics) {
             if(l.logic() instanceof LogicObject && object.getObjectId() == l.linkId()){
+                object.setLogic(l);
                 ((LogicObject)l.logic()).initObject(object);
             }
         }

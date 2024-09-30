@@ -41,11 +41,8 @@ public class MacTest extends Engine {
         eventBus = new EventBus();
 
         LogicManager logic = new LogicManager();
-        logic.loadLogic("./res/jars/TestLogic-1.0.jar", "org.polyscape.ObjectLogic");
+        logic.loadAllLogic("./res/jars/TestLogic-1.0.jar");
         logic.initLogic();
-        logic.loadLogic();
-
-
 
         SpriteSheet forestTiles = new SpriteSheet("ForestTiles", 16,16);
 
@@ -67,7 +64,6 @@ public class MacTest extends Engine {
         object.setObjectId(999);
         object.setLevel(1);
 
-        logic.initLogicObject(object);
 
         StaticObject object1 = new StaticObject();
         object1.setPosition(new Vector2(25, 500));
@@ -119,101 +115,15 @@ public class MacTest extends Engine {
 
         FluidObject fluidObject = new FluidObject(10f);
         fluidObject.setLevel(1);
+        fluidObject.setObjectId(991);
 
         //fluidObject.createFluid(200, 100, 200);
 
         ObjectManager.addObject(fluidObject);
 
-        AtomicReference<Vector2> startDrag = new AtomicReference<>();
-
-        AtomicReference<Float> translateX = new AtomicReference<>();
-
-        AtomicReference<Float> translateY= new AtomicReference<>();
-
-
-        IEvent<RenderEvent> renderEvent = e -> {
-
-            if (startDrag.get() != null) {
-                Vector2 v = Display.getMousePosition(display.getWindow());
-                RenderEngine.drawQuadA(startDrag.get(), v.x - startDrag.get().x, v.y - startDrag.get().y, new Color(0, 0, 0, 100));
-            }
-
-            Vector2 vector = object.getInterpolatedPosition(e.alpha);
-            float playerX = vector.x;
-            float playerY = vector.y;
-
-            // Assuming screenWidth and screenHeight are the dimensions of your window
-            float halfWidth = Profile.Display.WIDTH / 2.0f;
-            float halfHeight = Profile.Display.HEIGHT / 2.0f;
-
-            // Calculate the translation needed to keep the player at the center
-            translateX.set(-playerX + halfWidth);
-            translateY.set(-playerY + halfHeight);
-
-            // Apply this translation to the view matrix or directly using OpenGL's legacy functions
-            glLoadIdentity(); // Load the identity matrix to reset transformations
-            glPushMatrix();
-            glTranslatef(translateX.get(), translateY.get(), 0.0f);
-            //glEnable(GL_CULL_FACE);
-            ObjectManager.renderObjects(e.alpha);
-            //glDisable(GL_CULL_FACE);
-            glPopMatrix();
-        };
-
-        IEvent<KeyEvent> keyEvent = e -> {
-            if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_R)) {
-                Vector2 pos = Display.getMousePosition(display.getWindow());
-
-                ObjectManager.iterateObjects(n -> {
-                    if (n.getBody() != null) {
-                        if (n.isPointInObject(pos)) {
-                            n.getBody().setTransform(new Vec2(0, 0), 10);
-                        }
-                    }
-                });
-            }
-        };
-
-
-        IEvent<MouseClickEvent> clickEvent = e -> {
-
-            // Assume a scale factor where >1.0 is zoomed in, <1.0 is zoomed out
-            float scaleFactor = 1.0f; // Example scale factor
-
-// Adjust calculations for scale
-            float adjustedMouseX = (float) e.mX / scaleFactor;
-            float adjustedMouseY = (float) e.mY / scaleFactor;
-
-// Then apply translation as before
-            e.mX = adjustedMouseX - translateX.get();
-            e.mY = adjustedMouseY - translateY.get();
-
-            if (e.action == 0 && e.key == 0) {
-                fluidObject.createFluid((float) e.mX, (float) e.mY, 20);
-            }
-            if (e.action == 0 && e.key == 2) {
-                ObjectManager.clearObjects();
-            }
-
-            if (e.action == 1 && e.key == 1) {
-                startDrag.set(new Vector2(e.mX, e.mY));
-            }
-
-            if (e.action == 0 && e.key == 1) {
-                StaticObject object4 = new StaticObject();
-                object4.setPosition(startDrag.get());
-                object4.setWidth((int) (e.mX - startDrag.get().x));
-                object4.setHeight((int) (e.mY - startDrag.get().y));
-                object4.setBodyType(BodyType.DYNAMIC, true);
-                object4.setWireframe(false);
-                startDrag.set(null);
-                ObjectManager.addObject(object4);
-            }
-        };
-
-        RenderEvent.addEvent(renderEvent, new EventMetadata(RenderEvent.class, 0));
-        KeyEvent.addEvent(keyEvent, new EventMetadata(KeyEvent.class, 0));
-        MouseClickEvent.addEvent(clickEvent, new EventMetadata(MouseClickEvent.class, 0));
+        logic.initLogicObject(object);
+        logic.initLogicObject(fluidObject);
+        logic.loadLogic();
 
         ScreenManager screenManager = new ScreenManager();
 
