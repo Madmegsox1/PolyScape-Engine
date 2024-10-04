@@ -5,41 +5,48 @@ import org.polyscape.logic.objectLogic.LogicObject;
 import org.polyscape.object.BaseObject;
 
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 public final class LogicManager {
-    private final List<LogicContainer> logics = new ArrayList<>();
-    private final EventBus eventBus = new EventBus();
+    private static final HashMap<Integer,LogicContainer> logics = new HashMap<>();
+    private static final EventBus eventBus = new EventBus();
 
-    public void loadLogic(String path, String className) {
+    private static int currentLogicId = 0;
+
+    public static void loadLogic(String path, String className) {
         try {
             LogicLoader loader = new LogicLoader(new URL("file", null, path));
             LogicContainer logic = loader.load(className);
-            logics.add(logic);
+            currentLogicId++;
+            logics.put(currentLogicId, logic);
         } catch (Exception e) {
             System.err.println("Failed to load logic: " + e.getMessage());
         }
     }
 
-    public void loadAllLogic(String path){
+    public static void loadAllLogic(String path){
         try {
             LogicLoader loader = new LogicLoader(new URL("file", null, path));
             List<LogicContainer> logicList = loader.loadAll();
-            logics.addAll(logicList);
+            logicList.spliterator().forEachRemaining(logicContainer->{
+                currentLogicId++;
+                logics.put(currentLogicId, logicContainer);
+            });
         } catch (Exception e) {
             System.err.println("Failed to load logic: " + e.getMessage());
         }
     }
 
-    public void initLogic() {
-        for (LogicContainer l : logics) {
+    public static void initLogic() {
+        for (LogicContainer l : logics.values()) {
             l.logic().init(eventBus);
         }
     }
 
-    public void initLogicObject(BaseObject object){
-        for (LogicContainer l : logics) {
+    public static void initLogicObject(BaseObject object){
+        for (LogicContainer l : logics.values()) {
             if(l.logic() instanceof LogicObject && object.getObjectId() == l.linkId()){
                 object.setLogic(l);
                 ((LogicObject)l.logic()).initObject(object);
@@ -47,23 +54,27 @@ public final class LogicManager {
         }
     }
 
-    public void loadLogic(){
-        for (LogicContainer l : logics) {
+    public static void loadLogic(){
+        for (LogicContainer l : logics.values()) {
             l.logic().onLoad();
         }
     }
 
-    public void unloadLogic() {
-        for (LogicContainer l : logics) {
+    public static void unloadLogic() {
+        for (LogicContainer l : logics.values()) {
             l.logic().onUnload();
         }
     }
 
-    public Logic getLogic(int index){
+    public static Collection<LogicContainer> getLogics() {
+        return logics.values();
+    }
+
+    public static Logic getLogic(int index){
         return logics.get(index).logic();
     }
 
-    public EventBus getEventBus() {
+    public static EventBus getEventBus() {
         return eventBus;
     }
 }

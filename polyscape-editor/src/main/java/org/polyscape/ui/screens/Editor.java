@@ -7,7 +7,6 @@ import org.polyscape.Loader;
 import org.polyscape.Profile;
 import org.polyscape.event.EventMetadata;
 import org.polyscape.event.IEvent;
-import org.polyscape.font.Font;
 import org.polyscape.font.FontMac;
 import org.polyscape.object.BaseObject;
 import org.polyscape.object.Level;
@@ -58,7 +57,7 @@ public final class Editor extends Screen {
 
     boolean draggingLower;
 
-    public static int leftWidth = 250;
+    public static int leftWidth = 300;
 
     public Vector2 startCameraDrag;
     public static Vector2 cameraVector;
@@ -158,7 +157,7 @@ public final class Editor extends Screen {
         });
         objButton.baseColor = Profile.UiThemes.Dark.accent2;
 
-        Button spriteButton = new Button((int) objButton.getX() + objButton.getWidth() + 20, (lowerY + lowerHeight) - 60, this, "Sprite Sheets", "spriteButton");
+        Button spriteButton = new Button((int) objButton.getX() + objButton.getWidth() + 5, (lowerY + lowerHeight) - 60, this, "Sprite Sheets", "spriteButton");
         spriteButton.setClickAction(n -> {
             UiEngine.getScreenManager().setCurrentUi(2, "SpriteSheetList");
             UiEngine.getScreenManager().setScreenModel(2, info);
@@ -166,11 +165,20 @@ public final class Editor extends Screen {
 
         spriteButton.baseColor = Profile.UiThemes.Dark.accent2;
 
+        Button logicButton = new Button(5, (lowerY + lowerHeight) - 20, this, "Logic", "logicButton");
+        logicButton.setClickAction(n -> {
+            UiEngine.getScreenManager().setCurrentUi(2, "LogicList");
+            UiEngine.getScreenManager().setScreenModel(2, info);
+        });
+
+        logicButton.baseColor = Profile.UiThemes.Dark.accent2;
+
 
 
         addComponent(lvlButton);
         addComponent(objButton);
         addComponent(spriteButton);
+        addComponent(logicButton);
 
         ObjectManager.clearObjects();
         if(ObjectManager.getLevels().isEmpty()) {
@@ -264,6 +272,7 @@ public final class Editor extends Screen {
         if (draggingLeft) {
             leftWidth = (int) Display.getMousePosition(Engine.getDisplay().getWindow()).x;
         }
+
         glLoadIdentity();
         glPushMatrix();
         glTranslatef(cameraVector.x, cameraVector.y, 1.0f);
