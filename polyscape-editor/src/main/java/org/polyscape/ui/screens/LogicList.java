@@ -25,21 +25,41 @@ public final class LogicList extends Screen {
         this.info = getModel();
 
         components.clear();
+        LogicManager.getLogics().forEach(n -> {
+            Button b = getLogicButton(n);
+            buttonY += 10;
+            buttonY += font.getHeight(b.getText());
+            b.baseColor = Profile.UiThemes.Dark.foregroundDark;
+            addComponent(b);
+        });
+
+        Button newLogicButton = getLogicNewButton();
+        addComponent(newLogicButton);
+    }
+
+    private Button getLogicNewButton(){
+        Button newLogic = new Button(5, Profile.Display.HEIGHT - 140, this, "Add Logic", "addLogicButton");
+        newLogic.setClickAction(n -> {
+            UiEngine.getScreenManager().setCurrentUi(1, "LogicEdit");
+            UiEngine.getScreenManager().setScreenModel(1, null);
+        });
+
+        return newLogic;
     }
 
     private Button getLogicButton(LogicContainer logicContainer) {
-        Button button = new Button(5, buttonY, this, , "LvlButton:" + lvl.getLevelNumber());
+        Button button = new Button(5, buttonY, this, logicContainer.logicId()+"|"+logicContainer.logicName(), "LogicButton:" + logicContainer.logicId());
         button.setClickAction(n -> {
             int previousLvl = ObjectManager.getCurrentLevel().getLevelNumber();
-            ObjectManager.loadLevel(lvl.getLevelNumber());
-
-            getComponentById("LvlButton:" + previousLvl).foregroundColor = Profile.UiThemes.Dark.foreground;
+            getComponentById("LogicButton:" + previousLvl).foregroundColor = Profile.UiThemes.Dark.foreground;
             n.foregroundColor = Color.BLUE;
-            UiEngine.getScreenManager().setCurrentUi(1, "LevelEditor");
-            UiEngine.getScreenManager().setScreenModel(1, lvl);
+            UiEngine.getScreenManager().setCurrentUi(1, "LogicInfo");
+            UiEngine.getScreenManager().setScreenModel(1, info);
         });
         return button;
     }
+
+
     @Override
     public void render(RenderEvent event) {
 
@@ -62,6 +82,5 @@ public final class LogicList extends Screen {
         setFont(font);
 
         buttonY = 30;
-
     }
 }

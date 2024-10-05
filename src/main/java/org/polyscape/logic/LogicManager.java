@@ -20,7 +20,7 @@ public final class LogicManager {
             LogicLoader loader = new LogicLoader(new URL("file", null, path));
             LogicContainer logic = loader.load(className);
             currentLogicId++;
-            logics.put(currentLogicId, logic);
+            logics.put(currentLogicId, logic.setLogicId(currentLogicId));
         } catch (Exception e) {
             System.err.println("Failed to load logic: " + e.getMessage());
         }

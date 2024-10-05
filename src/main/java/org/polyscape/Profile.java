@@ -2,7 +2,57 @@ package org.polyscape;
 
 import org.polyscape.rendering.elements.Color;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
 public final class Profile {
+
+    public final static class ResourseLoader 
+    {
+        public static String RES_PATH = "./res/";
+
+        public static void LoadResPath() {
+            String resPath = System.getenv("POLYSCAPE_RES");
+
+            if(resPath != null && !resPath.isEmpty()){
+                RES_PATH = resPath;
+                return;
+            }
+
+            File file = new File("./.env");
+
+            if(file.exists()) {
+                try {
+                    FileReader fr = new FileReader(file);
+                    BufferedReader br = new BufferedReader(fr);
+
+                    String line = br.readLine();
+
+                    while (line != null) {
+                        if(line.startsWith("POLYSCAPE_RES")) {
+                            var spltEnv = line.split("=");
+                            if(spltEnv[1] != null){
+                                RES_PATH = spltEnv[1];
+                                break;
+                            }
+                        }
+
+                        line = br.readLine();
+                    }
+
+                    br.close();
+                    fr.close();
+                    return;
+                }
+                catch(IOException e) {
+                }
+            }
+        }
+
+    }
+
     public final static class Display
     {
         public static int WIDTH = 1280;
@@ -29,25 +79,25 @@ public final class Profile {
     public final static class Textures
     {
 
-        public static final String TEXTURE_LOCATION = "res/textures/";
-        public static final String TEXTURE_FILEFORMAT = "png";
+        public static String TEXTURE_LOCATION = ResourseLoader.RES_PATH +"textures/";
+        public static String TEXTURE_FILEFORMAT = "png";
 
     }
 
     public final static class Font{
-        public static final String FONT_LOCATION = "res/fonts/";
-        public static final String FONT_FILEFORMAT = "ttf";
+        public static String FONT_LOCATION = ResourseLoader.RES_PATH +"fonts/";
+        public static String FONT_FILEFORMAT = "ttf";
     }
 
     public final static class Shaders{
-        public static final String SHADER_LOCATION = "res/shaders/";
-        public static final String SHADER_FILEFORMAT = "glsl";
+        public static String SHADER_LOCATION = ResourseLoader.RES_PATH +"shaders/";
+        public static String SHADER_FILEFORMAT = "glsl";
     }
 
     public final static class Sound
     {
 
-        public static final String SOUND_LOCATION = "res/sound/";
+        public static final String SOUND_LOCATION = ResourseLoader.RES_PATH +"sound/";
         public static final String SOUND_FILEFORMAT = "wav";
 
     }

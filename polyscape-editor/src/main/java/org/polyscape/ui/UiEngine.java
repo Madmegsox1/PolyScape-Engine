@@ -52,6 +52,6 @@ public final class UiEngine extends Engine {
         screenManager.addScreen("LevelEditor", new LevelEditor());
         screenManager.addScreen("SpriteSheets", new SpriteSheetEditor());
         screenManager.addScreen("SpriteSheetList", new SpriteSheetList());
-        screenManager.addScreen("LogicList", new SpriteSheetEditor());
+        screenManager.addScreen("LogicList", new LogicList());
     }
 }

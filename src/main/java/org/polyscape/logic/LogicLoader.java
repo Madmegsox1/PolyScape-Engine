@@ -29,7 +29,7 @@ public final class LogicLoader {
             throw new Exception("LogicLink annotation not found");
         }
 
-        return new LogicContainer((Logic) constructor.newInstance(), link.logicType(), link.linkId());
+        return new LogicContainer((Logic) constructor.newInstance(), link.logicType(), link.linkId(), 0, logicClass.getSimpleName());
     }
 
     public List<LogicContainer> loadAll() throws Exception {
@@ -47,7 +47,7 @@ public final class LogicLoader {
                         constructor.setAccessible(true);
                         LogicLink link = logicClass.getAnnotation(LogicLink.class);
                         if(link != null) {
-                            containers.add(new LogicContainer((Logic) constructor.newInstance(), link.logicType(), link.linkId()));
+                            containers.add(new LogicContainer((Logic) constructor.newInstance(), link.logicType(), link.linkId(), 0, logicClass.getSimpleName()));
                         }
                     } catch (ClassNotFoundException | NoClassDefFoundError e) {
                         System.out.println("Failed to load class " + className);
