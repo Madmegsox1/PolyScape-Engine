@@ -32,7 +32,7 @@ public final class LogicManager {
             List<LogicContainer> logicList = loader.loadAll();
             logicList.spliterator().forEachRemaining(logicContainer->{
                 currentLogicId++;
-                logics.put(currentLogicId, logicContainer);
+                logics.put(currentLogicId, logicContainer.setLogicId(currentLogicId));
             });
         } catch (Exception e) {
             System.err.println("Failed to load logic: " + e.getMessage());

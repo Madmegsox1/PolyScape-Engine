@@ -4,7 +4,6 @@ import org.polyscape.Profile;
 import org.polyscape.font.FontMac;
 import org.polyscape.logic.LogicContainer;
 import org.polyscape.logic.LogicManager;
-import org.polyscape.object.Level;
 import org.polyscape.object.ObjectManager;
 import org.polyscape.project.model.ProjectInfo;
 import org.polyscape.rendering.elements.Color;
@@ -19,6 +18,9 @@ public final class LogicList extends Screen {
 
     private int buttonY = 30;
     private ProjectInfo info;
+
+    private int selectedId = -1;
+
 
     @Override
     public void model() {
@@ -50,11 +52,13 @@ public final class LogicList extends Screen {
     private Button getLogicButton(LogicContainer logicContainer) {
         Button button = new Button(5, buttonY, this, logicContainer.logicId()+"|"+logicContainer.logicName(), "LogicButton:" + logicContainer.logicId());
         button.setClickAction(n -> {
-            int previousLvl = ObjectManager.getCurrentLevel().getLevelNumber();
-            getComponentById("LogicButton:" + previousLvl).foregroundColor = Profile.UiThemes.Dark.foreground;
+            if(selectedId >= 0) {
+                getComponentById("LogicButton:" + selectedId).foregroundColor = Profile.UiThemes.Dark.foreground;
+            }
+            selectedId = logicContainer.logicId();
             n.foregroundColor = Color.BLUE;
-            UiEngine.getScreenManager().setCurrentUi(1, "LogicInfo");
-            UiEngine.getScreenManager().setScreenModel(1, info);
+            UiEngine.getScreenManager().setCurrentUi(1, "LogicEdit");
+            UiEngine.getScreenManager().setScreenModel(1, logicContainer);
         });
         return button;
     }

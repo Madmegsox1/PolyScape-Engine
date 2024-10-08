@@ -25,19 +25,19 @@ public final class LogicLoader {
         constructor.setAccessible(true);
         LogicLink link = logicClass.getAnnotation(LogicLink.class);
 
-        if(link == null) {
+        if (link == null) {
             throw new Exception("LogicLink annotation not found");
         }
 
-        return new LogicContainer((Logic) constructor.newInstance(), link.logicType(), link.linkId(), 0, logicClass.getSimpleName());
+        return new LogicContainer((Logic) constructor.newInstance(), link.logicType(), link.linkId(), 0, logicClass.getSimpleName(), this.file);
     }
 
     public List<LogicContainer> loadAll() throws Exception {
         List<LogicContainer> containers = new ArrayList<>();
 
-        try(JarFile jar = new JarFile(file)) {
+        try (JarFile jar = new JarFile(file)) {
             Enumeration<JarEntry> entries = jar.entries();
-            while(entries.hasMoreElements()) {
+            while (entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
                 if (entry.getName().endsWith(".class") && !entry.isDirectory()) {
                     String className = entry.getName().replace('/', '.').replace(".class", "");
@@ -46,8 +46,10 @@ public final class LogicLoader {
                         Constructor<?> constructor = logicClass.getDeclaredConstructor();
                         constructor.setAccessible(true);
                         LogicLink link = logicClass.getAnnotation(LogicLink.class);
-                        if(link != null) {
-                            containers.add(new LogicContainer((Logic) constructor.newInstance(), link.logicType(), link.linkId(), 0, logicClass.getSimpleName()));
+                        if (link != null) {
+                            containers.add(
+                                    new LogicContainer((Logic) constructor.newInstance(), link.logicType(), link.linkId(), 0, logicClass.getSimpleName(), this.file)
+                            );
                         }
                     } catch (ClassNotFoundException | NoClassDefFoundError e) {
                         System.out.println("Failed to load class " + className);
