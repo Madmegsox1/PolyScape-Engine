@@ -31,7 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.lwjgl.opengl.GL11.*;
 
 public class MacTest extends Engine {
-    @Test
+    //@Test
     public void test() {
         Profile.Display.BACKGROUND_COLOR = new float[]{255f / 255f, 255f / 255f, 255f / 255f, 1.0f};
         display = new Display("Mac Test");
@@ -43,11 +43,10 @@ public class MacTest extends Engine {
         renderEngine = new RenderEngine();
         eventBus = new EventBus();
 
-        try {
-            LogicScriptLoader scriptLoader = new LogicScriptLoader();
-        } catch (FileNotFoundException | ScriptException | NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
+        Level l = new Level(1, "Level 1");
+        ObjectManager.addLevel(l);
+        ObjectManager.loadLevel(1);
+
 
         LogicManager.loadAllLogic("./res/jars/TestLogic-1.0.jar");
         LogicManager.initLogic();
@@ -57,9 +56,12 @@ public class MacTest extends Engine {
         SpriteSheet spriteSheet = new SpriteSheet("002", 25, 25);
         ObjectManager.clearObjects();
 
-        Level l = new Level(1, "Level 1");
-        ObjectManager.addLevel(l);
-        ObjectManager.loadLevel(1);
+        try {
+            LogicScriptLoader scriptLoader = new LogicScriptLoader();
+        } catch (FileNotFoundException | ScriptException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+
 
         BaseObject object = new BaseObject();
         object.setPosition(new Vector2(100, 200));

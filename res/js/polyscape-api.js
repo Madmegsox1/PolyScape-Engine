@@ -4,17 +4,17 @@ function initScript() {
     log("Hello from js")
     log("Display ID: " + display.getWindow())
 
-    let txt = texture("001")
-    let jsPlayerPos = vector2(100, 100)
+    let obj = baseObject()
+    obj.setPosition(vector2(50,200))
+    obj.setWidth(50)
+    obj.setHeight(50)
+    obj.setBodyType(DYNAMIC_BODY(), true)
+    obj.setBaseColor(BLACK())
+    obj.setWireframe(true)
+    obj.setObjectId(111)
+    obj.setLevel(1)
 
-    addRenderEvent(function (event) {
-        event.renderEngine.drawQuadTexture(jsPlayerPos, 100.0, 100.0, txt)
-    })
-
-    addKeyboardEvent(function (event) {
-        jsPlayerPos.addToVect(1, 0)
-    })
-
+    addObject(obj)
 }
 
 function getEventBus() {
@@ -63,6 +63,22 @@ function vector2(x, y) {
 
 function texture(fileName) {
     return new Packages.org.polyscape.rendering.elements.Texture(fileName)
+}
+
+function STATIC_BODY(){
+    return org.jbox2d.dynamics.BodyType.STATIC
+}
+
+function DYNAMIC_BODY(){
+    return org.jbox2d.dynamics.BodyType.DYNAMIC
+}
+function baseObject() {
+    return new Packages.org.polyscape.object.BaseObject()
+}
+
+function addObject(obj) {
+    Packages.org.polyscape.object.ObjectManager.addObject(obj)
+
 }
 
 function addRenderEvent(event) {
