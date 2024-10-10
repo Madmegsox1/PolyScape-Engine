@@ -4,7 +4,6 @@ import org.polyscape.Profile;
 import org.polyscape.font.FontMac;
 import org.polyscape.logic.LogicContainer;
 import org.polyscape.logic.LogicManager;
-import org.polyscape.object.ObjectManager;
 import org.polyscape.project.model.ProjectInfo;
 import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.events.KeyEvent;

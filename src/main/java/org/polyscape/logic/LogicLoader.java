@@ -1,5 +1,8 @@
 package org.polyscape.logic;
 
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.net.URL;
@@ -19,6 +22,7 @@ public final class LogicLoader {
         this.file = new File(url.getFile());
     }
 
+
     public LogicContainer load(String className) throws Exception {
         Class<?> logicClass = Class.forName(className, true, classLoader);
         Constructor<?> constructor = logicClass.getDeclaredConstructor();
@@ -29,7 +33,7 @@ public final class LogicLoader {
             throw new Exception("LogicLink annotation not found");
         }
 
-        return new LogicContainer((Logic) constructor.newInstance(), link.logicType(), link.linkId(), 0, logicClass.getSimpleName(), this.file);
+        return new LogicContainer((Logic) constructor.newInstance(), link.logicType(), link.linkId(), 0, logicClass.getSimpleName(), this.file, logicClass.getName());
     }
 
     public List<LogicContainer> loadAll() throws Exception {
@@ -48,7 +52,7 @@ public final class LogicLoader {
                         LogicLink link = logicClass.getAnnotation(LogicLink.class);
                         if (link != null) {
                             containers.add(
-                                    new LogicContainer((Logic) constructor.newInstance(), link.logicType(), link.linkId(), 0, logicClass.getSimpleName(), this.file)
+                                    new LogicContainer((Logic) constructor.newInstance(), link.logicType(), link.linkId(), 0, logicClass.getSimpleName(), this.file, logicClass.getName())
                             );
                         }
                     } catch (ClassNotFoundException | NoClassDefFoundError e) {

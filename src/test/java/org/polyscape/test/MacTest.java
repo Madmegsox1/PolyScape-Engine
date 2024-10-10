@@ -10,6 +10,7 @@ import org.polyscape.event.EventBus;
 import org.polyscape.event.EventMetadata;
 import org.polyscape.event.IEvent;
 import org.polyscape.logic.LogicManager;
+import org.polyscape.logic.script.LogicScriptLoader;
 import org.polyscape.object.*;
 import org.polyscape.rendering.Display;
 import org.polyscape.rendering.RenderEngine;
@@ -23,12 +24,14 @@ import org.polyscape.rendering.sprite.SpriteSheet;
 import org.polyscape.test.ui.HomeScreen;
 import org.polyscape.ui.ScreenManager;
 
+import javax.script.ScriptException;
+import java.io.FileNotFoundException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.lwjgl.opengl.GL11.*;
 
 public class MacTest extends Engine {
-    //@Test
+    @Test
     public void test() {
         Profile.Display.BACKGROUND_COLOR = new float[]{255f / 255f, 255f / 255f, 255f / 255f, 1.0f};
         display = new Display("Mac Test");
@@ -40,9 +43,14 @@ public class MacTest extends Engine {
         renderEngine = new RenderEngine();
         eventBus = new EventBus();
 
-        LogicManager logic = new LogicManager();
-        logic.loadAllLogic("./res/jars/TestLogic-1.0.jar");
-        logic.initLogic();
+        try {
+            LogicScriptLoader scriptLoader = new LogicScriptLoader();
+        } catch (FileNotFoundException | ScriptException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+
+        LogicManager.loadAllLogic("./res/jars/TestLogic-1.0.jar");
+        LogicManager.initLogic();
 
         SpriteSheet forestTiles = new SpriteSheet("ForestTiles", 16,16);
 
@@ -121,9 +129,9 @@ public class MacTest extends Engine {
 
         ObjectManager.addObject(fluidObject);
 
-        logic.initLogicObject(object);
-        logic.initLogicObject(fluidObject);
-        logic.loadLogic();
+        LogicManager.initLogicObject(object);
+        LogicManager.initLogicObject(fluidObject);
+        LogicManager.loadLogic();
 
         ScreenManager screenManager = new ScreenManager();
 

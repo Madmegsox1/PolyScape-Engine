@@ -49,6 +49,7 @@ dependencies {
     implementation "org.pkl-lang:pkl-core:0.25.2"
     implementation "org.pkl-lang:pkl-config-java:0.25.2"
 
+    runtimeOnly group: 'org.mozilla', name: 'rhino-engine', version: '1.7.15'
 
     implementation group: 'org.l33tlabs.twl', name: 'pngdecoder', version: '1.0'
     implementation group: 'org.jasypt', name: 'jasypt', version: '1.9.2'

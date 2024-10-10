@@ -3,7 +3,6 @@ package org.polyscape.ui.screens;
 import org.polyscape.Profile;
 import org.polyscape.font.FontMac;
 import org.polyscape.logic.LogicContainer;
-import org.polyscape.logic.LogicLoader;
 import org.polyscape.logic.LogicManager;
 import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;

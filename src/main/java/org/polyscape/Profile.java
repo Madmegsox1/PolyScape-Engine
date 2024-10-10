@@ -102,6 +102,12 @@ public final class Profile {
 
     }
 
+    public final static class Logic {
+        public static final String JS_API_LOCATION = ResourseLoader.RES_PATH +"js/polyscape-api.js";
+        public static final String JS_LOGIC_FILEFORMAT = "js";
+        public static final String JS_LOGIC_LOCATION = ResourseLoader.RES_PATH +"js/";
+    }
+
     public final static class Colors
     {
         public static Color navyBlue = new Color(32, 44, 57);
