@@ -1,6 +1,7 @@
 package org.polyscape.logic.script;
 
 import org.polyscape.Profile;
+import org.polyscape.logic.LogicType;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -23,6 +24,12 @@ public final class LogicScriptLoader {
 
     public void loadScript(String file) throws FileNotFoundException, ScriptException {
         this.scriptEngine.eval(new FileReader(Profile.Logic.JS_LOGIC_LOCATION + file));
+        Integer linkId = (Integer) this.scriptEngine.get("LINK-ID");
+        String linkType = (String) this.scriptEngine.get("LINK-TYPE");
+        LogicType type = LogicType.valueOf(linkType);
+
+        LogicScript logicScript = new LogicScript(this.scriptEngine, this.invoker);
+
     }
 
     public Invocable getInvoker() {

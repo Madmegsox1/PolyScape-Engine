@@ -95,7 +95,10 @@ shadowJar {
 test {
     useJUnitPlatform()
 
-    //jvmArgs "-XstartOnFirstThread"
+    if(OperatingSystem.current() == OperatingSystem.MAC_OS) {
+        jvmArgs "-XstartOnFirstThread"
+    }
+
     testLogging {
         events "passed"
     }

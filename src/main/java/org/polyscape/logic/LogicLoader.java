@@ -1,8 +1,5 @@
 package org.polyscape.logic;
 
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.net.URL;

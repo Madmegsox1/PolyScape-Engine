@@ -1,37 +1,27 @@
 package org.polyscape.test;
 
-import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyType;
 import org.junit.jupiter.api.Test;
-import org.lwjgl.glfw.GLFW;
 import org.polyscape.Engine;
 import org.polyscape.Profile;
 import org.polyscape.event.EventBus;
-import org.polyscape.event.EventMetadata;
-import org.polyscape.event.IEvent;
 import org.polyscape.logic.LogicManager;
 import org.polyscape.logic.script.LogicScriptLoader;
 import org.polyscape.object.*;
 import org.polyscape.rendering.Display;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.Renderer;
-import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.elements.Vector2;
-import org.polyscape.rendering.events.KeyEvent;
-import org.polyscape.rendering.events.MouseClickEvent;
-import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.rendering.sprite.SpriteSheet;
 import org.polyscape.test.ui.HomeScreen;
 import org.polyscape.ui.ScreenManager;
 
 import javax.script.ScriptException;
 import java.io.FileNotFoundException;
-import java.util.concurrent.atomic.AtomicReference;
 
-import static org.lwjgl.opengl.GL11.*;
 
 public class MacTest extends Engine {
-    //@Test
+    @Test
     public void test() {
         Profile.Display.BACKGROUND_COLOR = new float[]{255f / 255f, 255f / 255f, 255f / 255f, 1.0f};
         display = new Display("Mac Test");
