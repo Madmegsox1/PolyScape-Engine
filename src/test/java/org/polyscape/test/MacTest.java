@@ -1,6 +1,5 @@
 package org.polyscape.test;
 
-import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyType;
 import org.junit.jupiter.api.Test;
 import org.polyscape.Engine;
@@ -9,22 +8,18 @@ import org.polyscape.event.EventBus;
 import org.polyscape.event.EventMetadata;
 import org.polyscape.event.IEvent;
 import org.polyscape.logic.LogicManager;
-import org.polyscape.logic.script.LogicScriptLoader;
+import org.polyscape.logic.script.LogicScript;
 import org.polyscape.object.*;
 import org.polyscape.rendering.Display;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.Renderer;
-import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.elements.Texture;
 import org.polyscape.rendering.elements.Vector2;
 import org.polyscape.rendering.events.MouseClickEvent;
-import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.rendering.sprite.SpriteSheet;
 import org.polyscape.test.ui.HomeScreen;
 import org.polyscape.ui.ScreenManager;
 
-import javax.script.ScriptException;
-import java.io.FileNotFoundException;
 
 
 public class MacTest extends Engine {
@@ -52,11 +47,15 @@ public class MacTest extends Engine {
         SpriteSheet spriteSheet = new SpriteSheet("002", 25, 25);
         ObjectManager.clearObjects();
 
-        try {
-            LogicScriptLoader scriptLoader = new LogicScriptLoader();
-        } catch (FileNotFoundException | ScriptException | NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
+
+        LogicScript logicScript = new LogicScript("test1");
+        LogicScript logicScript2 = new LogicScript("test2");
+
+        logicScript.onLoad();
+        logicScript2.onLoad();
+
+        logicScript.onUnload();
+        logicScript2.onUnload();
 
         CircleObject circleObject = new CircleObject();
         circleObject.setPosition(new Vector2(400, 400));

@@ -178,9 +178,6 @@ public final class ObjectManager {
 
     public static void renderObjects(float alpha) {
         for (final BaseObject object : getObjects()) {
-            if(object.getObjectId() == 111){
-                System.out.println("");
-            }
             object.render(alpha);
         }
     }

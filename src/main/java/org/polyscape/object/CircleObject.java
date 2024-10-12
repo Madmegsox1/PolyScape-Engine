@@ -63,8 +63,6 @@ public class CircleObject extends BaseObject {
         return distance <= radius;
     }
 
-
-
     @Override
     public int getWidth() {
         return (int) radius;
