@@ -1,17 +1,24 @@
 package org.polyscape.test;
 
+import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyType;
 import org.junit.jupiter.api.Test;
 import org.polyscape.Engine;
 import org.polyscape.Profile;
 import org.polyscape.event.EventBus;
+import org.polyscape.event.EventMetadata;
+import org.polyscape.event.IEvent;
 import org.polyscape.logic.LogicManager;
 import org.polyscape.logic.script.LogicScriptLoader;
 import org.polyscape.object.*;
 import org.polyscape.rendering.Display;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.Renderer;
+import org.polyscape.rendering.elements.Color;
+import org.polyscape.rendering.elements.Texture;
 import org.polyscape.rendering.elements.Vector2;
+import org.polyscape.rendering.events.MouseClickEvent;
+import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.rendering.sprite.SpriteSheet;
 import org.polyscape.test.ui.HomeScreen;
 import org.polyscape.ui.ScreenManager;
@@ -37,7 +44,6 @@ public class MacTest extends Engine {
         ObjectManager.addLevel(l);
         ObjectManager.loadLevel(1);
 
-
         LogicManager.loadAllLogic("./res/jars/TestLogic-1.0.jar");
         LogicManager.initLogic();
 
@@ -52,6 +58,20 @@ public class MacTest extends Engine {
             throw new RuntimeException(e);
         }
 
+        CircleObject circleObject = new CircleObject();
+        circleObject.setPosition(new Vector2(400, 400));
+        circleObject.setRadius(50);
+        circleObject.setTexture(new Texture("002"));
+        circleObject.setBodyType(BodyType.DYNAMIC, true);
+        circleObject.setWireframe(true);
+        circleObject.setLevel(1);
+
+
+        IEvent<MouseClickEvent> me =  n -> {
+            circleObject.setWidth(circleObject.getWidth() + 2);
+        };
+
+        MouseClickEvent.addEvent(me, new EventMetadata(MouseClickEvent.class, 2));
 
         BaseObject object = new BaseObject();
         object.setPosition(new Vector2(100, 200));
@@ -120,6 +140,7 @@ public class MacTest extends Engine {
         //fluidObject.createFluid(200, 100, 200);
 
         ObjectManager.addObject(fluidObject);
+        ObjectManager.addObject(circleObject);
 
         LogicManager.initLogicObject(object);
         LogicManager.initLogicObject(fluidObject);

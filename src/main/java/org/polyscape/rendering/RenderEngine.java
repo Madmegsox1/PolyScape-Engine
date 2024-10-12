@@ -72,6 +72,84 @@ public final class RenderEngine {
         glPopMatrix();
     }
 
+    public static void drawCircleAngle(final Vector2 center, final float radius, final float angle, final int segments, final Color color) {
+        final float[] c = Color.convertColorToFloatAlpha(color);
+        glPushMatrix();
+        glColor4f(c[0], c[1], c[2], c[3]);
+
+        glTranslatef(center.x, center.y, 0.0f);
+        glRotatef(angle, 0.0f, 0.0f, 1.0f);
+        glBegin(GL_POLYGON);
+
+        for (int i = 0; i < segments; i++) {
+            double theta = Math.PI * 2 * i / segments;
+            float xCos = (float) Math.cos(theta);
+            float yCos = (float) Math.sin(theta);
+
+            float x = (radius * xCos);
+            float y = (radius * yCos);
+
+            glVertex2f(x, y);
+        }
+
+        glEnd();
+        glPopMatrix();
+    }
+
+    public static void drawCircleAngleTextured(final Vector2 center, final float radius, final float angle, final int segments, final Texture texture) {
+        glPushMatrix();
+        texture.bind();
+
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        glTranslatef(center.x, center.y, 0.0f);
+        glRotatef(angle, 0.0f, 0.0f, 1.0f);
+        glBegin(GL_POLYGON);
+
+        for (int i = 0; i < segments; i++) {
+            double theta = Math.PI * 2 * i / segments;
+            float xCos = (float) Math.cos(theta);
+            float yCos = (float) Math.sin(theta);
+
+            float x = (radius * xCos);
+            float y = (radius * yCos);
+            float tx = xCos * 0.5f + 0.5f;
+            float ty = yCos * 0.5f + 0.5f;
+
+            glTexCoord2f(tx, ty);
+            glVertex2f(x, y);
+        }
+
+        glEnd();
+        glPopMatrix();
+        texture.disable();
+    }
+
+    public static void drawCircleTextured(final Vector2 center, final float radius, final int segments, final Texture texture) {
+        glPushMatrix();
+        texture.bind();
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+
+        glBegin(GL_POLYGON);
+
+        for (int i = 0; i < segments; i++) {
+            double theta = Math.PI * 2 * i / segments;
+            float xCos = (float) Math.cos(theta);
+            float yCos = (float) Math.sin(theta);
+
+            float x = (center.x + radius * xCos);
+            float y = (center.y + radius * yCos);
+            float tx = xCos * 0.5f + 0.5f;
+            float ty = yCos * 0.5f + 0.5f;
+
+            glTexCoord2f(tx, ty);
+            glVertex2f(x, y);
+        }
+
+        glEnd();
+        glPopMatrix();
+        texture.disable();
+    }
+
     public static void drawHollowCircle(final Vector2 center, final float radius, final int segments, final float width, final Color color) {
         final float[] c = Color.convertColorToFloatAlpha(color);
         glPushMatrix();

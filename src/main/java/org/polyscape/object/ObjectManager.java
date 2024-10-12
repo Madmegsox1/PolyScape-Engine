@@ -29,7 +29,6 @@ public final class ObjectManager {
             object.setObjectId(currentId);
         }
         objects.put(object.getObjectId(), object);
-        var x = 1;
     }
 
     public static float toPixels(float meters) {
@@ -51,10 +50,17 @@ public final class ObjectManager {
         return new Vec2(worldX, worldY);
     }
 
+    public static Vec2 screenToWorld(float screenX, float screenY, float circleRadius, int lvl) {
+        float worldX = (screenX) / PIXELS_PER_METER; // Subtract double of circle's radius from screenX
+        float worldY = (levels.get(lvl).levelHeight - screenY) / PIXELS_PER_METER; // Subtract circle's radius from screenY and convert to world coordinates
+
+        return new Vec2(worldX, worldY);
+    }
+
     public static Vector2 worldToScreen(Vec2 pos, int lvl){
         float screenX = pos.x * PIXELS_PER_METER;
         float screenY = levels.get(lvl).levelHeight - (pos.y  * PIXELS_PER_METER);
-        return new Vector2(screenX, screenY );
+        return new Vector2(screenX, screenY);
     }
 
     public static void setPreviousPositions(){
@@ -148,6 +154,7 @@ public final class ObjectManager {
 
     public static void loadLevel(int level){
         currentLevel = level;
+        getCurrentLevel().setCurrentLevel();
     }
 
     public static Level getCurrentLevel(){

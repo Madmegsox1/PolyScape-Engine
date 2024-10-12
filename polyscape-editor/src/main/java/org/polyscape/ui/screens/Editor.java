@@ -8,7 +8,9 @@ import org.polyscape.Profile;
 import org.polyscape.event.EventMetadata;
 import org.polyscape.event.IEvent;
 import org.polyscape.font.FontMac;
+import org.polyscape.font.FontRenderer;
 import org.polyscape.object.BaseObject;
+import org.polyscape.object.CircleObject;
 import org.polyscape.object.Level;
 import org.polyscape.object.ObjectManager;
 import org.polyscape.project.model.ProjectInfo;
@@ -74,6 +76,10 @@ public final class Editor extends Screen {
 
     boolean draggingObjectRot;
 
+    boolean draggingCircle;
+
+    CircleObject currentCircleObject;
+
     Vector2 draggingVectorObject;
 
     float previousAngle;
@@ -89,6 +95,8 @@ public final class Editor extends Screen {
     Button moveButton;
 
     Button rotateButton;
+
+    Button circleButton;
 
     @Override
     public void model() {
@@ -224,6 +232,14 @@ public final class Editor extends Screen {
                     previousAngle = endAngle;
                 }
             }
+            else if(movementMode == MovementMode.CIRCLE) {
+                if(draggingCircle) {
+                    Vector2 worldMy = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                    int distance = (int) Math.abs(Vector2.distance(worldMy, currentCircleObject.getPosition()));
+                    currentCircleObject.setRadius(distance);
+                }
+
+            }
 
             if (draggingCamera) {
                 float dx = (float) (mx - startCameraDrag.x);
@@ -259,6 +275,15 @@ public final class Editor extends Screen {
 
         this.rotateButton = rotateButton;
         addComponent(rotateButton);
+
+        Button circleTool = new Button(leftWidth + 140 + 140, 50, this,"Circle Tool", "circleTool");
+        circleTool.setClickAction(n -> {
+            this.movementMode = MovementMode.CIRCLE;
+        });
+
+        this.circleButton = circleTool;
+        addComponent(circleButton);
+
     }
 
     @Override
@@ -288,6 +313,11 @@ public final class Editor extends Screen {
             }
             if (selectedObject != null && movementMode == MovementMode.ROTATE) {
                 RenderEngine.drawHollowCircle(selectedObject.getCenter(), selectedObject.getWidth(), 100, 2f, Color.BLUE);
+            }
+            if (currentCircleObject != null && movementMode == MovementMode.CIRCLE) {
+                Vector2 worldMy = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                RenderEngine.drawLine(currentCircleObject.getCenter(), worldMy, 2f, Color.GREEN);
+                font.renderText("R " + currentCircleObject.getRadius(), new Vector2(currentCircleObject.getPosition().x, currentCircleObject.getPosition().y), Color.BLUE);
             }
         }
         else if(renderSpriteSheet()){
@@ -380,6 +410,29 @@ public final class Editor extends Screen {
                 if (event.action == 0 && draggingObjectRot) {
                     saveObjects();
                     draggingObjectRot = false;
+                }
+            }
+            else if(movementMode == MovementMode.CIRCLE) {
+                if(event.action == 1 && isInStageBounds((float) event.mX, (float) event.mY)) {
+                    var pos = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                    CircleObject circleObject = new CircleObject();
+                    circleObject.setPosition(pos);
+                    circleObject.setRadius(0);
+                    circleObject.setBaseColor(Color.BLACK);
+                    circleObject.setBodyType(BodyType.STATIC, true);
+                    circleObject.getBody().setAwake(false);
+                    circleObject.setLevel(ObjectManager.getCurrentLevel().getLevelNumber());
+                    this.draggingCircle = true;
+                    this.currentCircleObject = circleObject;
+                    addObject(circleObject, false);
+                    return;
+                }
+                if(event.action == 0 && draggingCircle) {
+                    saveObjects();
+                    draggingCircle = false;
+                    setSelectedId(currentCircleObject.getObjectId());
+                    currentCircleObject = null;
+                    movementMode = MovementMode.MOVE;
                 }
             }
         }

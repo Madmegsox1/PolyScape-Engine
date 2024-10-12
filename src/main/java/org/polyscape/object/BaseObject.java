@@ -1,5 +1,6 @@
 package org.polyscape.object;
 
+import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
@@ -24,13 +25,13 @@ public class BaseObject extends RenderProperty {
 
     private int objectId = 0;
 
-    private Vector2 position;
+    protected Vector2 position;
 
     private Vector2 previousPosition;
 
-    private BodyDef bodyDef;
+    protected BodyDef bodyDef;
 
-    private Body body;
+    protected Body body;
 
     private BodyType bodyType;
 
@@ -42,7 +43,7 @@ public class BaseObject extends RenderProperty {
 
     private boolean angleCals;
 
-    private int onLevel;
+    protected int onLevel;
 
     private LogicContainer logic;
 
@@ -350,7 +351,7 @@ public class BaseObject extends RenderProperty {
         renderObject(alpha);
     }
 
-    private void drawWireframe() {
+    public void drawWireframe() {
         if(body == null){
             //getInterpolatedPosition()
             RenderEngine.drawWireframe(position, width, height, 0f);
@@ -388,7 +389,7 @@ public class BaseObject extends RenderProperty {
         }
     }
 
-    private void onUpdatePosLogic(){
+    protected void onUpdatePosLogic(){
         if(getLogic() != null){
             ((LogicObject) getLogic().logic()).onPosUpdate();
         }

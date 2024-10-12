@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
 
@@ -56,12 +57,14 @@ public final class Texture {
     }
 
     public void bind() {
+        glEnable(GL_TEXTURE_2D);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.getTexture());
     }
 
 
     public void disable() {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+        glDisable(GL_TEXTURE_2D);
     }
 
 

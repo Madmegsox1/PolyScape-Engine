@@ -82,6 +82,7 @@ public abstract class RenderProperty {
     public SpriteSheet getSpriteSheet(){
         return spriteSheet;
     }
+
     public void setTexture(Texture texture) {
         this.texture = texture;
         if(this.texture != null){
