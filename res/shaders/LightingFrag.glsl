@@ -1,4 +1,4 @@
-#version 120
+#version 330 core
 
 uniform vec2 lightLocation;
 uniform vec3 lightColor;
@@ -26,11 +26,11 @@ void main() {
 
         float distance = length(vec2(lightLocation.x + lightWidth / 2, lightLocation.y + lightHeight / 2) - gl_FragCoord.xy);
 
-        attenuation = 1.0 / distance;
+        attenuation = (1.0 / distance)*lightBrightness;
     }
 
     // get brightness
-    attenuation = attenuation * lightBrightness;
+    attenuation = attenuation;
 
 
     vec4 color = vec4(attenuation, attenuation, attenuation, pow(attenuation, 3)) * vec4(lightColor, 1);

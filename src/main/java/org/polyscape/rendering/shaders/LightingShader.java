@@ -27,7 +27,6 @@ public class LightingShader extends Shader{
     public void bindAllAttributes() {
 
     }
-
     @Override
     protected void getAllUniforms() {
         lightLocationUniformId = getUniform("lightLocation");
@@ -38,24 +37,24 @@ public class LightingShader extends Shader{
 
     }
 
-    public void loadLightColor(Color color){
-        super.loadColorUniform(lightColorUniformId, color);
-    }
-
-    public void loadLightLocation(Vector2 vector2){
-        super.loadVectorUniform(lightLocationUniformId, new Vector2(vector2.x, Profile.Display.HEIGHT - vector2.y));
-    }
-
-    public void loadLightBrightness(float brightness){
-        super.loadFloatUniform(lightBrightnessUniformId, brightness);
-    }
-
-    public void loadLightWidth(float width){
-        super.loadFloatUniform(lightWidthUniformId, width);
-    }
-
-    public void loadLightHeight(float height){
-        super.loadFloatUniform(lightHeightUniformId, height);
-    }
+//    public void loadLightColor(Color color){
+//        super.loadColorUniform(lightColorUniformId, color);
+//    }
+//
+//    public void loadLightLocation(Vector2 vector2){
+//        super.loadVectorUniform(lightLocationUniformId, new Vector2(vector2.x, Profile.Display.HEIGHT - vector2.y));
+//    }
+//
+//    public void loadLightBrightness(float brightness){
+//        super.loadFloatUniform(lightBrightnessUniformId, brightness);
+//    }
+//
+//    public void loadLightWidth(float width){
+//        super.loadFloatUniform(lightWidthUniformId, width);
+//    }
+//
+//    public void loadLightHeight(float height){
+//        super.loadFloatUniform(lightHeightUniformId, height);
+//    }
 
 }

@@ -43,6 +43,17 @@ public final class Display {
         return new Vector2(mouseX, mouseY);
     }
 
+    public static Vector2 getWorldMousePosition(long display) {
+        DoubleBuffer posX = BufferUtils.createDoubleBuffer(1);
+        DoubleBuffer posY = BufferUtils.createDoubleBuffer(1);
+
+        glfwGetCursorPos(display, posX, posY);
+        double mouseX = posX.get(0);
+        double mouseY = posY.get(0);
+
+        return new Vector2((float)mouseX, (float)mouseY);
+    }
+
     public static Vector2 getWorldMousePosition(long display, Vector2 cameraPosition, float scale){
         DoubleBuffer posX = BufferUtils.createDoubleBuffer(1);
         DoubleBuffer posY = BufferUtils.createDoubleBuffer(1);
@@ -74,13 +85,15 @@ public final class Display {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
 
-
-
-
         // Window config
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); // Request OpenGL 3.3
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Use core profile
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE); // Forward-compatible
+
 
         // Check if user is on MacOS if not the disable this hint
         glfwWindowHint(GLFW.GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW.GLFW_FALSE);
@@ -98,6 +111,7 @@ public final class Display {
         // NULL);
         glfwMakeContextCurrent(this.window);
         GL.createCapabilities();
+        glViewport(0, 0, Profile.Display.WIDTH, Profile.Display.HEIGHT);
 
 
         if (this.window == NULL)

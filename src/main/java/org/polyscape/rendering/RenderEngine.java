@@ -1,7 +1,8 @@
 package org.polyscape.rendering;
 
+import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.*;
 import org.polyscape.Engine;
 import org.polyscape.object.ObjectManager;
 import org.polyscape.rendering.elements.Color;
@@ -14,9 +15,11 @@ import static org.lwjgl.opengl.GL11.*;
 public final class RenderEngine {
     public static int fps = 0;
     public static double deltaTime = 0;
+    private static Renderer renderer;
 
 
     public void render(final Renderer renderer, final Display display) {
+        RenderEngine.renderer = renderer;
         double time = GLFW.glfwGetTime();
         double fpsTime = time;
         int fpsOld = 0;
@@ -57,6 +60,121 @@ public final class RenderEngine {
         System.exit(0);
     }
 
+
+    public static void drawLineNew(final Vector2 start, final Vector2 end, final float width, final Color color) {
+        Vector2 direction = new Vector2(end.x - start.x, end.y - start.y);
+        float lineLength = (float) Math.sqrt(direction.x * direction.x + direction.y * direction.y);
+        float angle = (float) Math.atan2(direction.y, direction.x);
+
+        // Set up the transformation matrix for the line quad
+        Matrix4f transformMatrix = new Matrix4f()
+                .translate(start.x, start.y, 0)
+                .rotateZ(angle)
+                .scale(lineLength, width, 1.0f);
+
+        renderer.shader.bind();
+        renderer.shader.loadTransformMatrix(transformMatrix);
+        renderer.shader.loadShapeColor(color);
+        renderer.shader.loadUseTexture(false);
+
+        float[] triangleVertices = {
+                // Position          // Texture Coords
+                -0.5f, -0.5f,        0.0f, 0.0f,    // Bottom-left corner
+                0.5f, -0.5f,        1.0f, 0.0f,    // Bottom-right corner
+                0.5f,  0.5f,        1.0f, 1.0f,    // Top-right corner
+
+                -0.5f, -0.5f,        0.0f, 0.0f,    // Bottom-left corner
+                0.5f,  0.5f,        1.0f, 1.0f,    // Top-right corner
+                -0.5f,  0.5f,        0.0f, 1.0f     // Top-left corner
+        };
+
+        // Bind VAO and load vertex data into VBO
+        GL30.glBindVertexArray(renderer.vaoId);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, renderer.vboId);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, triangleVertices, GL15.GL_DYNAMIC_DRAW);
+
+        // Enable position and texture coordinate attributes
+        GL20.glEnableVertexAttribArray(0);
+        GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, 4 * Float.BYTES, 0);
+
+        GL20.glEnableVertexAttribArray(1);
+        GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 4 * Float.BYTES, 2 * Float.BYTES);
+
+        GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 6);
+
+        GL20.glDisableVertexAttribArray(0);
+        GL20.glDisableVertexAttribArray(1);
+        GL30.glBindVertexArray(0);
+        renderer.shader.unbind();
+    }
+
+
+    public static void drawCircleAngleTexturedNew(final Vector2 center, final float radius, final float angle, final int segments, final Texture texture) {
+        // Calculate transformation matrix for positioning and rotation
+        Matrix4f transformMatrix = new Matrix4f()
+                .translate(center.x, center.y, 0) // Move to the center position
+                .rotateZ(angle);                  // Rotate the circle
+
+        // Bind shader and set transformation matrix
+        renderer.shader.bind();
+        renderer.shader.loadTransformMatrix(transformMatrix);
+        renderer.shader.loadUseTexture(true);
+        renderer.shader.loadShapeColor(Color.WHITE);
+        renderer.shader.loadTextureSampler(0);
+
+        // Prepare vertices for a triangle fan circle with texture coordinates
+        float[] vertices = new float[(segments + 2) * 4]; // 4 values per vertex: x, y, tx, ty
+
+        // Center vertex
+        vertices[0] = 0.0f;         // x
+        vertices[1] = 0.0f;         // y
+        vertices[2] = 0.5f;         // tx
+        vertices[3] = 0.5f;         // ty
+
+        for (int i = 0; i <= segments; i++) {
+            double theta = Math.PI * 2 * i / segments;
+            float xCos = (float) Math.cos(theta);
+            float yCos = (float) Math.sin(theta);
+
+            // Calculate vertex position based on radius
+            float x = radius * xCos;
+            float y = radius * yCos;
+
+            // Map x, y coordinates to texture coordinates
+            float tx = xCos * 0.5f + 0.5f;
+            float ty = yCos * 0.5f + 0.5f;
+
+            vertices[(i + 1) * 4] = x;
+            vertices[(i + 1) * 4 + 1] = y;
+            vertices[(i + 1) * 4 + 2] = tx;
+            vertices[(i + 1) * 4 + 3] = ty;
+        }
+
+        // Bind VAO and load vertex data into VBO
+        GL30.glBindVertexArray(renderer.vaoId);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, renderer.vboId);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_DYNAMIC_DRAW);
+
+        // Set attribute pointers for position and texture coordinates
+        GL20.glEnableVertexAttribArray(0); // Position
+        GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, 4 * Float.BYTES, 0);
+        GL20.glEnableVertexAttribArray(1); // Texture coordinate
+        GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 4 * Float.BYTES, 2 * Float.BYTES);
+
+        // Activate the texture
+        GL13.glActiveTexture(GL13.GL_TEXTURE0);
+        texture.bind();
+
+        // Draw the circle as a triangle fan
+        GL11.glDrawArrays(GL11.GL_TRIANGLE_FAN, 0, segments + 2);
+
+        // Clean up
+        GL20.glDisableVertexAttribArray(0);
+        GL20.glDisableVertexAttribArray(1);
+        GL30.glBindVertexArray(0);
+        renderer.shader.unbind();
+        texture.disable();
+    }
 
     public static void drawLine(final Vector2 a, final Vector2 b, final float width, final Color color) {
         final float[] c = Color.convertColorToFloatAlpha(color);
@@ -252,6 +370,48 @@ public final class RenderEngine {
 
         glEnd();
         glPopMatrix();
+
+    }
+
+    public static void drawQuadTextureAngleNew(final Vector2 position, float angle, final float width, final float height, final Texture texture, final Color color) {
+        float halfWidth = width / 2.0f;
+        float halfHeight = height / 2.0f;
+
+        // Create a transformation matrix for the quad
+        Matrix4f transformMatrix = new Matrix4f()
+                .translate(position.x + halfWidth, position.y + halfHeight, 0)  // Move to quad center
+                .rotateZ(angle)                                                 // Rotate around center
+                .translate(-halfWidth, -halfHeight, 0);                         // Move to top-left corner
+
+        renderer.shader.bind();
+        renderer.shader.loadTransformMatrix(transformMatrix);  // Load quad transformation
+        renderer.shader.loadShapeColor(color);
+        renderer.shader.loadUseTexture(true);
+
+        float[] vertices = {
+                // Positions          // Texture Coords
+                0.0f, 0.0f, 0.0f, 0.0f,       // Bottom-left
+                width, 0.0f, 1.0f, 0.0f,       // Bottom-right
+                width, height, 1.0f, 1.0f,     // Top-right
+
+                0.0f, 0.0f, 0.0f, 0.0f,       // Bottom-left
+                width, height, 1.0f, 1.0f,     // Top-right
+                0.0f, height, 0.0f, 1.0f       // Top-left
+        };
+
+        GL30.glBindVertexArray(renderer.vaoId);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, renderer.vboId);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_DYNAMIC_DRAW);
+
+        GL13.glActiveTexture(GL13.GL_TEXTURE0);
+        texture.bind();
+        renderer.shader.loadTextureSampler(0);
+
+        GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 6);
+
+        GL30.glBindVertexArray(0);
+        renderer.shader.unbind();
+        texture.disable();
 
     }
 
