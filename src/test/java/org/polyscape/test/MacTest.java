@@ -40,22 +40,13 @@ public class MacTest extends Engine {
         ObjectManager.loadLevel(1);
 
         LogicManager.loadAllLogic("./res/jars/TestLogic-1.0.jar");
+        LogicManager.loadAllLogic("test1.js");
         LogicManager.initLogic();
 
         SpriteSheet forestTiles = new SpriteSheet("ForestTiles", 16,16);
 
         SpriteSheet spriteSheet = new SpriteSheet("002", 25, 25);
         ObjectManager.clearObjects();
-
-
-        LogicScript logicScript = new LogicScript("test1");
-        LogicScript logicScript2 = new LogicScript("test2");
-
-        logicScript.onLoad();
-        logicScript2.onLoad();
-
-        logicScript.onUnload();
-        logicScript2.onUnload();
 
         CircleObject circleObject = new CircleObject();
         circleObject.setPosition(new Vector2(400, 400));
@@ -64,6 +55,7 @@ public class MacTest extends Engine {
         circleObject.setBodyType(BodyType.DYNAMIC, true);
         circleObject.setWireframe(true);
         circleObject.setLevel(1);
+        circleObject.setObjectId(800);
 
 
         IEvent<MouseClickEvent> me =  n -> {
@@ -143,6 +135,7 @@ public class MacTest extends Engine {
 
         LogicManager.initLogicObject(object);
         LogicManager.initLogicObject(fluidObject);
+        LogicManager.initLogicObject(circleObject);
         LogicManager.loadLogic();
 
         ScreenManager screenManager = new ScreenManager();

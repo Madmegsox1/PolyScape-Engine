@@ -42,6 +42,7 @@ public class CircleObject extends BaseObject {
         else {
             RenderEngine.drawCircleAngle(this.position, this.radius, -this.getAngle(), 360, this.getBaseColor());
         }
+        onRenderLogic();
     }
 
     @Override

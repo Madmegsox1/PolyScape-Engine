@@ -78,7 +78,10 @@ function baseObject() {
 
 function addObject(obj) {
     Packages.org.polyscape.object.ObjectManager.addObject(obj)
+}
 
+function getObject(id){
+    return Packages.org.polyscape.object.ObjectManager.getObject(id)
 }
 
 function addRenderEvent(event) {

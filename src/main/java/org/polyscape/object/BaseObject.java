@@ -7,6 +7,7 @@ import org.jbox2d.dynamics.*;
 import org.polyscape.logic.LogicContainer;
 import org.polyscape.logic.LogicType;
 import org.polyscape.logic.objectLogic.LogicObject;
+import org.polyscape.logic.script.LogicScriptObject;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.elements.Vector2;
 
@@ -383,15 +384,25 @@ public class BaseObject extends RenderProperty {
         onRenderLogic();
     }
 
-    private void onRenderLogic(){
+    protected void onRenderLogic(){
         if(getLogic() != null){
-            ((LogicObject) getLogic().logic()).onRender();
+            if(getLogic().logic() instanceof LogicObject) {
+                ((LogicObject) getLogic().logic()).onRender();
+            }
+            else if(getLogic().logic() instanceof LogicScriptObject) {
+                ((LogicScriptObject) getLogic().logic()).onRender();
+            }
         }
     }
 
     protected void onUpdatePosLogic(){
         if(getLogic() != null){
-            ((LogicObject) getLogic().logic()).onPosUpdate();
+            if(getLogic().logic() instanceof LogicObject) {
+                ((LogicObject) getLogic().logic()).onPosUpdate();
+            }
+            else if(getLogic().logic() instanceof LogicScriptObject) {
+                ((LogicScriptObject) getLogic().logic()).onPosUpdate();
+            }
         }
     }
 

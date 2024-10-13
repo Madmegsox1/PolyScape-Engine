@@ -2,6 +2,9 @@ package org.polyscape.logic;
 
 import org.polyscape.event.EventBus;
 import org.polyscape.logic.objectLogic.LogicObject;
+import org.polyscape.logic.script.LogicScript;
+import org.polyscape.logic.script.LogicScriptLoader;
+import org.polyscape.logic.script.LogicScriptObject;
 import org.polyscape.object.BaseObject;
 
 import java.net.URL;
@@ -16,26 +19,40 @@ public final class LogicManager {
     private static int currentLogicId = 0;
 
     public static void loadLogic(String path, String className) {
-        try {
-            LogicLoader loader = new LogicLoader(new URL("file", null, path));
-            LogicContainer logic = loader.load(className);
+        if(path.endsWith(".js")){
+            LogicContainer logicContainer = LogicScriptLoader.loadScript(path);
             currentLogicId++;
-            logics.put(currentLogicId, logic.setLogicId(currentLogicId));
-        } catch (Exception e) {
-            System.err.println("Failed to load logic: " + e.getMessage());
+            logics.put(currentLogicId, logicContainer.setLogicId(currentLogicId));
+        }
+        else {
+            try {
+                LogicLoader loader = new LogicLoader(new URL("file", null, path));
+                LogicContainer logic = loader.load(className);
+                currentLogicId++;
+                logics.put(currentLogicId, logic.setLogicId(currentLogicId));
+            } catch (Exception e) {
+                System.err.println("Failed to load logic: " + e.getMessage());
+            }
         }
     }
 
     public static void loadAllLogic(String path){
-        try {
-            LogicLoader loader = new LogicLoader(new URL("file", null, path));
-            List<LogicContainer> logicList = loader.loadAll();
-            logicList.spliterator().forEachRemaining(logicContainer->{
-                currentLogicId++;
-                logics.put(currentLogicId, logicContainer.setLogicId(currentLogicId));
-            });
-        } catch (Exception e) {
-            System.err.println("Failed to load logic: " + e.getMessage());
+        if(path.endsWith(".js")){
+            LogicContainer logicContainer = LogicScriptLoader.loadScript(path);
+            currentLogicId++;
+            logics.put(currentLogicId, logicContainer.setLogicId(currentLogicId));
+        }
+        else {
+            try {
+                LogicLoader loader = new LogicLoader(new URL("file", null, path));
+                List<LogicContainer> logicList = loader.loadAll();
+                logicList.spliterator().forEachRemaining(logicContainer -> {
+                    currentLogicId++;
+                    logics.put(currentLogicId, logicContainer.setLogicId(currentLogicId));
+                });
+            } catch (Exception e) {
+                System.err.println("Failed to load logic: " + e.getMessage());
+            }
         }
     }
 
@@ -47,9 +64,14 @@ public final class LogicManager {
 
     public static void initLogicObject(BaseObject object){
         for (LogicContainer l : logics.values()) {
-            if(l.logic() instanceof LogicObject && object.getObjectId() == l.linkId()){
+            if(object.getObjectId() == l.linkId()){
                 object.setLogic(l);
-                ((LogicObject)l.logic()).initObject(object);
+                if(l.logic() instanceof LogicObject) {
+                    ((LogicObject) l.logic()).initObject(object);
+                }
+                else if(l.logic() instanceof LogicScriptObject) {
+                    l.logic().onLoad();
+                }
             }
         }
     }
