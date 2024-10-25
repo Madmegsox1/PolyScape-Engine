@@ -353,7 +353,7 @@ public final class Font {
                 continue;
             }
             Glyph g = glyphs.get(ch);
-            RenderEngine.drawQuadTexture(new Vector2(drawX, drawY), g.width, g.height,
+            RenderEngine.drawQuadTextureNew(new Vector2(drawX, drawY), g.width, g.height,
                     normalize(g.x, tw, 0), normalize(g.y, th, 0), normalize(g.width, tw, 0), normalize(g.height, th, 0), texture, c);
             drawX += g.width;
         }

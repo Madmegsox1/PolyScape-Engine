@@ -43,12 +43,12 @@ public class CheckBox extends Component {
     @Override
     public void draw(RenderEvent event) {
         if(type == CheckBoxType.Textured) {
-            RenderEngine.drawQuadTexture(pos, width, height, texture);
+            RenderEngine.drawQuadTextureNew(pos, width, height, texture);
         }else if(type == CheckBoxType.Untextured){
             RenderEngine.drawQuadLines(pos, width, height, 2f, baseColor);
 
             if(state > 0){
-                RenderEngine.drawQuad(new Vector2(pos.x + 5, pos.y + 5), width - 10, height - 10, baseColor);
+                RenderEngine.drawQuadNew(new Vector2(pos.x + 5, pos.y + 5), width - 10, height - 10, baseColor);
             }
         }
 

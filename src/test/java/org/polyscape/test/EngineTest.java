@@ -27,7 +27,7 @@ public class EngineTest extends Engine {
     @Test
     public void LightTest() {
 
-        Profile.Display.BACKGROUND_COLOR = new float[]{0f / 255f, 0f / 255f, 0f / 255f, 1.0f};
+        Profile.Display.BACKGROUND_COLOR = new float[]{100f / 255f, 0f / 255f, 0f / 255f, 1.0f};
 
 
         eventBus = new EventBus();
@@ -49,7 +49,7 @@ public class EngineTest extends Engine {
         position.get().flip();
 
 
-        var txt = new Texture("001");
+        var txt = new Texture("BoxTick");
         var txt2 = new Texture("002");
         var txt3 = new Texture("003");
 
@@ -58,6 +58,7 @@ public class EngineTest extends Engine {
             RenderEngine.drawQuadTextureAngleNew(new Vector2(100, 100), 0, 100, 100, txt, Color.WHITE);
             RenderEngine.drawQuadTextureAngleNew(new Vector2(200, 100), 0, 100, 100, txt2, Color.WHITE);
             RenderEngine.drawQuadTextureAngleNew(new Vector2(300, 100), 0, 100, 100, txt3, Color.WHITE);
+            RenderEngine.drawQuadNew(new Vector2(300, 100), 100, 100, new Color(255, 0, 0, 50));
             RenderEngine.drawLineNew(new Vector2(300, 300), new Vector2(400, 400), 4f, Color.BLUE);
             RenderEngine.drawCircleAngleTexturedNew(new Vector2(300, 500), 50f, 0, 360, txt2);
 

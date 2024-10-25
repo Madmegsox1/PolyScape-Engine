@@ -303,42 +303,42 @@ public final class Editor extends Screen {
         glTranslatef(cameraVector.x, cameraVector.y, 1.0f);
         glScalef(cameraZoom, cameraZoom, 0f);
         if(renderLevel) {
-            RenderEngine.drawQuadTexture(new Vector2(0, 0), ObjectManager.getCurrentLevel().levelWidth, ObjectManager.getCurrentLevel().levelHeight, 0, 0, ObjectManager.getCurrentLevel().levelWidth / 20f, ObjectManager.getCurrentLevel().levelHeight / 20f, t);
+            RenderEngine.drawQuadTextureNew(new Vector2(0, 0), ObjectManager.getCurrentLevel().levelWidth, ObjectManager.getCurrentLevel().levelHeight, 0, 0, ObjectManager.getCurrentLevel().levelWidth / 20f, ObjectManager.getCurrentLevel().levelHeight / 20f, t);
 
             ObjectManager.renderObjects(event.alpha);
 
             if (selectedObject != null && movementMode == MovementMode.MOVE) {
-                RenderEngine.drawLine(selectedObject.getCenter(), new Vector2(selectedObject.getCenter().x + selectedObject.getWidth() + 30, selectedObject.getCenter().y), 2f, Color.RED);
-                RenderEngine.drawLine(selectedObject.getCenter(), new Vector2(selectedObject.getCenter().x, selectedObject.getCenter().y - selectedObject.getHeight() - 30), 2f, Color.GREEN);
+                RenderEngine.drawLineNew(selectedObject.getCenter(), new Vector2(selectedObject.getCenter().x + selectedObject.getWidth() + 30, selectedObject.getCenter().y), 2f, Color.RED);
+                RenderEngine.drawLineNew(selectedObject.getCenter(), new Vector2(selectedObject.getCenter().x, selectedObject.getCenter().y - selectedObject.getHeight() - 30), 2f, Color.GREEN);
             }
             if (selectedObject != null && movementMode == MovementMode.ROTATE) {
                 RenderEngine.drawHollowCircle(selectedObject.getCenter(), selectedObject.getWidth(), 100, 2f, Color.BLUE);
             }
             if (currentCircleObject != null && movementMode == MovementMode.CIRCLE) {
                 Vector2 worldMy = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
-                RenderEngine.drawLine(currentCircleObject.getCenter(), worldMy, 2f, Color.GREEN);
+                RenderEngine.drawLineNew(currentCircleObject.getCenter(), worldMy, 2f, Color.GREEN);
                 font.renderText("R " + currentCircleObject.getRadius(), new Vector2(currentCircleObject.getPosition().x, currentCircleObject.getPosition().y), Color.BLUE);
             }
         }
         else if(renderSpriteSheet()){
             var currentSheet = getCurrentSpriteSheet();
             if (currentSheet != null) {
-                RenderEngine.drawQuadTexture(new Vector2(0, 0), currentSheet.width, currentSheet.height, currentSheet.getMasterTexture());
+                RenderEngine.drawQuadTextureNew(new Vector2(0, 0), currentSheet.width, currentSheet.height, currentSheet.getMasterTexture());
                 for (int y = 0; y < currentSheet.getRows(); y++) {
-                    RenderEngine.drawLine(new Vector2(0, y*currentSheet.getChunkHeight()), new Vector2(currentSheet.width, y*currentSheet.getChunkHeight()), 2f, Color.BLUE);
+                    RenderEngine.drawLineNew(new Vector2(0, y*currentSheet.getChunkHeight()), new Vector2(currentSheet.width, y*currentSheet.getChunkHeight()), 2f, Color.BLUE);
                 }
                 for (int x = 0; x < currentSheet.getCols(); x++) {
-                    RenderEngine.drawLine(new Vector2(x*currentSheet.getChunkWidth(), 0), new Vector2(x*currentSheet.getChunkWidth(), currentSheet.height), 2f, Color.BLUE);
+                    RenderEngine.drawLineNew(new Vector2(x*currentSheet.getChunkWidth(), 0), new Vector2(x*currentSheet.getChunkWidth(), currentSheet.height), 2f, Color.BLUE);
                 }
             }
         }
         glPopMatrix();
 
-        RenderEngine.drawQuadA(new Vector2(leftWidth, lowerY), Profile.Display.WIDTH, Profile.Display.HEIGHT, Profile.UiThemes.Dark.background);
-        RenderEngine.drawLine(new Vector2(leftWidth, lowerY), new Vector2(Profile.Display.WIDTH, lowerY), 8f, Profile.UiThemes.Dark.foregroundDark);
+        RenderEngine.drawQuadNew(new Vector2(leftWidth, lowerY), Profile.Display.WIDTH, Profile.Display.HEIGHT, Profile.UiThemes.Dark.background);
+        RenderEngine.drawLineNew(new Vector2(leftWidth, lowerY), new Vector2(Profile.Display.WIDTH, lowerY), 8f, Profile.UiThemes.Dark.foregroundDark);
 
-        RenderEngine.drawQuadA(new Vector2(0, 0), leftWidth, Profile.Display.HEIGHT, Profile.UiThemes.Dark.background);
-        RenderEngine.drawLine(new Vector2(leftWidth, 0), new Vector2(leftWidth, Profile.Display.HEIGHT), 8f, Profile.UiThemes.Dark.foregroundDark);
+        RenderEngine.drawQuadNew(new Vector2(0, 0), leftWidth, Profile.Display.HEIGHT, Profile.UiThemes.Dark.background);
+        RenderEngine.drawLineNew(new Vector2(leftWidth, 0), new Vector2(leftWidth, Profile.Display.HEIGHT), 8f, Profile.UiThemes.Dark.foregroundDark);
 
         if (selectedId != -1) {
             font.renderText(selectedObject.getPosition().toString(), new Vector2(leftWidth + 10, 30), Profile.UiThemes.Dark.foregroundDark);

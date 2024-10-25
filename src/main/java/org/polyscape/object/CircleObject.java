@@ -37,10 +37,10 @@ public class CircleObject extends BaseObject {
             drawWireframe();
         }
         if(isTextured) {
-            RenderEngine.drawCircleAngleTextured(this.position, this.radius, -this.getAngle(), 360, this.getTexture());
+            RenderEngine.drawCircleAngleTexturedNew(this.position, this.radius, -this.getAngle(), 360, this.getTexture());
         }
         else {
-            RenderEngine.drawCircleAngle(this.position, this.radius, -this.getAngle(), 360, this.getBaseColor());
+            RenderEngine.drawCircleAngleNew(this.position, this.radius, -this.getAngle(), 360, this.getBaseColor());
         }
         onRenderLogic();
     }

@@ -233,8 +233,6 @@ public class BaseObject extends RenderProperty {
 
     public void addToPos(float x, float y) {
         position.addToVect(x, y);
-        //ObjectManager.world.destroyBody(this.body);
-        //setUpPhysicsBody(this.bodyDef.type);
         body.setTransform(ObjectManager.screenToWorld(position.x, position.y, this.width, this.height, onLevel), body.getAngle());
     }
 
@@ -332,16 +330,16 @@ public class BaseObject extends RenderProperty {
     private void renderObject(float alpha) {
         if(body != null) {
             if (this.isTextured) {
-                RenderEngine.drawQuadTextureAngle(getInterpolatedPosition(alpha), -body.getAngle(), width, height, texture, baseColor);
+                RenderEngine.drawQuadTextureAngleNew(getInterpolatedPosition(alpha), -body.getAngle(), width, height, texture, baseColor);
             } else {
-                RenderEngine.drawQuadAngleA(getInterpolatedPosition(alpha), -body.getAngle(), width, height, baseColor);
+                RenderEngine.drawQuadAngleNew(getInterpolatedPosition(alpha), -body.getAngle(), width, height, baseColor);
             }
         }
         else{
             if (this.isTextured) {
-                RenderEngine.drawQuadTextureAngle(position, 0, width, height, texture, baseColor);
+                RenderEngine.drawQuadTextureAngleNew(position, 0, width, height, texture, baseColor);
             } else {
-                RenderEngine.drawQuadAngleA(position, 0, width, height, baseColor);
+                RenderEngine.drawQuadAngleNew(position, 0, width, height, baseColor);
             }
         }
 

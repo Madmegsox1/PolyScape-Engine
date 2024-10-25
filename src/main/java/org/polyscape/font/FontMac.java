@@ -131,7 +131,7 @@ public class FontMac {
         for (char c : text.toCharArray()){
             Glyph g = glyphs.get(c);
             Vector2 newPoint = new Vector2(vector.x + g.x, vector.y + g.y);
-            RenderEngine.drawQuadTexture(newPoint, g.width, g.height, g.uvx, g.uvy, g.uvWidth, g.uvHeight, this.texture, color);
+            RenderEngine.drawQuadTextureNew(newPoint, g.width, g.height, g.uvx, g.uvy, g.uvWidth, g.uvHeight, this.texture, color);
 
             vector.addToVect(g.advance, 0);
         }

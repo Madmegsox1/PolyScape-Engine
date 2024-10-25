@@ -60,15 +60,15 @@ public final class ProjectScreen extends Screen {
 
     @Override
     public void render(RenderEvent event) {
-        RenderEngine.drawQuad(new Vector2(0, 0), Profile.Display.WIDTH, Profile.Display.HEIGHT, Profile.UiThemes.Dark.background);
-        RenderEngine.drawLine(new Vector2(0, 45), new Vector2(Profile.Display.WIDTH, 45), 4f, Profile.UiThemes.Dark.foregroundDark);
+        RenderEngine.drawQuadNew(new Vector2(0, 0), Profile.Display.WIDTH, Profile.Display.HEIGHT, Profile.UiThemes.Dark.background);
+        RenderEngine.drawLineNew(new Vector2(0, 45), new Vector2(Profile.Display.WIDTH, 45), 4f, Profile.UiThemes.Dark.foregroundDark);
         font.renderText("Previous Projects:", new Vector2(5, 70), Profile.UiThemes.Dark.foreground);
 
         if (config != null && !config.projects.isEmpty()) {
             float y = 70;
             for (var p : config.projects) {
                 y += font.getHeight(p.projectName) + 50;
-                RenderEngine.drawLine(new Vector2(0, y - 50), new Vector2(Profile.Display.WIDTH, y - 50), 1f, Profile.UiThemes.Dark.foregroundDark);
+                RenderEngine.drawLineNew(new Vector2(0, y - 50), new Vector2(Profile.Display.WIDTH, y - 50), 1f, Profile.UiThemes.Dark.foregroundDark);
                 font.renderText(p.projectName, new Vector2(5, y), Profile.UiThemes.Dark.foreground);
                 font.renderText(p.projectPath, new Vector2(Profile.Display.WIDTH - font.getWidth(p.projectPath), y), Profile.UiThemes.Dark.foregroundDark);
             }
