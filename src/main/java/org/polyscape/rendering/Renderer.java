@@ -45,6 +45,7 @@ public final class Renderer {
 
         shader = new RendererShader("RendererVertex", "RendererFrag");
 
+
         projectionMatrix = new Matrix4f().ortho(
                 0.0f, Profile.Display.WIDTH,       // Left to Right
                 Profile.Display.HEIGHT, 0.0f,      // Bottom to Top
@@ -68,7 +69,7 @@ public final class Renderer {
 
         shader.unbind();
 
-
+        glViewport(0, 0, Profile.Display.WIDTH, Profile.Display.HEIGHT);
 
         //glEnable(GL11.GL_TEXTURE_2D);
         //glShadeModel(GL_SMOOTH);
@@ -95,7 +96,6 @@ public final class Renderer {
     }
 
     public void prepare() {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (this.fbo > 0) {
             GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, this.fbo);
@@ -103,6 +103,7 @@ public final class Renderer {
         } else {
             GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
         }
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
     public void render(final long window) {
