@@ -16,14 +16,12 @@ public class RendererShader extends Shader {
 
     @Override
     public void bindAllAttributes() {
-        // Bind attribute locations for position and texture coordinates
         bindAttribute(0, "aPos");          // Vertex position attribute
         bindAttribute(1, "aTexCoord");     // Texture coordinate attribute
     }
 
     @Override
     protected void getAllUniforms() {
-        // Retrieve uniform locations and store them in fields
         locationProjection = getUniform("projection");
         locationTransform = getUniform("transform");
         locationShapeColor = getUniform("shapeColor");
@@ -51,5 +49,21 @@ public class RendererShader extends Shader {
 
     public void loadTextureSampler(int sampler) {
         setUniform("textureSampler", sampler);
+    }
+
+    public void loadWireframe(boolean wireframe){
+        setUniform("wireframe", wireframe);
+    }
+
+    public void loadWireframeHolo(boolean holo){
+        setUniform("wireframeHolo", holo);
+    }
+
+    public void loadWireframeThickness(float thickness){
+        setUniform("wireframeWidth", thickness);
+    }
+
+    public void loadWireframeColor(Color color){
+        setUniform("wireframeColor", color);
     }
 }

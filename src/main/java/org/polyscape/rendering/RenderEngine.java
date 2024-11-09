@@ -59,7 +59,6 @@ public final class RenderEngine {
     }
 
 
-    // TODO fix this
     public static void drawLineNew(final Vector2 start, final Vector2 end, final float width, final Color color) {
         Vector2 direction = new Vector2(end.x - start.x, end.y - start.y);
         float lineLength = (float) Math.sqrt(direction.x * direction.x + direction.y * direction.y);
@@ -69,7 +68,8 @@ public final class RenderEngine {
         Matrix4f transformMatrix = new Matrix4f()
                 .translate(start.x, start.y, 0)
                 .rotateZ(angle)
-                .scale(lineLength*2, width, 1.0f);
+                .scale(lineLength, width, 1.0f);
+
 
         renderer.shader.bind();
         renderer.shader.loadTransformMatrix(transformMatrix);
@@ -78,13 +78,13 @@ public final class RenderEngine {
 
         float[] triangleVertices = {
                 // Position          // Texture Coords
-                -0.5f, -0.5f,        0.0f, 0.0f,    // Bottom-left corner
-                0.5f, -0.5f,        1.0f, 0.0f,    // Bottom-right corner
-                0.5f,  0.5f,        1.0f, 1.0f,    // Top-right corner
+                0.0f, 0.0f,        0.0f, 0.0f,    // Bottom-left corner
+                1f, 0.0f,        1.0f, 0.0f,    // Bottom-right corner
+                1f,  1f,        1.0f, 1.0f,    // Top-right corner
 
-                -0.5f, -0.5f,        0.0f, 0.0f,    // Bottom-left corner
-                0.5f,  0.5f,        1.0f, 1.0f,    // Top-right corner
-                -0.5f,  0.5f,        0.0f, 1.0f     // Top-left corner
+                0.0f, 0.0f,        0.0f, 0.0f,    // Bottom-left corner
+                1f,  1f,        1.0f, 1.0f,    // Top-right corner
+                0.0f,  1f,        0.0f, 1.0f     // Top-left corner
         };
 
         GL30.glBindVertexArray(renderer.vaoId);

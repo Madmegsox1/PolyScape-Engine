@@ -7,9 +7,11 @@ uniform mat4 projection;                    // Projection matrix
 uniform mat4 transform;                     // Transformation matrix for position, rotation, scaling
 
 out vec2 TexCoord;                          // Pass texture coordinates to the fragment shader
+out vec2 FragPos;
 
 void main() {
     // Apply projection and transformation matrices
     gl_Position = projection * transform * vec4(aPos, 0.0, 1.0);
     TexCoord = aTexCoord;  // Pass texture coordinate to fragment shader
+    FragPos = aPos;
 }

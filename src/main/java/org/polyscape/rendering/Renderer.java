@@ -71,9 +71,6 @@ public final class Renderer {
 
         glViewport(0, 0, Profile.Display.WIDTH, Profile.Display.HEIGHT);
 
-        //glEnable(GL11.GL_TEXTURE_2D);
-        //glShadeModel(GL_SMOOTH);
-
         glDisable(GL_CULL_FACE);
 
         glEnable(GL_MULTISAMPLE);
