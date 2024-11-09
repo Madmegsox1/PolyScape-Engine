@@ -8,6 +8,7 @@ import org.polyscape.Profile;
 import org.polyscape.event.EventBus;
 import org.polyscape.event.EventMetadata;
 import org.polyscape.event.IEvent;
+import org.polyscape.font.FontMac;
 import org.polyscape.rendering.Display;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.Renderer;
@@ -27,7 +28,7 @@ public class EngineTest extends Engine {
     @Test
     public void LightTest() {
 
-        Profile.Display.BACKGROUND_COLOR = new float[]{100f / 255f, 0f / 255f, 0f / 255f, 1.0f};
+        Profile.Display.BACKGROUND_COLOR = new float[]{0f / 255f, 0f / 255f, 0f / 255f, 1.0f};
 
 
         eventBus = new EventBus();
@@ -52,15 +53,18 @@ public class EngineTest extends Engine {
         var txt = new Texture("BoxTick");
         var txt2 = new Texture("002");
         var txt3 = new Texture("003");
+        var text = new FontMac("Segoe UI", 30);
 
         IEvent<RenderEvent> renderEvent = e -> {
 
-            RenderEngine.drawQuadTextureAngleNew(new Vector2(100, 100), 0, 100, 100, txt, Color.WHITE);
+            RenderEngine.drawLineNew(new Vector2(300, 300), new Vector2(400, 400), 4f, Color.BLUE);
+            RenderEngine.drawQuadTextureNew(new Vector2(100, 100), 100, 100, txt, Color.WHITE);
+            // TODO fix this
+            //RenderEngine.drawCircleAngleTexturedNew(new Vector2(300, 500), 50f, 0, 360, txt2);
+            text.renderText("Hello World", new Vector2(500, 200), Color.WHITE);
             RenderEngine.drawQuadTextureAngleNew(new Vector2(200, 100), 0, 100, 100, txt2, Color.WHITE);
             RenderEngine.drawQuadTextureAngleNew(new Vector2(300, 100), 0, 100, 100, txt3, Color.WHITE);
             RenderEngine.drawQuadNew(new Vector2(300, 100), 100, 100, new Color(255, 0, 0, 50));
-            RenderEngine.drawLineNew(new Vector2(300, 300), new Vector2(400, 400), 4f, Color.BLUE);
-            RenderEngine.drawCircleAngleTexturedNew(new Vector2(300, 500), 50f, 0, 360, txt2);
 
         };
 

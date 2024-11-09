@@ -1,6 +1,7 @@
 package org.polyscape.ui.screens;
 
 import org.jbox2d.dynamics.BodyType;
+import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 import org.polyscape.Engine;
 import org.polyscape.Loader;
@@ -283,7 +284,6 @@ public final class Editor extends Screen {
 
         this.circleButton = circleTool;
         addComponent(circleButton);
-
     }
 
     @Override
@@ -298,10 +298,28 @@ public final class Editor extends Screen {
             leftWidth = (int) Display.getMousePosition(Engine.getDisplay().getWindow()).x;
         }
 
+
+/*
         glLoadIdentity();
         glPushMatrix();
         glTranslatef(cameraVector.x, cameraVector.y, 1.0f);
         glScalef(cameraZoom, cameraZoom, 0f);
+*/
+
+        Matrix4f cameraMatrix = new Matrix4f()
+                .identity()
+                .translate(cameraVector.x, cameraVector.y, 0.0f)
+                .scale(cameraZoom, cameraZoom, 1.0f);
+
+        Matrix4f combined = new Matrix4f(event.renderer.projectionMatrix)
+                .mul(cameraMatrix);
+
+        event.renderer.shader.bind();
+        event.renderer.shader.loadProjectionMatrix(combined);
+        event.renderer.shader.unbind();
+
+
+
         if(renderLevel) {
             RenderEngine.drawQuadTextureNew(new Vector2(0, 0), ObjectManager.getCurrentLevel().levelWidth, ObjectManager.getCurrentLevel().levelHeight, 0, 0, ObjectManager.getCurrentLevel().levelWidth / 20f, ObjectManager.getCurrentLevel().levelHeight / 20f, t);
 
@@ -332,7 +350,12 @@ public final class Editor extends Screen {
                 }
             }
         }
-        glPopMatrix();
+
+        event.renderer.shader.bind();
+        event.renderer.shader.loadProjectionMatrix(event.renderer.projectionMatrix);
+        event.renderer.shader.unbind();
+
+        //glPopMatrix();
 
         RenderEngine.drawQuadNew(new Vector2(leftWidth, lowerY), Profile.Display.WIDTH, Profile.Display.HEIGHT, Profile.UiThemes.Dark.background);
         RenderEngine.drawLineNew(new Vector2(leftWidth, lowerY), new Vector2(Profile.Display.WIDTH, lowerY), 8f, Profile.UiThemes.Dark.foregroundDark);

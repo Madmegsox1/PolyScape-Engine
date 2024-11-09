@@ -59,6 +59,7 @@ public final class RenderEngine {
     }
 
 
+    // TODO fix this
     public static void drawLineNew(final Vector2 start, final Vector2 end, final float width, final Color color) {
         Vector2 direction = new Vector2(end.x - start.x, end.y - start.y);
         float lineLength = (float) Math.sqrt(direction.x * direction.x + direction.y * direction.y);
@@ -68,7 +69,7 @@ public final class RenderEngine {
         Matrix4f transformMatrix = new Matrix4f()
                 .translate(start.x, start.y, 0)
                 .rotateZ(angle)
-                .scale(lineLength, width, 1.0f);
+                .scale(lineLength*2, width, 1.0f);
 
         renderer.shader.bind();
         renderer.shader.loadTransformMatrix(transformMatrix);
@@ -86,12 +87,10 @@ public final class RenderEngine {
                 -0.5f,  0.5f,        0.0f, 1.0f     // Top-left corner
         };
 
-        // Bind VAO and load vertex data into VBO
         GL30.glBindVertexArray(renderer.vaoId);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, renderer.vboId);
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, triangleVertices, GL15.GL_DYNAMIC_DRAW);
 
-        // Enable position and texture coordinate attributes
         GL20.glEnableVertexAttribArray(0);
         GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, 4 * Float.BYTES, 0);
 
@@ -100,9 +99,9 @@ public final class RenderEngine {
 
         GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 6);
 
+        GL30.glBindVertexArray(0);
         GL20.glDisableVertexAttribArray(0);
         GL20.glDisableVertexAttribArray(1);
-        GL30.glBindVertexArray(0);
         renderer.shader.unbind();
     }
 
@@ -115,12 +114,6 @@ public final class RenderEngine {
                 .translate(center.x, center.y, 0)
                 .rotateZ(angle);
 
-        // Bind shader and set transformation matrix
-        renderer.shader.bind();
-        renderer.shader.loadTransformMatrix(transformMatrix);
-        renderer.shader.loadUseTexture(texture != null);
-        renderer.shader.loadShapeColor(color);
-        renderer.shader.loadTextureSampler(0);
 
         float[] vertices = new float[(segments + 2) * 4];
 
@@ -146,6 +139,12 @@ public final class RenderEngine {
             vertices[(i + 1) * 4 + 3] = ty;
         }
 
+        // Bind shader and set transformation matrix
+        renderer.shader.bind();
+        renderer.shader.loadTransformMatrix(transformMatrix);
+        renderer.shader.loadUseTexture(false);
+        renderer.shader.loadShapeColor(color);
+
         GL30.glBindVertexArray(renderer.vaoId);
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, renderer.vboId);
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_DYNAMIC_DRAW);
@@ -154,16 +153,20 @@ public final class RenderEngine {
         GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, 4 * Float.BYTES, 0);
         GL20.glEnableVertexAttribArray(1); // Texture coordinate
         GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 4 * Float.BYTES, 2 * Float.BYTES);
+
         if(texture != null) {
             GL13.glActiveTexture(GL13.GL_TEXTURE0);
             texture.bind();
         }
 
+        renderer.shader.loadTextureSampler(0);
+
         GL11.glDrawArrays(GL11.GL_TRIANGLE_FAN, 0, segments + 2);
 
+        GL30.glBindVertexArray(0);
         GL20.glDisableVertexAttribArray(0);
         GL20.glDisableVertexAttribArray(1);
-        GL30.glBindVertexArray(0);
+
         renderer.shader.unbind();
         if(texture != null) {
             texture.disable();
@@ -174,6 +177,7 @@ public final class RenderEngine {
         drawCircleAngleTexturedNew(center, radius, angle, segments, null, color);
     }
 
+    // todo rewrite this function
     public static void drawHollowCircle(final Vector2 center, final float radius, final int segments, final float width, final Color color) {
         final float[] c = Color.convertColorToFloatAlpha(color);
         glPushMatrix();
@@ -242,8 +246,8 @@ public final class RenderEngine {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, renderer.vboId);
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_DYNAMIC_DRAW);
 
-        GL13.glActiveTexture(GL13.GL_TEXTURE0);
         if(texture != null) {
+            GL13.glActiveTexture(GL13.GL_TEXTURE0);
             texture.bind();
         }
         renderer.shader.loadTextureSampler(0);
@@ -287,8 +291,8 @@ public final class RenderEngine {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, renderer.vboId);
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_DYNAMIC_DRAW);
 
-        GL13.glActiveTexture(GL13.GL_TEXTURE0);
         if(texture != null) {
+            GL13.glActiveTexture(GL13.GL_TEXTURE0);
             texture.bind();
         }
         renderer.shader.loadTextureSampler(0);
@@ -323,23 +327,35 @@ public final class RenderEngine {
     }
 
     public static void drawWireframe(Vector2 screenPos, float screenWidth, float screenHeight, float angle) {
-        final float[] c = Color.convertColorToFloatAlpha(Color.GREEN);
-        glPushMatrix();
-        glColor4f(c[0], c[1], c[2], c[3]);
-        // Translate to the object's position on the screen
-        glTranslatef(screenPos.x, screenPos.y, 0);
-        // Rotate around the center of the object
-        glRotatef((float) Math.toDegrees(angle), 0, 0, 1);
+        Matrix4f transformMatrix = new Matrix4f()
+                .translate(screenPos.x, screenPos.y, 0)
+                .rotateZ(angle)
+                .scale(screenWidth / 2, screenHeight / 2, 1.0f);
 
-        // Draw a wireframe rectangle to represent the object
-        glBegin(GL_LINE_LOOP);
-        glVertex2f(-screenWidth / 2, -screenHeight / 2);
-        glVertex2f(-screenWidth / 2, screenHeight / 2);
-        glVertex2f(screenWidth / 2, screenHeight / 2);
-        glVertex2f(screenWidth / 2, -screenHeight / 2);
-        glEnd();
+        renderer.shader.bind();
+        renderer.shader.loadTransformMatrix(transformMatrix);
+        renderer.shader.loadShapeColor(Color.GREEN);
+        renderer.shader.loadUseTexture(false);
 
-        glPopMatrix();
+        float[] vertices = {
+                -1.0f, -1.0f,  // Bottom-left
+                -1.0f,  1.0f,  // Top-left
+                1.0f,  1.0f,  // Top-right
+                1.0f, -1.0f   // Bottom-right
+        };
+
+        GL30.glBindVertexArray(renderer.vaoId);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, renderer.vboId);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_DYNAMIC_DRAW);
+
+        GL20.glEnableVertexAttribArray(0);
+        GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, 2 * Float.BYTES, 0);
+
+        GL11.glDrawArrays(GL11.GL_LINE_LOOP, 0, 4);
+
+        GL20.glDisableVertexAttribArray(0);
+        GL30.glBindVertexArray(0);
+        renderer.shader.unbind();
     }
 
 

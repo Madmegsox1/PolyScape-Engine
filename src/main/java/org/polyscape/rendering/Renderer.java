@@ -66,10 +66,6 @@ public final class Renderer {
         shader.bind();
         shader.loadProjectionMatrix(projectionMatrix);
 
-        GL30.glBindVertexArray(vaoId);
-        //shader.validate(vaoId);
-        GL30.glBindVertexArray(0);
-
         shader.unbind();
 
 
@@ -99,27 +95,23 @@ public final class Renderer {
     }
 
     public void prepare() {
-        // Clear color and depth buffers
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         if (this.fbo > 0) {
             GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, this.fbo);
-            GL20.glDrawBuffers(GL30.GL_COLOR_ATTACHMENT0); // Set color attachment for rendering
+            GL20.glDrawBuffers(GL30.GL_COLOR_ATTACHMENT0);
         } else {
-            // If rendering directly to screen, bind the default framebuffer
             GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, 0);
         }
     }
 
     public void render(final long window) {
         if (this.fbo > 0) {
-            // Bind the off-screen framebuffer for reading
             GL30.glBindFramebuffer(GL30.GL_READ_FRAMEBUFFER, this.fbo);
             GL11.glReadBuffer(GL30.GL_COLOR_ATTACHMENT0);
-            GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, 0); // Default framebuffer for drawing
+            GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, 0);
             GL20.glDrawBuffers(GL11.GL_BACK_LEFT);
 
-            // Blit from fbo to the screen
             GL30.glBlitFramebuffer(
                     0, 0, Profile.Display.WIDTH, Profile.Display.HEIGHT,
                     0, 0, Profile.Display.WIDTH, Profile.Display.HEIGHT,
@@ -127,7 +119,6 @@ public final class Renderer {
             );
         }
 
-        // Swap buffers and poll events
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
