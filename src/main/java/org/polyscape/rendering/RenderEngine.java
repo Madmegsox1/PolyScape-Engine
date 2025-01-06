@@ -334,6 +334,8 @@ public final class RenderEngine {
 
         renderer.shader.bind();
         renderer.shader.loadTransformMatrix(transformMatrix);
+        renderer.shader.loadWireframe(true);
+
         renderer.shader.loadShapeColor(Color.GREEN);
         renderer.shader.loadUseTexture(false);
 

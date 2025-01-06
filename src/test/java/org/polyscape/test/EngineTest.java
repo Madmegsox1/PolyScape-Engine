@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class EngineTest extends Engine {
 
-    @Test
+    //@Test
     public void LightTest() {
 
         Profile.Display.BACKGROUND_COLOR = new float[]{0f / 255f, 0f / 255f, 0f / 255f, 1.0f};

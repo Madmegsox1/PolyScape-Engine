@@ -255,7 +255,7 @@ public final class Editor extends Screen {
         GLFW.glfwSetScrollCallback(Engine.getDisplay().getWindow(), (w, sx, sy) -> {
             Vector2 v2M = Display.getMousePosition(Engine.getDisplay().getWindow());
             if (isInStageBounds(v2M.x, v2M.y)) {
-                float scaleFactor = 0.01f;
+                float scaleFactor = 0.1f;
                 updateScale((float) (sy * scaleFactor));
             }
         });

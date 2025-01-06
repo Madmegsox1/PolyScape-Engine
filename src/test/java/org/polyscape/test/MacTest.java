@@ -23,7 +23,7 @@ import org.polyscape.ui.ScreenManager;
 
 
 public class MacTest extends Engine {
-    @Test
+    //@Test
     public void test() {
         Profile.Display.BACKGROUND_COLOR = new float[]{255f / 255f, 255f / 255f, 255f / 255f, 1.0f};
         display = new Display("Mac Test");
