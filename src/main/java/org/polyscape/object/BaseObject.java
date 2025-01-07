@@ -1,6 +1,5 @@
 package org.polyscape.object;
 
-import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
@@ -10,10 +9,6 @@ import org.polyscape.logic.objectLogic.LogicObject;
 import org.polyscape.logic.script.LogicScriptObject;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.elements.Vector2;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import static org.polyscape.object.ObjectManager.*;
 
@@ -48,6 +43,8 @@ public class BaseObject extends RenderProperty {
 
     private LogicContainer logic;
 
+    private BindingBox bindingBox;
+
 
     public BaseObject() {
         bodyDef = new BodyDef();
@@ -56,6 +53,7 @@ public class BaseObject extends RenderProperty {
         linearDamping = 2f;
         bodyType = BodyType.STATIC;
         angleCals = false;
+        bindingBox = new BindingBox(width, height);
         onLevel = ObjectManager.getCurrentLevel().getLevelNumber();
     }
 
@@ -132,6 +130,15 @@ public class BaseObject extends RenderProperty {
     public void setHeight(int height) {
         this.height = height;
         if (body != null) {
+            var angle = Math.toDegrees(body.getAngle());
+            setUpPhysicsBody();
+            setAngle(angle);
+        }
+    }
+
+    public void setBindingBox(BindingBox bindingBox){
+        this.bindingBox = bindingBox;
+        if(body != null){
             var angle = Math.toDegrees(body.getAngle());
             setUpPhysicsBody();
             setAngle(angle);
@@ -242,14 +249,11 @@ public class BaseObject extends RenderProperty {
         }
         this.bodyDef.type = type;
         bodyDef.fixedRotation = angleCals;
-        var width = ObjectManager.toMeters(this.width / 2f);
-        var height = ObjectManager.toMeters(this.height / 2f);
-
         this.bodyDef.position.set(ObjectManager.screenToWorld(position.x, position.y, this.width, this.height, onLevel));
         this.body = ObjectManager.world.createBody(bodyDef);
-        PolygonShape shape = new PolygonShape();
 
-        shape.setAsBox(width, height);
+        PolygonShape shape = bindingBox.getPolygon();
+
         FixtureDef fixture = new FixtureDef();
         fixture.friction = friction;
         fixture.density = density;

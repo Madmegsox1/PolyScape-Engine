@@ -1,6 +1,7 @@
 package org.polyscape.rendering.elements;
 
 
+import org.jbox2d.common.Vec2;
 import org.polyscape.font.Font;
 import org.polyscape.Profile;
 
@@ -119,5 +120,9 @@ public final class Vector2 implements Comparable<Vector2> {
     @Override
     public int compareTo(Vector2 o) {
         return Float.compare(o.y, this.y);
+    }
+
+    public Vec2 toVec2(){
+        return new Vec2(this.x, this.y);
     }
 }
