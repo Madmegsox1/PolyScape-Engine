@@ -10,6 +10,7 @@ import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.elements.Texture;
 import org.polyscape.rendering.elements.Vector2;
 import org.polyscape.rendering.events.RenderEvent;
+import org.polyscape.rendering.events.WorldUpdateEvent;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -40,6 +41,7 @@ public final class RenderEngine {
             while (accumulator >= timeStep) {
                 ObjectManager.setPreviousPositions();
                 ObjectManager.world.step(timeStep, velocityIterations, positionIterations);
+                Engine.getEventBus().postEvent(new WorldUpdateEvent(renderer, this, deltaTime, accumulator));
                 ObjectManager.updatePosition();
                 accumulator -= timeStep;
             }
