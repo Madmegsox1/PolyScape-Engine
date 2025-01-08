@@ -327,37 +327,10 @@ public final class RenderEngine {
     }
 
     public static void drawWireframe(Vector2 screenPos, float screenWidth, float screenHeight, float angle) {
-        Matrix4f transformMatrix = new Matrix4f()
-                .translate(screenPos.x, screenPos.y, 0)
-                .rotateZ(angle)
-                .scale(screenWidth / 2, screenHeight / 2, 1.0f);
-
-        renderer.shader.bind();
-        renderer.shader.loadTransformMatrix(transformMatrix);
-        renderer.shader.loadWireframe(true);
-
-        renderer.shader.loadShapeColor(Color.GREEN);
-        renderer.shader.loadUseTexture(false);
-
-        float[] vertices = {
-                -1.0f, -1.0f,  // Bottom-left
-                -1.0f,  1.0f,  // Top-left
-                1.0f,  1.0f,  // Top-right
-                1.0f, -1.0f   // Bottom-right
-        };
-
-        GL30.glBindVertexArray(renderer.vaoId);
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, renderer.vboId);
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_DYNAMIC_DRAW);
-
-        GL20.glEnableVertexAttribArray(0);
-        GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, 2 * Float.BYTES, 0);
-
-        GL11.glDrawArrays(GL11.GL_LINE_LOOP, 0, 4);
-
-        GL20.glDisableVertexAttribArray(0);
-        GL30.glBindVertexArray(0);
-        renderer.shader.unbind();
+        drawLineNew(screenPos, new Vector2(screenPos.x + screenWidth, screenPos.y), 1.0f, Color.GREEN);
+        drawLineNew(new Vector2(screenPos.x + screenWidth, screenPos.y), new Vector2(screenPos.x + screenWidth, screenPos.y + screenHeight), 1.0f, Color.GREEN);
+        drawLineNew(new Vector2(screenPos.x + screenWidth, screenPos.y + screenHeight), new Vector2(screenPos.x, screenPos.y + screenHeight), 1.0f, Color.GREEN);
+        drawLineNew(new Vector2(screenPos.x, screenPos.y + screenHeight),  screenPos, 1.0f, Color.GREEN);
     }
 
 
