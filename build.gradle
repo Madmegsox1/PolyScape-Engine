@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 group = 'org.polyscape'
@@ -48,6 +49,7 @@ dependencies {
     implementation "org.pkl-lang:pkl-core:0.25.2"
     implementation "org.pkl-lang:pkl-config-java:0.25.2"
 
+    runtimeOnly group: 'org.mozilla', name: 'rhino-engine', version: '1.7.15'
 
     implementation group: 'org.l33tlabs.twl', name: 'pngdecoder', version: '1.0'
     implementation group: 'org.jasypt', name: 'jasypt', version: '1.9.2'
@@ -73,8 +75,29 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
+shadowJar {
+    archiveBaseName.set('polyscape-game-engine')
+    archiveVersion.set('1.0.0-beta')
+    archiveClassifier.set('all')
+
+    mergeServiceFiles {
+        include 'META-INF/services/*'
+    }
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer) {
+        resource = 'META-INF/spring.handlers'
+    }
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.AppendingTransformer) {
+        resource = 'META-INF/spring.schemas'
+    }
+}
+
+
 test {
     useJUnitPlatform()
+
+    if(OperatingSystem.current() == OperatingSystem.MAC_OS) {
+        jvmArgs "-XstartOnFirstThread"
+    }
 
     testLogging {
         events "passed"

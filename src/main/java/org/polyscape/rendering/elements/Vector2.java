@@ -1,6 +1,7 @@
 package org.polyscape.rendering.elements;
 
 
+import org.jbox2d.common.Vec2;
 import org.polyscape.font.Font;
 import org.polyscape.Profile;
 
@@ -73,6 +74,13 @@ public final class Vector2 implements Comparable<Vector2> {
         return new Vector2(v1.x - v2.x, v1.y - v2.y);
     }
 
+    public static float distance(final Vector2 v1, final Vector2 v2){
+        double dx = v1.x - v2.x;
+        double dy = v1.y - v2.y;
+
+        return (float) Math.sqrt(dx * dx + dy *dy);
+    }
+
     public static float dot(final Vector2 v1, final Vector2 v2){
         return v1.x * v2.x + v1.y * v2.y;
     }
@@ -112,5 +120,9 @@ public final class Vector2 implements Comparable<Vector2> {
     @Override
     public int compareTo(Vector2 o) {
         return Float.compare(o.y, this.y);
+    }
+
+    public Vec2 toVec2(){
+        return new Vec2(this.x, this.y);
     }
 }

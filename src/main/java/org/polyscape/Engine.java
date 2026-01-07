@@ -14,7 +14,6 @@ public abstract class Engine {
     protected static Renderer renderer;
     protected static RenderEngine renderEngine;
     protected static FontRenderer fontRenderer;
-
     protected static ScreenManager screenManager;
 
 

@@ -30,7 +30,7 @@ public class Button extends Component {
 
     @Override
     public void draw(RenderEvent event) {
-        RenderEngine.drawQuad(pos, width, height, (buttonDown) ? pressedColor : baseColor);
+        RenderEngine.drawQuadNew(pos, width, height, (buttonDown) ? pressedColor : baseColor);
         screen.font.renderText(text, new Vector2(pos.x + 5, pos.y + screen.font.getHeight(text)), foregroundColor);
     }
 

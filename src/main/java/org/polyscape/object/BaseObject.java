@@ -3,12 +3,12 @@ package org.polyscape.object;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
+import org.polyscape.logic.LogicContainer;
+import org.polyscape.logic.LogicType;
+import org.polyscape.logic.objectLogic.LogicObject;
+import org.polyscape.logic.script.LogicScriptObject;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.elements.Vector2;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import static org.polyscape.object.ObjectManager.*;
 
@@ -21,13 +21,13 @@ public class BaseObject extends RenderProperty {
 
     private int objectId = 0;
 
-    private Vector2 position;
+    protected Vector2 position;
 
     private Vector2 previousPosition;
 
-    private BodyDef bodyDef;
+    protected BodyDef bodyDef;
 
-    private Body body;
+    protected Body body;
 
     private BodyType bodyType;
 
@@ -39,7 +39,11 @@ public class BaseObject extends RenderProperty {
 
     private boolean angleCals;
 
-    private int onLevel;
+    protected int onLevel;
+
+    private LogicContainer logic;
+
+    private BindingBox bindingBox;
 
 
     public BaseObject() {
@@ -49,9 +53,22 @@ public class BaseObject extends RenderProperty {
         linearDamping = 2f;
         bodyType = BodyType.STATIC;
         angleCals = false;
+        bindingBox = new BindingBox(width, height);
         onLevel = ObjectManager.getCurrentLevel().getLevelNumber();
     }
 
+    public LogicContainer getLogic() {
+        return logic;
+    }
+
+    public void setLogic(LogicContainer logic) {
+        if(logic.logicType() == LogicType.OBJECT) {
+            this.logic = logic;
+        }
+        else {
+            throw new IllegalArgumentException("Logic Type must be OBJECT");
+        }
+    }
 
     public int getLevel(){
         return this.onLevel;
@@ -113,6 +130,15 @@ public class BaseObject extends RenderProperty {
     public void setHeight(int height) {
         this.height = height;
         if (body != null) {
+            var angle = Math.toDegrees(body.getAngle());
+            setUpPhysicsBody();
+            setAngle(angle);
+        }
+    }
+
+    public void setBindingBox(BindingBox bindingBox){
+        this.bindingBox = bindingBox;
+        if(body != null){
             var angle = Math.toDegrees(body.getAngle());
             setUpPhysicsBody();
             setAngle(angle);
@@ -193,7 +219,6 @@ public class BaseObject extends RenderProperty {
     public void setPreviousPosition() {
         if (position == null) return;
         this.previousPosition = new Vector2(position.x, position.y);
-        ;
     }
 
 
@@ -202,6 +227,7 @@ public class BaseObject extends RenderProperty {
         position = worldToScreen(body.getPosition(), onLevel);
         position.x -= (this.width / 2f);
         position.y -= (this.height / 2f);
+        onUpdatePosLogic();
     }
 
 
@@ -214,8 +240,6 @@ public class BaseObject extends RenderProperty {
 
     public void addToPos(float x, float y) {
         position.addToVect(x, y);
-        //ObjectManager.world.destroyBody(this.body);
-        //setUpPhysicsBody(this.bodyDef.type);
         body.setTransform(ObjectManager.screenToWorld(position.x, position.y, this.width, this.height, onLevel), body.getAngle());
     }
 
@@ -225,14 +249,11 @@ public class BaseObject extends RenderProperty {
         }
         this.bodyDef.type = type;
         bodyDef.fixedRotation = angleCals;
-        var width = ObjectManager.toMeters(this.width / 2f);
-        var height = ObjectManager.toMeters(this.height / 2f);
-
         this.bodyDef.position.set(ObjectManager.screenToWorld(position.x, position.y, this.width, this.height, onLevel));
         this.body = ObjectManager.world.createBody(bodyDef);
-        PolygonShape shape = new PolygonShape();
 
-        shape.setAsBox(width, height);
+        PolygonShape shape = bindingBox.getPolygon();
+
         FixtureDef fixture = new FixtureDef();
         fixture.friction = friction;
         fixture.density = density;
@@ -310,31 +331,30 @@ public class BaseObject extends RenderProperty {
         }
     }
 
-    public void renderObject(float alpha) {
+    private void renderObject(float alpha) {
         if(body != null) {
             if (this.isTextured) {
-                RenderEngine.drawQuadTextureAngle(getInterpolatedPosition(alpha), -body.getAngle(), width, height, texture, baseColor);
+                RenderEngine.drawQuadTextureAngleNew(getInterpolatedPosition(alpha), -body.getAngle(), width, height, texture, baseColor);
             } else {
-                RenderEngine.drawQuadAngleA(getInterpolatedPosition(alpha), -body.getAngle(), width, height, baseColor);
+                RenderEngine.drawQuadAngleNew(getInterpolatedPosition(alpha), -body.getAngle(), width, height, baseColor);
             }
         }
         else{
             if (this.isTextured) {
-                RenderEngine.drawQuadTextureAngle(position, 0, width, height, texture, baseColor);
+                RenderEngine.drawQuadTextureAngleNew(position, 0, width, height, texture, baseColor);
             } else {
-                RenderEngine.drawQuadAngleA(position, 0, width, height, baseColor);
+                RenderEngine.drawQuadAngleNew(position, 0, width, height, baseColor);
             }
         }
 
     }
 
-    public void renderObjectWireframe(float alpha) {
+    private void renderObjectWireframe(float alpha) {
         drawWireframe();
         renderObject(alpha);
-
     }
 
-    private void drawWireframe() {
+    public void drawWireframe() {
         if(body == null){
             //getInterpolatedPosition()
             RenderEngine.drawWireframe(position, width, height, 0f);
@@ -362,6 +382,29 @@ public class BaseObject extends RenderProperty {
             renderObjectWireframe(alpha);
         } else {
             renderObject(alpha);
+        }
+        onRenderLogic();
+    }
+
+    protected void onRenderLogic(){
+        if(getLogic() != null){
+            if(getLogic().logic() instanceof LogicObject) {
+                ((LogicObject) getLogic().logic()).onRender();
+            }
+            else if(getLogic().logic() instanceof LogicScriptObject) {
+                ((LogicScriptObject) getLogic().logic()).onRender();
+            }
+        }
+    }
+
+    protected void onUpdatePosLogic(){
+        if(getLogic() != null){
+            if(getLogic().logic() instanceof LogicObject) {
+                ((LogicObject) getLogic().logic()).onPosUpdate();
+            }
+            else if(getLogic().logic() instanceof LogicScriptObject) {
+                ((LogicScriptObject) getLogic().logic()).onPosUpdate();
+            }
         }
     }
 

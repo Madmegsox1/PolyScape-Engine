@@ -1,22 +1,26 @@
 package org.polyscape.rendering;
 
+import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.*;
+import org.pkl.core.util.Nullable;
 import org.polyscape.Engine;
 import org.polyscape.object.ObjectManager;
 import org.polyscape.rendering.elements.Color;
 import org.polyscape.rendering.elements.Texture;
 import org.polyscape.rendering.elements.Vector2;
 import org.polyscape.rendering.events.RenderEvent;
+import org.polyscape.rendering.events.WorldUpdateEvent;
 
-import static org.lwjgl.opengl.GL11.*;
 
 public final class RenderEngine {
     public static int fps = 0;
     public static double deltaTime = 0;
+    private static Renderer renderer;
 
 
     public void render(final Renderer renderer, final Display display) {
+        RenderEngine.renderer = renderer;
         double time = GLFW.glfwGetTime();
         double fpsTime = time;
         int fpsOld = 0;
@@ -28,8 +32,6 @@ public final class RenderEngine {
         double accumulator = 0.0;
 
         while (!renderer.shouldClose()) {
-
-
             final double currentTime = GLFW.glfwGetTime();
             deltaTime = currentTime - time;
             time = currentTime;
@@ -38,6 +40,7 @@ public final class RenderEngine {
             while (accumulator >= timeStep) {
                 ObjectManager.setPreviousPositions();
                 ObjectManager.world.step(timeStep, velocityIterations, positionIterations);
+                Engine.getEventBus().postEvent(new WorldUpdateEvent(renderer, this, deltaTime, accumulator));
                 ObjectManager.updatePosition();
                 accumulator -= timeStep;
             }
@@ -52,398 +55,316 @@ public final class RenderEngine {
                 fpsOld = 0;
                 fpsTime = GLFW.glfwGetTime();
             }
-
         }
         System.exit(0);
     }
 
 
-    public static void drawLine(final Vector2 a, final Vector2 b, final float width, final Color color) {
-        final float[] c = Color.convertColorToFloatAlpha(color);
-        glPushMatrix();
-        glColor4f(c[0], c[1], c[2], c[3]);
-        glLineWidth(width);
-        glBegin(GL_LINE_STRIP);
+    public static void drawLineNew(final Vector2 start, final Vector2 end, final float width, final Color color) {
+        Vector2 direction = new Vector2(end.x - start.x, end.y - start.y);
+        float lineLength = (float) Math.sqrt(direction.x * direction.x + direction.y * direction.y);
+        float angle = (float) Math.atan2(direction.y, direction.x);
 
-        glVertex2f(a.x, a.y);
-        glVertex2f(b.x, b.y);
+        // Set up the transformation matrix for the line quad
+        Matrix4f transformMatrix = new Matrix4f()
+                .translate(start.x, start.y, 0)
+                .rotateZ(angle)
+                .scale(lineLength, width, 1.0f);
 
-        glEnd();
-        glPopMatrix();
+
+        renderer.shader.bind();
+        renderer.shader.loadTransformMatrix(transformMatrix);
+        renderer.shader.loadShapeColor(color);
+        renderer.shader.loadUseTexture(false);
+
+        float[] triangleVertices = {
+                // Position          // Texture Coords
+                0.0f, 0.0f,        0.0f, 0.0f,    // Bottom-left corner
+                1f, 0.0f,        1.0f, 0.0f,    // Bottom-right corner
+                1f,  1f,        1.0f, 1.0f,    // Top-right corner
+
+                0.0f, 0.0f,        0.0f, 0.0f,    // Bottom-left corner
+                1f,  1f,        1.0f, 1.0f,    // Top-right corner
+                0.0f,  1f,        0.0f, 1.0f     // Top-left corner
+        };
+
+        GL30.glBindVertexArray(renderer.vaoId);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, renderer.vboId);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, triangleVertices, GL15.GL_DYNAMIC_DRAW);
+
+        GL20.glEnableVertexAttribArray(0);
+        GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, 4 * Float.BYTES, 0);
+
+        GL20.glEnableVertexAttribArray(1);
+        GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 4 * Float.BYTES, 2 * Float.BYTES);
+
+        GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 6);
+
+        GL30.glBindVertexArray(0);
+        GL20.glDisableVertexAttribArray(0);
+        GL20.glDisableVertexAttribArray(1);
+        renderer.shader.unbind();
+    }
+
+    public static void drawCircleAngleTexturedNew(final Vector2 center, final float radius, final float angle, final int segments, @Nullable Texture texture) {
+        drawCircleAngleTexturedNew(center, radius, angle, segments, texture, Color.WHITE);
+    }
+
+    public static void drawCircleAngleTexturedNew(final Vector2 center, final float radius, final float angle, final int segments, @Nullable Texture texture, Color color) {
+        Matrix4f transformMatrix = new Matrix4f()
+                .translate(center.x, center.y, 0)
+                .rotateZ(angle);
+
+
+        float[] vertices = new float[(segments + 2) * 4];
+
+        vertices[0] = 0.0f;         // x
+        vertices[1] = 0.0f;         // y
+        vertices[2] = 0.5f;         // tx
+        vertices[3] = 0.5f;         // ty
+
+        for (int i = 0; i <= segments; i++) {
+            double theta = Math.PI * 2 * i / segments;
+            float xCos = (float) Math.cos(theta);
+            float yCos = (float) Math.sin(theta);
+
+            float x = radius * xCos;
+            float y = radius * yCos;
+
+            float tx = xCos * 0.5f + 0.5f;
+            float ty = yCos * 0.5f + 0.5f;
+
+            vertices[(i + 1) * 4] = x;
+            vertices[(i + 1) * 4 + 1] = y;
+            vertices[(i + 1) * 4 + 2] = tx;
+            vertices[(i + 1) * 4 + 3] = ty;
+        }
+
+        // Bind shader and set transformation matrix
+        renderer.shader.bind();
+        renderer.shader.loadTransformMatrix(transformMatrix);
+        renderer.shader.loadUseTexture(false);
+        renderer.shader.loadShapeColor(color);
+
+        GL30.glBindVertexArray(renderer.vaoId);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, renderer.vboId);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_DYNAMIC_DRAW);
+
+        GL20.glEnableVertexAttribArray(0); // Position
+        GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, 4 * Float.BYTES, 0);
+        GL20.glEnableVertexAttribArray(1); // Texture coordinate
+        GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 4 * Float.BYTES, 2 * Float.BYTES);
+
+        if(texture != null) {
+            GL13.glActiveTexture(GL13.GL_TEXTURE0);
+            texture.bind();
+        }
+
+        renderer.shader.loadTextureSampler(0);
+
+        GL11.glDrawArrays(GL11.GL_TRIANGLE_FAN, 0, segments + 2);
+
+        GL30.glBindVertexArray(0);
+        GL20.glDisableVertexAttribArray(0);
+        GL20.glDisableVertexAttribArray(1);
+
+        renderer.shader.unbind();
+        if(texture != null) {
+            texture.disable();
+        }
+    }
+
+    public static void drawCircleAngleNew(final Vector2 center, final float radius, final float angle, final int segments, final Color color) {
+        drawCircleAngleTexturedNew(center, radius, angle, segments, null, color);
     }
 
     public static void drawHollowCircle(final Vector2 center, final float radius, final int segments, final float width, final Color color) {
-        final float[] c = Color.convertColorToFloatAlpha(color);
-        glPushMatrix();
-        glColor4f(c[0], c[1], c[2], c[3]);
-        glLineWidth(width);
-        glBegin(GL11.GL_LINE_LOOP);
 
-        for (int i = 0; i < segments; i++) {
+        Matrix4f transformMatrix = new Matrix4f()
+                .translate(center.x, center.y, 0)
+                .rotateZ(0);
+
+        float[] vertices = new float[segments * 2];
+
+        for(int i = 0; i < segments; i++) {
             double theta = 2.0f * Math.PI * i / segments;
             float x = (float) (radius * Math.cos(theta));
             float y = (float) (radius * Math.sin(theta));
 
-            GL11.glVertex2f(center.x + x, center.y + y);
+            vertices[i * 2] = x;
+            vertices[i * 2 + 1] = y;
         }
 
-        GL11.glEnd();
-        GL11.glPopMatrix();
-    }
+        renderer.shader.bind();
+        renderer.shader.loadTransformMatrix(transformMatrix);
+        renderer.shader.loadUseTexture(false);
+        renderer.shader.loadShapeColor(color);
 
+        GL30.glBindVertexArray(renderer.vaoId);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, renderer.vboId);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_DYNAMIC_DRAW);
 
-    public static void drawQuad(final Vector2 vector, final float width, final float height, final Color color) {
-        float halfWidth = width / 2.0f;
-        float halfHeight = height / 2.0f;
-        final float[] c = Color.convertColorToFloat(color);
-        glPushMatrix();
-        glColor3f(c[0], c[1], c[2]);
-        glTranslatef(vector.x + halfWidth, vector.y + halfHeight, 0);
-        //glRotatef((float) Math.toDegrees(0), 0, 0, 1);
-        glBegin(GL_QUADS);
+        GL20.glEnableVertexAttribArray(0);
+        GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, 2 * Float.BYTES, 0);
 
-        glVertex2f(-halfWidth, -halfHeight);
-        glVertex2f(-halfWidth, halfHeight);
-        glVertex2f(halfWidth, halfHeight);
-        glVertex2f(halfWidth, -halfHeight);
+        GL11.glLineWidth(width);
+        GL11.glDrawArrays(GL11.GL_LINE_LOOP, 0, segments);
 
-        glEnd();
-
-        glPopMatrix();
-    }
-
-    public static void drawQuadAngle(final Vector2 vector, final float angle, final float width, final float height, final Color color) {
-        float halfWidth = width / 2.0f;
-        float halfHeight = height / 2.0f;
-        final float[] c = Color.convertColorToFloat(color);
-        glPushMatrix();
-        glColor3f(c[0], c[1], c[2]);
-        glTranslatef(vector.x + halfWidth, vector.y + halfHeight, 0);
-        glRotatef((float) Math.toDegrees(angle), 0, 0, 1);
-        glBegin(GL_QUADS);
-
-        glVertex2f(-halfWidth, -halfHeight);
-        glVertex2f(-halfWidth, halfHeight);
-        glVertex2f(halfWidth, halfHeight);
-        glVertex2f(halfWidth, -halfHeight);
-
-        glEnd();
-
-        glPopMatrix();
-    }
-
-    public static void drawQuadAngleA(final Vector2 vector, float angle, final float width, final float height, final Color color) {
-        float halfWidth = width / 2.0f;
-        float halfHeight = height / 2.0f;
-        final float[] c = Color.convertColorToFloatAlpha(color);
-
-        glPushMatrix();
-
-        glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-        glColor4f(c[0], c[1], c[2], c[3]);
-        glTranslatef(vector.x + halfWidth, vector.y + halfHeight, 0);
-        glRotatef((float) Math.toDegrees(angle), 0, 0, 1);
-        glBegin(GL_QUADS);
-
-        glVertex2f(-halfWidth, -halfHeight);
-        glVertex2f(-halfWidth, halfHeight);
-        glVertex2f(halfWidth, halfHeight);
-        glVertex2f(halfWidth, -halfHeight);
-
-        glEnd();
-        glPopMatrix();
+        GL20.glDisableVertexAttribArray(0);
+        GL30.glBindVertexArray(0);
+        renderer.shader.unbind();
 
     }
 
-    public static void drawQuadA(final Vector2 vector, final float width, final float height, final Color color) {
-        float halfWidth = width / 2.0f;
-        float halfHeight = height / 2.0f;
-        final float[] c = Color.convertColorToFloatAlpha(color);
-        glPushMatrix();
-
-        glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
-        glColor4f(c[0], c[1], c[2], c[3]);
-        glTranslatef(vector.x + halfWidth, vector.y + halfHeight, 0);
-
-        glBegin(GL_QUADS);
-
-        glVertex2f(-halfWidth, -halfHeight);
-        glVertex2f(-halfWidth, halfHeight);
-        glVertex2f(halfWidth, halfHeight);
-        glVertex2f(halfWidth, -halfHeight);
-
-        glEnd();
-        glPopMatrix();
-
+    public static void drawQuadTextureNew(final Vector2 position, final float width, final float height, final Texture texture, final Color color) {
+        drawQuadTextureAngleNew(position, 0, width, height, texture, color);
     }
 
-    public static void drawQuadTextureAngle(final Vector2 vector2, float angle, final float width, final float height, final Texture texture, final Color color) {
-        float halfWidth = width / 2.0f;
-        float halfHeight = height / 2.0f;
-        final float[] c = Color.convertColorToFloatAlpha(color);
-        texture.bind();
-        glPushMatrix();
-
-        glColor4f(1, 1, 1, 1);
-        glTranslatef(vector2.x + halfWidth, vector2.y + halfHeight, 0);
-        glRotatef((float) Math.toDegrees(angle), 0, 0, 1);
-        glTranslatef(-halfWidth, -halfHeight, 0);
-
-        glBegin(GL_QUADS);
-
-        glTexCoord2f(0, 0);
-        glVertex2f(0, 0);
-
-        glTexCoord2f(1, 0);
-        glVertex2f(width, 0);
-
-        glTexCoord2f(1, 1);
-        glVertex2f(width, height);
-
-        glTexCoord2f(0, 1);
-        glVertex2f(0, height);
-
-        glEnd();
-
-        glPopMatrix();
-        texture.disable();
+    public static void drawQuadTextureNew(final Vector2 position, final float width, final float height, final Texture texture) {
+        drawQuadTextureAngleNew(position, 0, width, height, texture, Color.WHITE);
     }
 
-    public static void drawQuadTexture(final Vector2 vector2, final float width, final float height, final Texture texture, final Color color) {
-        float halfWidth = width / 2.0f;
-        float halfHeight = height / 2.0f;
-        final float[] c = Color.convertColorToFloatAlpha(color);
-
-        glPushMatrix();
-        texture.bind();
-        glColor4f(c[0], c[1], c[2], c[3]);
-        glTranslatef(vector2.x + halfWidth, vector2.y + halfHeight, 0);
-        glTranslatef(-halfWidth, -halfHeight, 0);
-
-        glBegin(GL_QUADS);
-
-        glTexCoord2f(0, 0);
-        glVertex2f(0, 0);
-
-        glTexCoord2f(1, 0);
-        glVertex2f(width, 0);
-
-        glTexCoord2f(1, 1);
-        glVertex2f(width, height);
-
-        glTexCoord2f(0, 1);
-        glVertex2f(0, height);
-
-        glEnd();
-        texture.disable();
-        glPopMatrix();
+    public static void drawQuadTextureAngleNew(final Vector2 position, float angle, final float width, final float height, final Texture texture) {
+        drawQuadTextureAngleNew(position, angle, width, height, texture, Color.WHITE);
     }
 
-    public static void drawQuadTextureAngle(final Vector2 vector2, float angle, final float width, final float height, final Texture texture) {
+    public static void drawQuadNew(final Vector2 position, final float width, final float height, final Color color) {
+        drawQuadTextureAngleNew(position, 0, width, height, null, color);
+    }
+
+    public static void drawQuadAngleNew(final Vector2 position, float angle, final float width, final float height, final Color color) {
+        drawQuadTextureAngleNew(position, angle, width, height, null, color);
+    }
+
+    public static void drawQuadTextureAngleNew(final Vector2 position, float angle, final float width, final float height, @Nullable Texture texture, final Color color) {
         float halfWidth = width / 2.0f;
         float halfHeight = height / 2.0f;
-        glPushMatrix();
-        texture.bind();
 
-        glColor4f(1, 1, 1, 1);
-        glTranslatef(vector2.x + halfWidth, vector2.y + halfHeight, 0);
-        glRotatef(angle, 0, 0, 1);
-        glTranslatef(-halfWidth, -halfHeight, 0);
+        Matrix4f transformMatrix = new Matrix4f()
+                .translate(position.x + halfWidth, position.y + halfHeight, 0)
+                .rotateZ(angle)
+                .translate(-halfWidth, -halfHeight, 0);
 
+        renderer.shader.bind();
+        renderer.shader.loadTransformMatrix(transformMatrix);
+        renderer.shader.loadShapeColor(color);
+        renderer.shader.loadUseTexture(texture != null);
 
-        glBegin(GL_QUADS);
+        float[] vertices = {
+                // Positions          // Texture Coords
+                0.0f, 0.0f, 0.0f, 0.0f,       // Bottom-left
+                width, 0.0f, 1.0f, 0.0f,       // Bottom-right
+                width, height, 1.0f, 1.0f,     // Top-right
 
-        glTexCoord2f(0, 0);
-        glVertex2f(0, 0);
+                0.0f, 0.0f, 0.0f, 0.0f,       // Bottom-left
+                width, height, 1.0f, 1.0f,     // Top-right
+                0.0f, height, 0.0f, 1.0f       // Top-left
+        };
 
-        glTexCoord2f(1, 0);
-        glVertex2f(width, 0);
+        GL30.glBindVertexArray(renderer.vaoId);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, renderer.vboId);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_DYNAMIC_DRAW);
 
-        glTexCoord2f(1, 1);
-        glVertex2f(width, height);
+        final int stride = 4 * Float.BYTES;
+        GL20.glEnableVertexAttribArray(0); // position
+        GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, stride, 0L);
+        GL20.glEnableVertexAttribArray(1); // texcoord
+        GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, stride, 2L * Float.BYTES);
 
-        glTexCoord2f(0, 1);
-        glVertex2f(0, height);
+        if(texture != null) {
+            GL13.glActiveTexture(GL13.GL_TEXTURE0);
+            texture.bind();
+            renderer.shader.loadTextureSampler(0);
+        }
+        GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 6);
 
-        glEnd();
-        texture.disable();
-        glPopMatrix();
+        GL20.glDisableVertexAttribArray(0);
+        GL20.glDisableVertexAttribArray(1);
+        GL30.glBindVertexArray(0);
+        renderer.shader.unbind();
+        if(texture != null) {
+            texture.disable();
+        }
+    }
+
+    public static void drawQuadTextureAngleNew(final Vector2 position, float angle, final float width, final float height, final float tx, final float ty, final float tw, final float th, Texture texture, final Color color) {
+        float halfWidth = width / 2.0f;
+        float halfHeight = height / 2.0f;
+
+        // Create a transformation matrix for the quad
+        Matrix4f transformMatrix = new Matrix4f()
+                .translate(position.x + halfWidth, position.y + halfHeight, 0)
+                .rotateZ(angle)
+                .translate(-halfWidth, -halfHeight, 0);
+
+        renderer.shader.bind();
+        renderer.shader.loadTransformMatrix(transformMatrix);
+        renderer.shader.loadShapeColor(color);
+        renderer.shader.loadUseTexture(texture != null);
+
+        float[] vertices = {
+                // Positions          // Texture Coords
+                0.0f, 0.0f, tx, ty,       // Bottom-left
+                width, 0.0f, tx + tw, ty,       // Bottom-right
+                width, height, tx + tw, ty + th,     // Top-right
+
+                0.0f, 0.0f, tx, ty,       // Bottom-left
+                width, height, tx + tw, ty + th,     // Top-right
+                0.0f, height, tx, ty + th       // Top-left
+        };
+
+        GL30.glBindVertexArray(renderer.vaoId);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, renderer.vboId);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_DYNAMIC_DRAW);
+
+        final int stride = 4 * Float.BYTES;
+        GL20.glEnableVertexAttribArray(0); // position
+        GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, stride, 0L);
+        GL20.glEnableVertexAttribArray(1); // texcoord
+        GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, stride, 2L * Float.BYTES);
+
+        if(texture != null) {
+            GL13.glActiveTexture(GL13.GL_TEXTURE0);
+            texture.bind();
+            renderer.shader.loadTextureSampler(0);
+        }
+
+        GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 6);
+
+        GL20.glDisableVertexAttribArray(0);
+        GL20.glDisableVertexAttribArray(1);
+        GL30.glBindVertexArray(0);
+        renderer.shader.unbind();
+        if(texture != null) {
+            texture.disable();
+        }
     }
 
 
-    public static void drawQuadTexture(final Vector2 vector2, final float width, final float height, final Texture texture) {
-        float halfWidth = width / 2.0f;
-        float halfHeight = height / 2.0f;
-        glPushMatrix();
-        texture.bind();
-
-        glColor4f(1, 1, 1, 1);
-        glTranslatef(vector2.x + halfWidth, vector2.y + halfHeight, 0);
-        glTranslatef(-halfWidth, -halfHeight, 0);
-
-
-        glBegin(GL_QUADS);
-
-        glTexCoord2f(0, 0);
-        glVertex2f(0, 0);
-
-        glTexCoord2f(1, 0);
-        glVertex2f(width, 0);
-
-        glTexCoord2f(1, 1);
-        glVertex2f(width, height);
-
-        glTexCoord2f(0, 1);
-        glVertex2f(0, height);
-
-        glEnd();
-        texture.disable();
-        glPopMatrix();
+    public static void drawQuadTextureNew(final Vector2 position, final float width, final float height, final float tx, final float ty, final float tw, final float th, Texture texture, final Color color) {
+        drawQuadTextureAngleNew(position, 0, width, height, tx, ty, tw, th, texture, color);
     }
 
-    public static void drawQuadTextureAngle(final Vector2 vector2, float angle, final float width, final float height, final float tx, final float ty, final float tw, final float th, final Texture texture) {
-        float halfWidth = width / 2.0f;
-        float halfHeight = height / 2.0f;
-
-        glPushMatrix();
-        texture.bind();
-        glColor4f(1, 1, 1, 1);
-        glTranslatef(vector2.x + halfWidth, vector2.y + halfHeight, 0);
-        glRotatef(angle, 0, 0, 1);
-        glTranslatef(-halfWidth, -halfHeight, 0);
-
-        glBegin(GL_QUADS);
-
-        glTexCoord2f(tx, ty);
-        glVertex2f(0, 0);
-
-        glTexCoord2f(tx + tw, ty);
-        glVertex2f(width, 0);
-
-        glTexCoord2f(tx + tw, ty + th);
-        glVertex2f(width, height);
-
-        glTexCoord2f(tx, ty + th);
-        glVertex2f(0, height);
-
-        glEnd();
-        texture.disable();
-        glPopMatrix();
+    public static void drawQuadTextureAngleNew(final Vector2 position, float angle, final float width, final float height, final float tx, final float ty, final float tw, final float th, Texture texture) {
+        drawQuadTextureAngleNew(position, angle, width, height, tx, ty, tw, th, texture, Color.WHITE);
     }
 
-    public static void drawQuadTexture(final Vector2 vector2, final float width, final float height, final float tx, final float ty, final float tw, final float th, final Texture texture) {
-        float halfWidth = width / 2.0f;
-        float halfHeight = height / 2.0f;
-
-        glPushMatrix();
-        texture.bind();
-        glColor4f(1, 1, 1, 1);
-        glTranslatef(vector2.x + halfWidth, vector2.y + halfHeight, 0);
-        glTranslatef(-halfWidth, -halfHeight, 0);
-
-        glBegin(GL_QUADS);
-
-        glTexCoord2f(tx, ty);
-        glVertex2f(0, 0);
-
-        glTexCoord2f(tx + tw, ty);
-        glVertex2f(width, 0);
-
-        glTexCoord2f(tx + tw, ty + th);
-        glVertex2f(width, height);
-
-        glTexCoord2f(tx, ty + th);
-        glVertex2f(0, height);
-
-        glEnd();
-        texture.disable();
-        glPopMatrix();
-    }
-
-    public static void drawQuadTextureAngle(final Vector2 vector2, float angle, final float width, final float height, final float tx, final float ty, final float tw, final float th, final Texture texture, final Color color) {
-        final float[] c = Color.convertColorToFloatAlpha(color);
-        float halfWidth = width / 2.0f;
-        float halfHeight = height / 2.0f;
-        texture.bind();
-        glPushMatrix();
-
-        glColor4f(c[0], c[1], c[2], c[3]);
-        glTranslatef(vector2.x + halfWidth, vector2.y + halfHeight, 0);
-        glRotatef(angle, 0, 0, 1);
-        glTranslatef(-halfWidth, -halfHeight, 0);
-        glBegin(GL_QUADS);
-
-        glTexCoord2f(tx, ty);
-        glVertex2f(0, 0);
-
-        glTexCoord2f(tx + tw, ty);
-        glVertex2f(width, 0);
-
-        glTexCoord2f(tx + tw, ty + th);
-        glVertex2f(width, height);
-
-        glTexCoord2f(tx, ty + th);
-        glVertex2f(0, height);
-
-        glEnd();
-        texture.disable();
-        glPopMatrix();
-    }
-
-    public static void drawQuadTexture(final Vector2 vector2, final float width, final float height, final float tx, final float ty, final float tw, final float th, final Texture texture, final Color color) {
-        final float[] c = Color.convertColorToFloatAlpha(color);
-        float halfWidth = width / 2.0f;
-        float halfHeight = height / 2.0f;
-        texture.bind();
-        glPushMatrix();
-
-        glColor4f(c[0], c[1], c[2], c[3]);
-        glTranslatef(vector2.x + halfWidth, vector2.y + halfHeight, 0);
-        glTranslatef(-halfWidth, -halfHeight, 0);
-        glBegin(GL_QUADS);
-
-        glTexCoord2f(tx, ty);
-        glVertex2f(0, 0);
-
-        glTexCoord2f(tx + tw, ty);
-        glVertex2f(width, 0);
-
-        glTexCoord2f(tx + tw, ty + th);
-        glVertex2f(width, height);
-
-        glTexCoord2f(tx, ty + th);
-        glVertex2f(0, height);
-
-        glEnd();
-        texture.disable();
-        glPopMatrix();
+    public static void drawQuadTextureNew(final Vector2 position, final float width, final float height, final float tx, final float ty, final float tw, final float th, Texture texture) {
+        drawQuadTextureAngleNew(position, 0, width, height, tx, ty, tw, th, texture, Color.WHITE);
     }
 
     public static void drawQuadLines(final Vector2 pos, final float width, final float height, final float lineWidth, final Color color) {
-        RenderEngine.drawLine(pos, new Vector2(pos.x, pos.y + height), lineWidth, color);
-        RenderEngine.drawLine(new Vector2(pos.x, pos.y + height), new Vector2(pos.x + width, pos.y + height), lineWidth, color);
-        RenderEngine.drawLine(new Vector2(pos.x + width, pos.y + height), new Vector2(pos.x + width, pos.y), lineWidth, color);
-        RenderEngine.drawLine(new Vector2(pos.x + width, pos.y), pos, lineWidth, color);
+        RenderEngine.drawLineNew(pos, new Vector2(pos.x, pos.y + height), lineWidth, color);
+        RenderEngine.drawLineNew(new Vector2(pos.x, pos.y + height), new Vector2(pos.x + width, pos.y + height), lineWidth, color);
+        RenderEngine.drawLineNew(new Vector2(pos.x + width, pos.y + height), new Vector2(pos.x + width, pos.y), lineWidth, color);
+        RenderEngine.drawLineNew(new Vector2(pos.x + width, pos.y), pos, lineWidth, color);
     }
 
     public static void drawWireframe(Vector2 screenPos, float screenWidth, float screenHeight, float angle) {
-        final float[] c = Color.convertColorToFloatAlpha(Color.GREEN);
-        glPushMatrix();
-        glColor4f(c[0], c[1], c[2], c[3]);
-        // Translate to the object's position on the screen
-        glTranslatef(screenPos.x, screenPos.y, 0);
-        // Rotate around the center of the object
-        glRotatef((float) Math.toDegrees(angle), 0, 0, 1);
-
-        // Draw a wireframe rectangle to represent the object
-        glBegin(GL_LINE_LOOP);
-        glVertex2f(-screenWidth / 2, -screenHeight / 2);
-        glVertex2f(-screenWidth / 2, screenHeight / 2);
-        glVertex2f(screenWidth / 2, screenHeight / 2);
-        glVertex2f(screenWidth / 2, -screenHeight / 2);
-        glEnd();
-
-        glPopMatrix();
+        drawLineNew(screenPos, new Vector2(screenPos.x + screenWidth, screenPos.y), 1.0f, Color.GREEN);
+        drawLineNew(new Vector2(screenPos.x + screenWidth, screenPos.y), new Vector2(screenPos.x + screenWidth, screenPos.y + screenHeight), 1.0f, Color.GREEN);
+        drawLineNew(new Vector2(screenPos.x + screenWidth, screenPos.y + screenHeight), new Vector2(screenPos.x, screenPos.y + screenHeight), 1.0f, Color.GREEN);
+        drawLineNew(new Vector2(screenPos.x, screenPos.y + screenHeight),  screenPos, 1.0f, Color.GREEN);
     }
 
 

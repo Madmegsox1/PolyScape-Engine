@@ -40,11 +40,4 @@ public abstract class Event<T> {
 
         events = temp;
     }
-
-
-
-
-
-
-
 }

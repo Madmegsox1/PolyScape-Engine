@@ -133,7 +133,7 @@ public final class NewOrEditProject extends Screen {
 
     @Override
     public void render(RenderEvent event) {
-        RenderEngine.drawQuad(new Vector2(0, 0), Profile.Display.WIDTH, Profile.Display.HEIGHT, Profile.UiThemes.Dark.background);
+        RenderEngine.drawQuadNew(new Vector2(0, 0), Profile.Display.WIDTH, Profile.Display.HEIGHT, Profile.UiThemes.Dark.background);
 
         if(model !=  null){
             font.renderText("Editing Project Config: " + info.projectName, new Vector2(200, 30), Profile.UiThemes.Dark.foreground);

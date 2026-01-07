@@ -151,7 +151,7 @@ public final class Graph {
         for (Vector2 v : graphData) {
             Vector2 v2 = new Vector2(pos.x + ((v.x * mv) * mx), pos.y - ((v.y * mv) * my));
             if (((vector2.y <= v2.y && vector2.y + 10 >= v2.y) || (vector2.y >= v2.y && vector2.y - 10 <= v2.y)) && ((vector2.x <= v2.x && vector2.x + 10 >= v2.x) || (vector2.x >= v2.x && vector2.x - 10 <= v2.x))) {
-                RenderEngine.drawQuad(new Vector2(v2.x, v2.y - 14), font.getWidth(v.x + ", " + v.y) + 2, 10, Color.BLACK);
+                RenderEngine.drawQuadNew(new Vector2(v2.x, v2.y - 14), font.getWidth(v.x + ", " + v.y) + 2, 10, Color.BLACK);
                 font.drawText(v.x + ", " + v.y, new Vector2(v2.x, v2.y - 16), Color.WHITE);
                 break;
             }
@@ -209,8 +209,8 @@ public final class Graph {
             }
         }
 
-        RenderEngine.drawLine(pos, new Vector2(pos.x + ((maxAxis.x * mv) * mx), pos.y), 2f, Color.BLACK);
-        RenderEngine.drawLine(pos, new Vector2(pos.x, pos.y - ((maxAxis.y * mv) * my)), 2f, Color.BLACK);
+        RenderEngine.drawLineNew(pos, new Vector2(pos.x + ((maxAxis.x * mv) * mx), pos.y), 2f, Color.BLACK);
+        RenderEngine.drawLineNew(pos, new Vector2(pos.x, pos.y - ((maxAxis.y * mv) * my)), 2f, Color.BLACK);
 
         if (title != null) {
             titleVector = new Vector2(pos.x + (((maxAxis.x * mv) * mx) / 2), pos.y - ((maxAxis.y * mv) * my));

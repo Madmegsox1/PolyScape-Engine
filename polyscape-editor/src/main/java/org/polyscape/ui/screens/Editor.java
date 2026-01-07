@@ -1,15 +1,17 @@
 package org.polyscape.ui.screens;
 
 import org.jbox2d.dynamics.BodyType;
+import org.joml.Matrix4f;
 import org.lwjgl.glfw.GLFW;
 import org.polyscape.Engine;
 import org.polyscape.Loader;
 import org.polyscape.Profile;
 import org.polyscape.event.EventMetadata;
 import org.polyscape.event.IEvent;
-import org.polyscape.font.Font;
 import org.polyscape.font.FontMac;
+import org.polyscape.font.FontRenderer;
 import org.polyscape.object.BaseObject;
+import org.polyscape.object.CircleObject;
 import org.polyscape.object.Level;
 import org.polyscape.object.ObjectManager;
 import org.polyscape.project.model.ProjectInfo;
@@ -58,7 +60,7 @@ public final class Editor extends Screen {
 
     boolean draggingLower;
 
-    public static int leftWidth = 250;
+    public static int leftWidth = 300;
 
     public Vector2 startCameraDrag;
     public static Vector2 cameraVector;
@@ -75,6 +77,10 @@ public final class Editor extends Screen {
 
     boolean draggingObjectRot;
 
+    boolean draggingCircle;
+
+    CircleObject currentCircleObject;
+
     Vector2 draggingVectorObject;
 
     float previousAngle;
@@ -90,6 +96,8 @@ public final class Editor extends Screen {
     Button moveButton;
 
     Button rotateButton;
+
+    Button circleButton;
 
     @Override
     public void model() {
@@ -158,7 +166,7 @@ public final class Editor extends Screen {
         });
         objButton.baseColor = Profile.UiThemes.Dark.accent2;
 
-        Button spriteButton = new Button((int) objButton.getX() + objButton.getWidth() + 20, (lowerY + lowerHeight) - 60, this, "Sprite Sheets", "spriteButton");
+        Button spriteButton = new Button((int) objButton.getX() + objButton.getWidth() + 5, (lowerY + lowerHeight) - 60, this, "Sprite Sheets", "spriteButton");
         spriteButton.setClickAction(n -> {
             UiEngine.getScreenManager().setCurrentUi(2, "SpriteSheetList");
             UiEngine.getScreenManager().setScreenModel(2, info);
@@ -166,11 +174,20 @@ public final class Editor extends Screen {
 
         spriteButton.baseColor = Profile.UiThemes.Dark.accent2;
 
+        Button logicButton = new Button(5, (lowerY + lowerHeight) - 20, this, "Logic", "logicButton");
+        logicButton.setClickAction(n -> {
+            UiEngine.getScreenManager().setCurrentUi(2, "LogicList");
+            UiEngine.getScreenManager().setScreenModel(2, info);
+        });
+
+        logicButton.baseColor = Profile.UiThemes.Dark.accent2;
+
 
 
         addComponent(lvlButton);
         addComponent(objButton);
         addComponent(spriteButton);
+        addComponent(logicButton);
 
         ObjectManager.clearObjects();
         if(ObjectManager.getLevels().isEmpty()) {
@@ -216,6 +233,14 @@ public final class Editor extends Screen {
                     previousAngle = endAngle;
                 }
             }
+            else if(movementMode == MovementMode.CIRCLE) {
+                if(draggingCircle) {
+                    Vector2 worldMy = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                    int distance = (int) Math.abs(Vector2.distance(worldMy, currentCircleObject.getPosition()));
+                    currentCircleObject.setRadius(distance);
+                }
+
+            }
 
             if (draggingCamera) {
                 float dx = (float) (mx - startCameraDrag.x);
@@ -230,7 +255,7 @@ public final class Editor extends Screen {
         GLFW.glfwSetScrollCallback(Engine.getDisplay().getWindow(), (w, sx, sy) -> {
             Vector2 v2M = Display.getMousePosition(Engine.getDisplay().getWindow());
             if (isInStageBounds(v2M.x, v2M.y)) {
-                float scaleFactor = 0.01f;
+                float scaleFactor = 0.1f;
                 updateScale((float) (sy * scaleFactor));
             }
         });
@@ -251,6 +276,14 @@ public final class Editor extends Screen {
 
         this.rotateButton = rotateButton;
         addComponent(rotateButton);
+
+        Button circleTool = new Button(leftWidth + 140 + 140, 50, this,"Circle Tool", "circleTool");
+        circleTool.setClickAction(n -> {
+            this.movementMode = MovementMode.CIRCLE;
+        });
+
+        this.circleButton = circleTool;
+        addComponent(circleButton);
     }
 
     @Override
@@ -264,42 +297,71 @@ public final class Editor extends Screen {
         if (draggingLeft) {
             leftWidth = (int) Display.getMousePosition(Engine.getDisplay().getWindow()).x;
         }
+
+
+/*
         glLoadIdentity();
         glPushMatrix();
         glTranslatef(cameraVector.x, cameraVector.y, 1.0f);
         glScalef(cameraZoom, cameraZoom, 0f);
+*/
+
+        Matrix4f cameraMatrix = new Matrix4f()
+                .identity()
+                .translate(cameraVector.x, cameraVector.y, 0.0f)
+                .scale(cameraZoom, cameraZoom, 1.0f);
+
+        Matrix4f combined = new Matrix4f(event.renderer.projectionMatrix)
+                .mul(cameraMatrix);
+
+        event.renderer.shader.bind();
+        event.renderer.shader.loadProjectionMatrix(combined);
+        event.renderer.shader.unbind();
+
+
+
         if(renderLevel) {
-            RenderEngine.drawQuadTexture(new Vector2(0, 0), ObjectManager.getCurrentLevel().levelWidth, ObjectManager.getCurrentLevel().levelHeight, 0, 0, ObjectManager.getCurrentLevel().levelWidth / 20f, ObjectManager.getCurrentLevel().levelHeight / 20f, t);
+            RenderEngine.drawQuadTextureNew(new Vector2(0, 0), ObjectManager.getCurrentLevel().levelWidth, ObjectManager.getCurrentLevel().levelHeight, 0, 0, ObjectManager.getCurrentLevel().levelWidth / 20f, ObjectManager.getCurrentLevel().levelHeight / 20f, t);
 
             ObjectManager.renderObjects(event.alpha);
 
             if (selectedObject != null && movementMode == MovementMode.MOVE) {
-                RenderEngine.drawLine(selectedObject.getCenter(), new Vector2(selectedObject.getCenter().x + selectedObject.getWidth() + 30, selectedObject.getCenter().y), 2f, Color.RED);
-                RenderEngine.drawLine(selectedObject.getCenter(), new Vector2(selectedObject.getCenter().x, selectedObject.getCenter().y - selectedObject.getHeight() - 30), 2f, Color.GREEN);
+                RenderEngine.drawLineNew(selectedObject.getCenter(), new Vector2(selectedObject.getCenter().x + selectedObject.getWidth() + 30, selectedObject.getCenter().y), 2f, Color.RED);
+                RenderEngine.drawLineNew(selectedObject.getCenter(), new Vector2(selectedObject.getCenter().x, selectedObject.getCenter().y - selectedObject.getHeight() - 30), 2f, Color.GREEN);
             }
             if (selectedObject != null && movementMode == MovementMode.ROTATE) {
                 RenderEngine.drawHollowCircle(selectedObject.getCenter(), selectedObject.getWidth(), 100, 2f, Color.BLUE);
+            }
+            if (currentCircleObject != null && movementMode == MovementMode.CIRCLE) {
+                Vector2 worldMy = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                RenderEngine.drawLineNew(currentCircleObject.getCenter(), worldMy, 2f, Color.GREEN);
+                font.renderText("R " + currentCircleObject.getRadius(), new Vector2(currentCircleObject.getPosition().x, currentCircleObject.getPosition().y), Color.BLUE);
             }
         }
         else if(renderSpriteSheet()){
             var currentSheet = getCurrentSpriteSheet();
             if (currentSheet != null) {
-                RenderEngine.drawQuadTexture(new Vector2(0, 0), currentSheet.width, currentSheet.height, currentSheet.getMasterTexture());
+                RenderEngine.drawQuadTextureNew(new Vector2(0, 0), currentSheet.width, currentSheet.height, currentSheet.getMasterTexture());
                 for (int y = 0; y < currentSheet.getRows(); y++) {
-                    RenderEngine.drawLine(new Vector2(0, y*currentSheet.getChunkHeight()), new Vector2(currentSheet.width, y*currentSheet.getChunkHeight()), 2f, Color.BLUE);
+                    RenderEngine.drawLineNew(new Vector2(0, y*currentSheet.getChunkHeight()), new Vector2(currentSheet.width, y*currentSheet.getChunkHeight()), 2f, Color.BLUE);
                 }
                 for (int x = 0; x < currentSheet.getCols(); x++) {
-                    RenderEngine.drawLine(new Vector2(x*currentSheet.getChunkWidth(), 0), new Vector2(x*currentSheet.getChunkWidth(), currentSheet.height), 2f, Color.BLUE);
+                    RenderEngine.drawLineNew(new Vector2(x*currentSheet.getChunkWidth(), 0), new Vector2(x*currentSheet.getChunkWidth(), currentSheet.height), 2f, Color.BLUE);
                 }
             }
         }
-        glPopMatrix();
 
-        RenderEngine.drawQuadA(new Vector2(leftWidth, lowerY), Profile.Display.WIDTH, Profile.Display.HEIGHT, Profile.UiThemes.Dark.background);
-        RenderEngine.drawLine(new Vector2(leftWidth, lowerY), new Vector2(Profile.Display.WIDTH, lowerY), 8f, Profile.UiThemes.Dark.foregroundDark);
+        event.renderer.shader.bind();
+        event.renderer.shader.loadProjectionMatrix(event.renderer.projectionMatrix);
+        event.renderer.shader.unbind();
 
-        RenderEngine.drawQuadA(new Vector2(0, 0), leftWidth, Profile.Display.HEIGHT, Profile.UiThemes.Dark.background);
-        RenderEngine.drawLine(new Vector2(leftWidth, 0), new Vector2(leftWidth, Profile.Display.HEIGHT), 8f, Profile.UiThemes.Dark.foregroundDark);
+        //glPopMatrix();
+
+        RenderEngine.drawQuadNew(new Vector2(leftWidth, lowerY), Profile.Display.WIDTH, Profile.Display.HEIGHT, Profile.UiThemes.Dark.background);
+        RenderEngine.drawLineNew(new Vector2(leftWidth, lowerY), new Vector2(Profile.Display.WIDTH, lowerY), 8f, Profile.UiThemes.Dark.foregroundDark);
+
+        RenderEngine.drawQuadNew(new Vector2(0, 0), leftWidth, Profile.Display.HEIGHT, Profile.UiThemes.Dark.background);
+        RenderEngine.drawLineNew(new Vector2(leftWidth, 0), new Vector2(leftWidth, Profile.Display.HEIGHT), 8f, Profile.UiThemes.Dark.foregroundDark);
 
         if (selectedId != -1) {
             font.renderText(selectedObject.getPosition().toString(), new Vector2(leftWidth + 10, 30), Profile.UiThemes.Dark.foregroundDark);
@@ -371,6 +433,29 @@ public final class Editor extends Screen {
                 if (event.action == 0 && draggingObjectRot) {
                     saveObjects();
                     draggingObjectRot = false;
+                }
+            }
+            else if(movementMode == MovementMode.CIRCLE) {
+                if(event.action == 1 && isInStageBounds((float) event.mX, (float) event.mY)) {
+                    var pos = Display.getWorldMousePosition(Engine.getDisplay().getWindow(), cameraVector, cameraZoom);
+                    CircleObject circleObject = new CircleObject();
+                    circleObject.setPosition(pos);
+                    circleObject.setRadius(0);
+                    circleObject.setBaseColor(Color.BLACK);
+                    circleObject.setBodyType(BodyType.STATIC, true);
+                    circleObject.getBody().setAwake(false);
+                    circleObject.setLevel(ObjectManager.getCurrentLevel().getLevelNumber());
+                    this.draggingCircle = true;
+                    this.currentCircleObject = circleObject;
+                    addObject(circleObject, false);
+                    return;
+                }
+                if(event.action == 0 && draggingCircle) {
+                    saveObjects();
+                    draggingCircle = false;
+                    setSelectedId(currentCircleObject.getObjectId());
+                    currentCircleObject = null;
+                    movementMode = MovementMode.MOVE;
                 }
             }
         }

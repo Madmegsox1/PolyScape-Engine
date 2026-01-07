@@ -30,8 +30,8 @@ public class Input extends Component {
 
     @Override
     public void draw(RenderEvent event) {
-        RenderEngine.drawQuadA(new Vector2(getX() - boarder, getY() - boarder), width + boarder * 2, height + boarder * 2, Profile.UiThemes.Dark.foregroundDark);
-        RenderEngine.drawQuadA(getPosition(), width, height, baseColor);
+        RenderEngine.drawQuadNew(new Vector2(getX() - boarder, getY() - boarder), width + boarder * 2, height + boarder * 2, Profile.UiThemes.Dark.foregroundDark);
+        RenderEngine.drawQuadNew(getPosition(), width, height, baseColor);
         screen.font.renderText((this.editing) ? text + getCaret() : text, new Vector2(getX() + 5, getY() + height - 5), Profile.UiThemes.Dark.foregroundDark);
     }
 

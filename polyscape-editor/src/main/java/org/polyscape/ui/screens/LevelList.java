@@ -38,9 +38,7 @@ public class LevelList extends Screen {
         UiEngine.getScreenManager().setCurrentUi(1, "LevelEditor");
         UiEngine.getScreenManager().setScreenModel(1, ObjectManager.getCurrentLevel());
 
-
         getComponentById("LvlButton:" + ObjectManager.getCurrentLevel().getLevelNumber()).foregroundColor = Color.BLUE;
-
     }
 
     private Button getLvlButton() {

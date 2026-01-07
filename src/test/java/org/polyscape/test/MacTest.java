@@ -1,35 +1,30 @@
 package org.polyscape.test;
 
-import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.BodyType;
-import org.lwjgl.glfw.GLFW;
+import org.junit.jupiter.api.Test;
 import org.polyscape.Engine;
 import org.polyscape.Profile;
 import org.polyscape.event.EventBus;
 import org.polyscape.event.EventMetadata;
 import org.polyscape.event.IEvent;
-import org.polyscape.object.BaseObject;
-import org.polyscape.object.FluidObject;
-import org.polyscape.object.ObjectManager;
-import org.polyscape.object.StaticObject;
+import org.polyscape.logic.LogicManager;
+import org.polyscape.logic.script.LogicScript;
+import org.polyscape.object.*;
 import org.polyscape.rendering.Display;
 import org.polyscape.rendering.RenderEngine;
 import org.polyscape.rendering.Renderer;
-import org.polyscape.rendering.elements.Color;
+import org.polyscape.rendering.elements.Texture;
 import org.polyscape.rendering.elements.Vector2;
-import org.polyscape.rendering.events.KeyEvent;
 import org.polyscape.rendering.events.MouseClickEvent;
-import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.rendering.sprite.SpriteSheet;
 import org.polyscape.test.ui.HomeScreen;
 import org.polyscape.ui.ScreenManager;
 
-import java.util.concurrent.atomic.AtomicReference;
 
-import static org.lwjgl.opengl.GL11.*;
 
 public class MacTest extends Engine {
-    public static void main(String[] args) {
+    //@Test
+    public void test() {
         Profile.Display.BACKGROUND_COLOR = new float[]{255f / 255f, 255f / 255f, 255f / 255f, 1.0f};
         display = new Display("Mac Test");
         display.init(false);
@@ -40,11 +35,34 @@ public class MacTest extends Engine {
         renderEngine = new RenderEngine();
         eventBus = new EventBus();
 
+        Level l = new Level(1, "Level 1");
+        ObjectManager.addLevel(l);
+        ObjectManager.loadLevel(1);
+
+        LogicManager.loadAllLogic("./res/jars/TestLogic-1.0.jar");
+        LogicManager.loadAllLogic("test1.js");
+        LogicManager.initLogic();
 
         SpriteSheet forestTiles = new SpriteSheet("ForestTiles", 16,16);
 
         SpriteSheet spriteSheet = new SpriteSheet("002", 25, 25);
         ObjectManager.clearObjects();
+
+        CircleObject circleObject = new CircleObject();
+        circleObject.setPosition(new Vector2(400, 400));
+        circleObject.setRadius(50);
+        circleObject.setTexture(new Texture("002"));
+        circleObject.setBodyType(BodyType.DYNAMIC, true);
+        circleObject.setWireframe(true);
+        circleObject.setLevel(1);
+        circleObject.setObjectId(800);
+
+
+        IEvent<MouseClickEvent> me =  n -> {
+            circleObject.setWidth(circleObject.getWidth() + 2);
+        };
+
+        MouseClickEvent.addEvent(me, new EventMetadata(MouseClickEvent.class, 2));
 
         BaseObject object = new BaseObject();
         object.setPosition(new Vector2(100, 200));
@@ -54,6 +72,8 @@ public class MacTest extends Engine {
         object.setSpriteSheet(spriteSheet);
         object.setWireframe(true);
         object.setTexture(0);
+        object.setObjectId(999);
+        object.setLevel(1);
 
 
         StaticObject object1 = new StaticObject();
@@ -62,6 +82,7 @@ public class MacTest extends Engine {
         object1.setHeight(50);
         object1.setBodyType(BodyType.STATIC, true);
         object1.setWireframe(true);
+        object1.setLevel(1);
 
         ObjectManager.addObject(object1);
 
@@ -72,18 +93,21 @@ public class MacTest extends Engine {
         object2.setHeight(100);
         object2.setSpriteSheet(forestTiles);
         object2.setTexture(0);
+        object2.setLevel(1);
         BaseObject object3 = new BaseObject();
         object3.setPosition(new Vector2(100,0));
         object3.setWidth(100);
         object3.setHeight(100);
         object3.setSpriteSheet(forestTiles);
         object3.setTexture(1);
+        object3.setLevel(1);
         BaseObject object5 = new BaseObject();
         object5.setPosition(new Vector2(200,0));
         object5.setWidth(100);
         object5.setHeight(100);
         object5.setSpriteSheet(forestTiles);
         object5.setTexture(2);
+        object5.setLevel(1);
 
         BaseObject object6 = new BaseObject();
         object6.setPosition(new Vector2(300,0));
@@ -91,6 +115,7 @@ public class MacTest extends Engine {
         object6.setHeight(100);
         object6.setSpriteSheet(forestTiles);
         object6.setTexture(3);
+        object6.setLevel(1);
 
         ObjectManager.addObject(object2);
         ObjectManager.addObject(object3);
@@ -100,127 +125,18 @@ public class MacTest extends Engine {
         ObjectManager.addObject(object);
 
         FluidObject fluidObject = new FluidObject(10f);
+        fluidObject.setLevel(1);
+        fluidObject.setObjectId(991);
 
         //fluidObject.createFluid(200, 100, 200);
 
         ObjectManager.addObject(fluidObject);
+        ObjectManager.addObject(circleObject);
 
-        AtomicReference<Vector2> startDrag = new AtomicReference<>();
-
-        AtomicReference<Float> translateX = new AtomicReference<>();
-
-        AtomicReference<Float> translateY= new AtomicReference<>();
-
-
-        IEvent<RenderEvent> renderEvent = e -> {
-
-            if (startDrag.get() != null) {
-                Vector2 v = Display.getMousePosition(display.getWindow());
-                RenderEngine.drawQuadA(startDrag.get(), v.x - startDrag.get().x, v.y - startDrag.get().y, new Color(0, 0, 0, 100));
-            }
-
-            Vector2 vector = object.getInterpolatedPosition(e.alpha);
-            float playerX = vector.x;
-            float playerY = vector.y;
-
-            // Assuming screenWidth and screenHeight are the dimensions of your window
-            float halfWidth = Profile.Display.WIDTH / 2.0f;
-            float halfHeight = Profile.Display.HEIGHT / 2.0f;
-
-            // Calculate the translation needed to keep the player at the center
-            translateX.set(-playerX + halfWidth);
-            translateY.set(-playerY + halfHeight);
-
-            // Apply this translation to the view matrix or directly using OpenGL's legacy functions
-            glLoadIdentity(); // Load the identity matrix to reset transformations
-            glPushMatrix();
-            glTranslatef(translateX.get(), translateY.get(), 0.0f);
-            //glEnable(GL_CULL_FACE);
-            ObjectManager.renderObjects(e.alpha);
-            //glDisable(GL_CULL_FACE);
-            glPopMatrix();
-        };
-
-        IEvent<KeyEvent> keyEvent = e -> {
-            float yv = 0;
-            float xv = 0;
-
-            if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_W)) {
-                yv += 20f;
-            }
-            if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_S)) {
-                yv -= 20f;
-            }
-            if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_A)) {
-                xv -= 20f;
-            }
-            if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_D)) {
-                xv += 20f;
-            }
-
-
-            if (KeyEvent.isKeyDown(GLFW.GLFW_KEY_R)) {
-                Vector2 pos = Display.getMousePosition(display.getWindow());
-
-                ObjectManager.iterateObjects(n -> {
-                    if (n.getBody() != null) {
-                        if (n.isPointInObject(pos)) {
-                            n.getBody().setTransform(new Vec2(0, 0), 10);
-                        }
-                    }
-                });
-            }
-
-            float finalXv = xv;
-            float finalYv = yv;
-            ObjectManager.iterateObjects(n -> {
-                if (n.getBody() != null) {
-                    n.addForce(finalXv, finalYv);
-                }
-            });
-
-        };
-
-
-        IEvent<MouseClickEvent> clickEvent = e -> {
-
-            // Assume a scale factor where >1.0 is zoomed in, <1.0 is zoomed out
-            float scaleFactor = 1.0f; // Example scale factor
-
-// Adjust calculations for scale
-            float adjustedMouseX = (float) e.mX / scaleFactor;
-            float adjustedMouseY = (float) e.mY / scaleFactor;
-
-// Then apply translation as before
-            e.mX = adjustedMouseX - translateX.get();
-            e.mY = adjustedMouseY - translateY.get();
-
-            if (e.action == 0 && e.key == 0) {
-                fluidObject.createFluid((float) e.mX, (float) e.mY, 20);
-            }
-            if (e.action == 0 && e.key == 2) {
-                ObjectManager.clearObjects();
-            }
-
-            if (e.action == 1 && e.key == 1) {
-                startDrag.set(new Vector2(e.mX, e.mY));
-            }
-
-            if (e.action == 0 && e.key == 1) {
-                StaticObject object4 = new StaticObject();
-                object4.setPosition(startDrag.get());
-                object4.setWidth((int) (e.mX - startDrag.get().x));
-                object4.setHeight((int) (e.mY - startDrag.get().y));
-                object4.setBodyType(BodyType.DYNAMIC, true);
-                object4.setWireframe(false);
-                startDrag.set(null);
-                ObjectManager.addObject(object4);
-            }
-        };
-
-        RenderEvent.addEvent(renderEvent, new EventMetadata(RenderEvent.class, 0));
-        KeyEvent.addEvent(keyEvent, new EventMetadata(KeyEvent.class, 0));
-        MouseClickEvent.addEvent(clickEvent, new EventMetadata(MouseClickEvent.class, 0));
+        LogicManager.initLogicObject(object);
+        LogicManager.initLogicObject(fluidObject);
+        LogicManager.initLogicObject(circleObject);
+        LogicManager.loadLogic();
 
         ScreenManager screenManager = new ScreenManager();
 

@@ -48,49 +48,28 @@ public class KeyEvent extends Event<KeyEvent> {
     }
 
     public static String toUpper(String value){
-        switch (value){
-            case "1":
-                return "!";
-            case "2":
-                return "@";
-            case "4":
-                return "$";
-            case "5":
-                return "%";
-            case "6":
-                return "^";
-            case "7":
-                return "&";
-            case "8":
-                return "*";
-            case "9":
-                return "(";
-            case "0":
-                return ")";
-            case "-":
-                return "_";
-            case "=":
-                return "+";
-            case "[":
-                return "{";
-            case "]":
-                return "}";
-            case ";":
-                return ":";
-            case "'":
-                return "\"";
-            case ",":
-                return "<";
-            case ".":
-                return ">";
-            case "/":
-                return "?";
-            case "\\":
-                return "|";
-            case "`":
-                return "~";
-            default:
-                return value.toUpperCase();
-        }
+        return switch (value) {
+            case "1" -> "!";
+            case "2" -> "@";
+            case "4" -> "$";
+            case "5" -> "%";
+            case "6" -> "^";
+            case "7" -> "&";
+            case "8" -> "*";
+            case "9" -> "(";
+            case "0" -> ")";
+            case "-" -> "_";
+            case "=" -> "+";
+            case "[" -> "{";
+            case "]" -> "}";
+            case ";" -> ":";
+            case "'" -> "\"";
+            case "," -> "<";
+            case "." -> ">";
+            case "/" -> "?";
+            case "\\" -> "|";
+            case "`" -> "~";
+            default -> value.toUpperCase();
+        };
     }
 }

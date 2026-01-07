@@ -17,6 +17,7 @@ import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
 
 import static org.lwjgl.glfw.GLFW.*;
+
 import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
@@ -41,6 +42,17 @@ public final class Display {
         double mouseY = posY.get(0);
 
         return new Vector2(mouseX, mouseY);
+    }
+
+    public static Vector2 getWorldMousePosition(long display) {
+        DoubleBuffer posX = BufferUtils.createDoubleBuffer(1);
+        DoubleBuffer posY = BufferUtils.createDoubleBuffer(1);
+
+        glfwGetCursorPos(display, posX, posY);
+        double mouseX = posX.get(0);
+        double mouseY = posY.get(0);
+
+        return new Vector2((float)mouseX, (float)mouseY);
     }
 
     public static Vector2 getWorldMousePosition(long display, Vector2 cameraPosition, float scale){
@@ -74,22 +86,22 @@ public final class Display {
             throw new IllegalStateException("Unable to initialize GLFW");
         }
 
-
-
-
         // Window config
         glfwDefaultWindowHints();
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 
-        // Check if user is on MacOS if not the disable this hint
+
         glfwWindowHint(GLFW.GLFW_COCOA_RETINA_FRAMEBUFFER, GLFW.GLFW_FALSE);
 
         if(aa) {
             glfwWindowHint(GLFW_SAMPLES, 4);
         }
 
-        // Window creation
         this.window = GLFW.glfwCreateWindow(Profile.Display.WIDTH, Profile.Display.HEIGHT, this.title, NULL, NULL);
 
         // Make fullscreen
@@ -98,6 +110,7 @@ public final class Display {
         // NULL);
         glfwMakeContextCurrent(this.window);
         GL.createCapabilities();
+        glViewport(0, 0, Profile.Display.WIDTH, Profile.Display.HEIGHT);
 
 
         if (this.window == NULL)
