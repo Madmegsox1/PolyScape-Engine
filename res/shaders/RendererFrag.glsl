@@ -18,12 +18,6 @@ uniform vec4 wireframeColor;
 void main() {
 
     if(wireframe) {
-        float distance = min(min(FragPos.x, 1.0 - FragPos.x), min(FragPos.y, 1.0 - FragPos.y));
-
-        if(distance < wireframeWidth){
-            FragColor = wireframeColor;
-            return;
-        }
     } else if(wireframeHolo) {
         discard;
     }

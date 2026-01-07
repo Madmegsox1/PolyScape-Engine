@@ -12,7 +12,6 @@ import org.polyscape.rendering.elements.Vector2;
 import org.polyscape.rendering.events.RenderEvent;
 import org.polyscape.rendering.events.WorldUpdateEvent;
 
-import static org.lwjgl.opengl.GL11.*;
 
 public final class RenderEngine {
     public static int fps = 0;
@@ -179,24 +178,42 @@ public final class RenderEngine {
         drawCircleAngleTexturedNew(center, radius, angle, segments, null, color);
     }
 
-    // todo rewrite this function
     public static void drawHollowCircle(final Vector2 center, final float radius, final int segments, final float width, final Color color) {
-        final float[] c = Color.convertColorToFloatAlpha(color);
-        glPushMatrix();
-        glColor4f(c[0], c[1], c[2], c[3]);
-        glLineWidth(width);
-        glBegin(GL11.GL_LINE_LOOP);
 
-        for (int i = 0; i < segments; i++) {
+        Matrix4f transformMatrix = new Matrix4f()
+                .translate(center.x, center.y, 0)
+                .rotateZ(0);
+
+        float[] vertices = new float[segments * 2];
+
+        for(int i = 0; i < segments; i++) {
             double theta = 2.0f * Math.PI * i / segments;
             float x = (float) (radius * Math.cos(theta));
             float y = (float) (radius * Math.sin(theta));
 
-            GL11.glVertex2f(center.x + x, center.y + y);
+            vertices[i * 2] = x;
+            vertices[i * 2 + 1] = y;
         }
 
-        GL11.glEnd();
-        GL11.glPopMatrix();
+        renderer.shader.bind();
+        renderer.shader.loadTransformMatrix(transformMatrix);
+        renderer.shader.loadUseTexture(false);
+        renderer.shader.loadShapeColor(color);
+
+        GL30.glBindVertexArray(renderer.vaoId);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, renderer.vboId);
+        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_DYNAMIC_DRAW);
+
+        GL20.glEnableVertexAttribArray(0);
+        GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, 2 * Float.BYTES, 0);
+
+        GL11.glLineWidth(width);
+        GL11.glDrawArrays(GL11.GL_LINE_LOOP, 0, segments);
+
+        GL20.glDisableVertexAttribArray(0);
+        GL30.glBindVertexArray(0);
+        renderer.shader.unbind();
+
     }
 
     public static void drawQuadTextureNew(final Vector2 position, final float width, final float height, final Texture texture, final Color color) {
@@ -248,14 +265,21 @@ public final class RenderEngine {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, renderer.vboId);
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_DYNAMIC_DRAW);
 
+        final int stride = 4 * Float.BYTES;
+        GL20.glEnableVertexAttribArray(0); // position
+        GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, stride, 0L);
+        GL20.glEnableVertexAttribArray(1); // texcoord
+        GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, stride, 2L * Float.BYTES);
+
         if(texture != null) {
             GL13.glActiveTexture(GL13.GL_TEXTURE0);
             texture.bind();
+            renderer.shader.loadTextureSampler(0);
         }
-        renderer.shader.loadTextureSampler(0);
-
         GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 6);
 
+        GL20.glDisableVertexAttribArray(0);
+        GL20.glDisableVertexAttribArray(1);
         GL30.glBindVertexArray(0);
         renderer.shader.unbind();
         if(texture != null) {
@@ -293,14 +317,22 @@ public final class RenderEngine {
         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, renderer.vboId);
         GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_DYNAMIC_DRAW);
 
+        final int stride = 4 * Float.BYTES;
+        GL20.glEnableVertexAttribArray(0); // position
+        GL20.glVertexAttribPointer(0, 2, GL11.GL_FLOAT, false, stride, 0L);
+        GL20.glEnableVertexAttribArray(1); // texcoord
+        GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, stride, 2L * Float.BYTES);
+
         if(texture != null) {
             GL13.glActiveTexture(GL13.GL_TEXTURE0);
             texture.bind();
+            renderer.shader.loadTextureSampler(0);
         }
-        renderer.shader.loadTextureSampler(0);
 
         GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 6);
 
+        GL20.glDisableVertexAttribArray(0);
+        GL20.glDisableVertexAttribArray(1);
         GL30.glBindVertexArray(0);
         renderer.shader.unbind();
         if(texture != null) {

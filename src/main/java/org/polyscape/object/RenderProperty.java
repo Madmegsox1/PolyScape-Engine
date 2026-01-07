@@ -85,6 +85,10 @@ public abstract class RenderProperty {
 
     public void setTexture(Texture texture) {
         this.texture = texture;
+        if(this.baseColor.r == 0f && this.baseColor.b == 0f && this.baseColor.g == 0f && this.baseColor.a == 255f){
+            this.baseColor = Color.WHITE;
+        }
+
         if(this.texture != null){
             this.isTextured = true;
         }
