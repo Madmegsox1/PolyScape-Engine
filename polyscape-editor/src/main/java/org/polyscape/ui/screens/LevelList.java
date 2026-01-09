@@ -42,7 +42,7 @@ public class LevelList extends Screen {
     }
 
     private Button getLvlButton() {
-        Button newLevel = new Button(5, Profile.Display.HEIGHT - 140, this, "Add Level", "addLevelButton");
+        Button newLevel = new Button(5, Profile.Display.HEIGHT - 160, this, "Add Level", "addLevelButton");
         newLevel.setClickAction(n -> {
             Level newLvl = new Level(ObjectManager.getLevels().size() + 1, "New Level");
             newLvl.levelWidth = 100;

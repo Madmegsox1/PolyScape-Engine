@@ -46,7 +46,7 @@ public class SpriteSheetList extends Screen  {
             addComponent(bt);
         });
 
-        Button newSpriteSheet = new Button(5, Profile.Display.HEIGHT - 140, this, "Add Sprite Sheet", "addSpriteSheet");
+        Button newSpriteSheet = new Button(5, Profile.Display.HEIGHT - 160, this, "Add Sprite Sheet", "addSpriteSheet");
         newSpriteSheet.setClickAction(n -> {
             UiEngine.getScreenManager().setCurrentUi(1, "SpriteSheets");
             UiEngine.getScreenManager().setScreenModel(1, null);

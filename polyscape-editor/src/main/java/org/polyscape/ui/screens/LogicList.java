@@ -39,7 +39,7 @@ public final class LogicList extends Screen {
     }
 
     private Button getLogicNewButton(){
-        Button newLogic = new Button(5, Profile.Display.HEIGHT - 140, this, "Add Logic", "addLogicButton");
+        Button newLogic = new Button(5, Profile.Display.HEIGHT - 160, this, "Add Logic", "addLogicButton");
         newLogic.setClickAction(n -> {
             UiEngine.getScreenManager().setCurrentUi(1, "LogicEdit");
             UiEngine.getScreenManager().setScreenModel(1, null);

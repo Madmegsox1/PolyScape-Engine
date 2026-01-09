@@ -193,7 +193,6 @@ public final class ObjectEditor extends Screen {
                     object.setTexture(texture1);
                     saveObjects();
                 }catch (Exception ignored){}
-
             }
         });
 
